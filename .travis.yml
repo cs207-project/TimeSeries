@@ -22,7 +22,7 @@ before_install:
 install:
   - source tests/travis_install.sh
   - pip install -r requirements.txt
-  - conda install numpy
+  - - conda install --yes python=$TRAVIS_PYTHON_VERSION numpy
 before_script:
   - git config --global user.email "you@example.com"
   - git config --global user.name "Your Name"
