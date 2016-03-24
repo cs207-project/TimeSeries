@@ -1,7 +1,7 @@
 from pytest import raises
 import numpy as np
-import TimeSeries as TS
-from lazy import *
+import timeserieslazy.TimeSeries as TS
+from timeseries.lazy import *
 import collections
 
 testSeries = TS.TimeSeries(range(0,4),range(1,5))
