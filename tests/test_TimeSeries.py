@@ -1,6 +1,6 @@
 from pytest import raises
 import numpy as np
-import timeserieslazy.TimeSeries as TS
+import timeseries.TimeSeries as TS
 from timeseries.lazy import *
 import collections
 
