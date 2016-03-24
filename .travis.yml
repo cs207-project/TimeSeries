@@ -16,6 +16,10 @@ addons:
     packages:
       - git
       - python-pip
+before_install:
+    - pip install pytest pytest-cov
+    - pip install coveralls
+    - pip install numpy
 install:
   - source tests/travis_install.sh
   - pip install -r requirements.txt
@@ -25,6 +29,6 @@ before_script:
 script:
   - python setup.py test
 after_success:
-  - if [[ "$COVERAGE" == "true" ]]; then coveralls || echo "failed";
+  - if [[ "$COVERAGE" == "true" ]]; then coveralls || echo "failed"; fi
 cache:
   - apt
