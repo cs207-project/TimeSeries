@@ -29,6 +29,7 @@ if [[ "$DISTRIB" == "conda" ]]; then
     source activate testenv
 
 elif [[ "$DISTRIB" == "ubuntu" ]]; then
+    echo hi
     # Use standard ubuntu packages in their default version
 fi
 
