@@ -1,5 +1,5 @@
 import numpy as np
-from lazy import *
+from .lazy import *
 import numbers
 
 class TimeSeries():
