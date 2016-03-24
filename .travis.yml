@@ -19,10 +19,10 @@ addons:
 before_install:
     - pip install pytest pytest-cov
     - pip install coveralls
-    - pip install numpy
 install:
   - source tests/travis_install.sh
   - pip install -r requirements.txt
+  - conda install numpy
 before_script:
   - git config --global user.email "you@example.com"
   - git config --global user.name "Your Name"
