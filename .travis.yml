@@ -3,20 +3,32 @@
 # THIS SCRIPT IS SUPPOSED TO BE AN EXAMPLE. MODIFY IT ACCORDING TO YOUR NEEDS!
 
 
+# Travis configuration file using the build matrix feature
+# Read more under http://docs.travis-ci.com/user/build-configuration/
+# THIS SCRIPT IS SUPPOSED TO BE AN EXAMPLE. MODIFY IT ACCORDING TO YOUR NEEDS!
+
+sudo: false
 language: python
-python:
-    - "3.5"
-before_install:
-    - pip install pytest pytest-cov
-    - pip install coveralls
+virtualenv:
+  system_site_packages: true
+env:
+  matrix:
+    - DISTRIB="conda" PYTHON_VERSION="3.5" COVERAGE="false"
+
+addons:
+  apt:
+    packages:
+      - git
+      - python-pip
+install:
+  - source tests/travis_install.sh
+  - pip install -r requirements.txt
+before_script:
+  - git config --global user.email "you@example.com"
+  - git config --global user.name "Your Name"
 script:
-    - py.test
+  - python setup.py test
 after_success:
-    - coveralls
-notifications:
-  email: 
-    - qingzhao@g.harvard.edu
-    - jeewonhwang@g.harvard.edu
-    - zelong430@gmail.com
-    - chenchenzhang@g.harvard.edu
-    - tang01@g.harvard.edu  
+  - if [[ "$COVERAGE" == "true" ]]; then coveralls || echo "failed"; fi
+cache:
+  - apt
