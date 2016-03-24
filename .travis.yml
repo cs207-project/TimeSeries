@@ -3,10 +3,6 @@
 # THIS SCRIPT IS SUPPOSED TO BE AN EXAMPLE. MODIFY IT ACCORDING TO YOUR NEEDS!
 
 
-# Travis configuration file using the build matrix feature
-# Read more under http://docs.travis-ci.com/user/build-configuration/
-# THIS SCRIPT IS SUPPOSED TO BE AN EXAMPLE. MODIFY IT ACCORDING TO YOUR NEEDS!
-
 sudo: false
 language: python
 virtualenv:
@@ -29,6 +25,6 @@ before_script:
 script:
   - python setup.py test
 after_success:
-  - if [[ "$COVERAGE" == "true" ]]; then coveralls || echo "failed"; fi
+  - if [[ "$COVERAGE" == "true" ]]; then coveralls || echo "failed";
 cache:
   - apt
