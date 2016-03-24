@@ -61,7 +61,7 @@ def test_interpolation():
     a = TS.TimeSeries([0,5,10], [1,2,3])
     b = TS.TimeSeries([2.5,7.5], [100, -100])
     # Simple cases
-    assert a.interpolate([1]) == TS.TimeSeries([1],[1.2])
+    assert a.interpolate([1.]) == TS.TimeSeries([1.],[1.2])
     assert a.interpolate(b.times()) == TS.TimeSeries([2.5,7.5], [1.5, 2.5])
     # Boundary conditions
     assert a.interpolate([-100,100]) == TS.TimeSeries([-100,100],[1,3])
