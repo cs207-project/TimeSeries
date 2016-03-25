@@ -4,7 +4,6 @@ timeseries
 
 .. image:: https://travis-ci.org/cs207-project/timeseries-package.svg?branch=master
     :target: https://travis-ci.org/cs207-project/timeseries-package
-
 .. image:: https://coveralls.io/repos/github/ytang14/timeseries-package/badge.svg?branch=master :target: https://coveralls.io/github/ytang14/timeseries-package?branch=master
 
 w
