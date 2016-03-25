@@ -1,5 +1,5 @@
 import ply.lex
-import pipeline.lexer
+import pype.lexer
 
 def test_lexer():
     lexer = ply.lex.lex()
