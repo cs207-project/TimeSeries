@@ -23,13 +23,14 @@ install:
   - source tests/travis_install.sh
   - pip install -r requirements.txt
   - conda install --yes numpy ply
+  - pip install coverage 
 before_script:
   - git config --global user.email "you@example.com"
   - git config --global user.name "Your Name"
 script:
   - python setup.py test
 after_success:
-  - if [[ "$COVERAGE" == "true" ]]; then coveralls || echo "failed"; fi
+  - coveralls
 cache:
   - apt
 notifications:
