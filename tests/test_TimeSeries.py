@@ -53,11 +53,6 @@ def test_check_length():
     thunk = check_length(TS.TimeSeries(range(0,4),range(1,5)).lazy, TS.TimeSeries(range(1,5),range(2,6)))
 
 # Lab 11
-def test_mean():
-    assert ts1.mean() == 2.5
-    with raises(ValueError):
-         ts0.mean() 
-
 def test_median():
     assert ts1.median() == 2.5
     with raises(ValueError):

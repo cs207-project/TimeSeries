@@ -81,7 +81,7 @@ DESCRIPTION
     # Lab 07
 
     # Lab 08 
-     def __len__(self):
+    def __len__(self):
         """
         Returns the length of this TimeSeries instance.
 
