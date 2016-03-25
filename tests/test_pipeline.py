@@ -1,7 +1,7 @@
-from timeseries.pype.lexer import lexer
-from timeseries.pype.parser import parser
-from timeseries.pype.semantic_analysis import CheckSingleAssignment, PrettyPrint
-from timeseries.pype.translate import SymbolTableVisitor
+from pype.lexer import lexer
+from pype.parser import parser
+from pype.semantic_analysis import CheckSingleAssignment, PrettyPrint
+from pype.translate import SymbolTableVisitor
 
 class Pipeline(object):
   def __init__(self, source):
