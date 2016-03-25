@@ -202,6 +202,18 @@ DESCRIPTION
         """
         return self._times
 
+    def items(self):
+        """
+        Returns a sequence of (time, value) tuples
+
+        Returns
+        -------
+        list
+            (time, value)
+        """
+        return list((t, v) for t, v in zip(self._times, self._values))
+
+
     def interpolate(self, times):
         '''
         Filling the TimeSeries class with a given list of times using linear interpolation
@@ -561,3 +573,4 @@ DESCRIPTION
         if(len(self._values) == 0):
             raise ValueError("cant calculate standard deviation of length 0 list")
         return np.std(self._values)
+

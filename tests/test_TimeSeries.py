@@ -36,6 +36,9 @@ def test_values():
 def test_times():
     assert np.array_equal(ts1.times(), range(0,4)) == True
 
+def test_items():
+    assert ts1.items()==list((t,v) for t,v in zip(range(0,4), range(1,5)))
+
 def test_interpolation():
     # Simple cases
     c = TS.TimeSeries([1.],[1.2])
