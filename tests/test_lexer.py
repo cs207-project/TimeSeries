@@ -1,4 +1,5 @@
 import ply.lex
+import pipeline.lexer
 
 def test_lexer():
     lexer = ply.lex.lex()
