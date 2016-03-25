@@ -63,7 +63,7 @@ def test_iteritems():
 def test_interpolation():
     # Simple cases
     c = TS.TimeSeries([1.],[1.2])
-    d = a.interpolate([1.])
+    d = ts3.interpolate([1.])
     assert c == d
     assert ts3.interpolate(ts4.times()) == TS.TimeSeries([2.5,7.5], [1.5, 2.5])
     # Boundary conditions
