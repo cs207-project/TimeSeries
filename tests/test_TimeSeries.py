@@ -122,8 +122,6 @@ def test_mul():
     assert c*a == a*c
     with raises(ValueError):
         d*a
-    with raises(TypeError):
-        d*'a'
 
 def test_abs():
     a = TS.TimeSeries([0,5], [3,4])
@@ -144,11 +142,11 @@ def test_pos():
 
 # Lab 19
 def test_std():
-    assert testSeries.std() == 1.1180339887498949
+    assert ts1.std() == 1.1180339887498949
     with raises(ValueError):
         ts0.std()
 
 def test_mean():
-    assert testSeries.mean() == 2.5
+    assert ts1.mean() == 2.5
     with raises(ValueError):
         ts0.mean() 
