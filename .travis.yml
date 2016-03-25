@@ -1,22 +1,41 @@
-# command to define language
+# Travis configuration file using the build matrix feature
+# Read more under http://docs.travis-ci.com/user/build-configuration/
+# THIS SCRIPT IS SUPPOSED TO BE AN EXAMPLE. MODIFY IT ACCORDING TO YOUR NEEDS!
+
+
+sudo: false
 language: python
-python:
-  - 3.5
+virtualenv:
+  system_site_packages: true
+env:
+  matrix:
+    - DISTRIB="conda" PYTHON_VERSION="3.5" COVERAGE="true"
 
-# command to install dependencies and modules
+addons:
+  apt:
+    packages:
+      - git
+      - python-pip
+before_install:
+    - pip install pytest pytest-cov
+    - pip install coveralls
 install:
+  - source tests/travis_install.sh
   - pip install -r requirements.txt
-  - pip install coverage
-  - pip install coveralls
-  - pip install pytest
-  - pip install pytest-cov
-  - pip install ply
-  - pip install timeseries
-# command to run tests
+  - conda install --yes numpy
+before_script:
+  - git config --global user.email "you@example.com"
+  - git config --global user.name "Your Name"
 script:
-  - nosetests
-  - py.test --cov timeseries
-
-# command to add coveralls
+  - python setup.py test
 after_success:
-  - coveralls
+  - if [[ "$COVERAGE" == "true" ]]; then coveralls || echo "failed"; fi
+cache:
+  - apt
+notifications:
+  email: 
+    - qingzhao@g.harvard.edu
+    - jeewonhwang@g.harvard.edu
+    - chenchenzhang@g.harvard.edu
+    - tang01@g.harvard.edu  
+    - 85831374@qq.com
