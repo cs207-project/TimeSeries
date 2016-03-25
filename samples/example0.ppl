@@ -1,0 +1,10 @@
+(import timeseries)
+
+{ standardize
+  (input (TimeSeries t))
+  (:= mu (mean t))
+  (:= sig (std t))
+  (:= new_t (/ (- t mu) sig))
+  (output new_t)
+}
+
