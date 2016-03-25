@@ -1,7 +1,9 @@
 ==========
 timeseries
 ==========
+[![Build Status](https://travis-ci.org/cs207-project/timeseries-package.svg?branch=master)](https://travis-ci.org/cs207-project/timeseries-package)
 
+[![Coverage Status](https://coveralls.io/repos/github/ytang14/cs207test/badge.svg?branch=master)](https://coveralls.io/github/ytang14/cs207test?branch=master)
 
 Add a short description here!
 
