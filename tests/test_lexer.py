@@ -1,6 +1,7 @@
 import ply.lex
 
 def test_lexer():
+    lexer = ply.lex.lex()
     data = '''
     3 + 4 * 10
     + -20 *2
