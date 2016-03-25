@@ -78,59 +78,10 @@ DESCRIPTION
             self._values = self._TimeSeries[1]
             self._times = self._TimeSeries[0]
     
-    @property
-    @lazy
-    def lazy(self):
-        """
-        Class method used for lazy-evaluation.
-        By @lazy decorator, the lazy function returns
-        lazyOperation() instance that is used later
-        when actual evaluation happens.
+    # Lab 07
 
-        Returns
-        -------
-        instance
-            lazyOperation()
-        """
-        return self
-
-    def itervalues(self):
-        """
-        Class method that yields values of the Timeseries one by one.
-
-        Yields
-        -------
-        flot
-            value
-        """
-        for v in self._values:
-            yield v
-
-    def itertimes(self):
-        """
-        Class method that yields time-values of the Timeseries one by one.
-
-        Yields
-        -------
-        flot
-            time
-        """
-        for t in self._times:
-            yield t
-
-    def iteritems(self):
-        """
-        Class method that yields each pair of (value, time) of the Timeseries one by one.
-
-        Yields
-        -------
-        tuple
-            (value, time)
-        """
-        for t,v in zip(self._times,self._values):
-            yield (t,v)
-            
-    def __len__(self):
+    # Lab 08 
+     def __len__(self):
         """
         Returns the length of this TimeSeries instance.
 
@@ -157,6 +108,37 @@ DESCRIPTION
         """
         index = np.where(self._TimeSeries[0]==time)
         return index[0].size>0
+
+    def __iter__(self):
+        """
+        Returns a generator object that iterates value-list of the TimeSeries.
+
+        Returns
+        -------
+        iter()
+        """
+        return iter(self._TimeSeries[1])
+    
+    def __repr__(self):
+        """
+        Representation method.
+        Refer to __str__ method.
+        """
+        return "%r"%(self._TimeSeries)
+    
+    def __str__(self):
+        """
+        Representation method.
+
+        Returns
+        -------
+        ex) TimeSeries([1, 2, ...])
+        """
+        className = type(self).__name__
+        if len(self)>100:
+            return "%s" %('['+(str(self._values[:99]))[1:-1]+'...'+']')
+        else:
+            return "%s" %(self._TimeSeries)
             
     
     def __getitem__(self,time):
@@ -195,53 +177,9 @@ DESCRIPTION
             self._TimeSeries[1][index]=value
         else:
             print ("no time point at t={0}".format(time))
-            
-    def __iter__(self):
-        """
-        Returns a generator object that iterates value-list of the TimeSeries.
 
-        Returns
-        -------
-        iter()
-        """
-        return iter(self._TimeSeries[1])
-    
-    def __repr__(self):
-        """
-        Representation method.
-        Refer to __str__ method.
-        """
-        return "%r"%(self._TimeSeries)
-    
-    def __str__(self):
-        """
-        Representation method.
 
-        Returns
-        -------
-        ex) TimeSeries([1, 2, ...])
-        """
-        className = type(self).__name__
-        if len(self)>100:
-            return "%s" %('['+(str(self._values[:99]))[1:-1]+'...'+']')
-        else:
-            return "%s" %(self._TimeSeries)
-        
-    def __eq__(self, other):
-        """
-        Check if the 'other' is the same instance with this TimeSeries instacne.
-
-        Parameters
-        ----------
-        other : TimeSeries()
-
-        Returns
-        -------
-        bool
-            True if they are equal, False otherwise
-        """
-        return np.array_equal(self._TimeSeries, other._TimeSeries)
-        
+    # Lab 10
     def values(self):
         """
         Returns the 'value-list' attribute of this TimeSeries
@@ -263,7 +201,61 @@ DESCRIPTION
             time_list
         """
         return self._times
-    
+
+    def interpolate(self, times):
+        '''
+        Filling the TimeSeries class with a given list of times using linear interpolation
+
+        Parameters
+        ----------
+        times: list of float
+            a list of times to be added to self
+
+        Returns
+        -------
+        TimeSeries
+             New TimeSeries instance with parameter 'times' and interpolated 'values' added
+
+        '''
+        new_values = []
+        for time in times:
+            if time > self._times[-1]: # over the rightest boundary
+                new_values.append(self._values[-1])
+            elif time < self._times[0]: # over the leftest boundary
+                new_values.append(self._values[0])
+            elif time in self._times:
+                new_values.append(self.__getitem__(time))
+            else : #within boundary
+                for i in range(len(self._times)):
+                    if self._times[i] > time:
+                        left_value = self._values[i-1]
+                        right_value = self._values[i]
+                        left_time = self._times[i-1]
+                        right_time = self._times[i]
+                        #interpolate
+                        new_values.append(left_value + (right_value - left_value)/(right_time - left_time)*(time - left_time))
+                        break
+        return TimeSeries(times, new_values)
+
+    @property
+    @lazy
+    def lazy(self):
+        """
+        Class method used for lazy-evaluation.
+        By @lazy decorator, the lazy function returns
+        lazyOperation() instance that is used later
+        when actual evaluation happens.
+
+        Returns
+        -------
+        instance
+            lazyOperation()
+        """
+        return self
+
+
+
+    # Lab11
     def mean(self):
         """
         Returns the mean value of self.values
@@ -299,61 +291,62 @@ DESCRIPTION
         if(len(self._values) == 0):
             raise ValueError("cant calculate median of length 0 list")
         return np.median(self._values)
+    
+    # Lab12
+    def itervalues(self):
+        """
+        Class method that yields values of the Timeseries one by one.
 
-    def std(self):
-        '''
-        Returns the standard-deviation of self.values
-
-        Returns
+        Yields
         -------
         float
-            the standard deviation of self.values
+            value
+        """
+        for v in self._values:
+            yield v
 
-        Raises
-        ------
-        ValueError
-            If self.values is empty
-        '''
-        if(len(self._values) == 0):
-            raise ValueError("cant calculate median of length 0 list")
-        return np.std(self._values)
-    
-    def interpolate(self, times):
-        '''
-        Filling the TimeSeries class with a given list of times using linear interpolation
+    def itertimes(self):
+        """
+        Class method that yields time-values of the Timeseries one by one.
+
+        Yields
+        -------
+        float
+            time
+        """
+        for t in self._times:
+            yield t
+
+    def iteritems(self):
+        """
+        Class method that yields each pair of (value, time) of the Timeseries one by one.
+
+        Yields
+        -------
+        tuple
+            (value, time)
+        """
+        for t,v in zip(self._times,self._values):
+            yield (t,v)
+
+
+    # Lab15
+    def __eq__(self, other):
+        """
+        Check if the 'other' is the same instance with this TimeSeries instacne.
 
         Parameters
         ----------
-        times: list of float
-            a list of times to be added to self
+        other : TimeSeries()
 
         Returns
         -------
-        TimeSeries
-             New TimeSeries instance with parameter 'times' and interpolated 'values' added
+        bool
+            True if they are equal, False otherwise
+        """
+        return np.array_equal(self._TimeSeries, other._TimeSeries)
 
-        '''
-        new_values = []
-        for time in times:
-            if time > self._times[-1]: # over the rightest boundary
-                new_values.append(self._values[-1])
-            elif time < self._times[0]: # over the leftest boundary
-                new_values.append(self._values[0])
-            elif time in self._times:
-                new_values.append(self.__getitem__(time))
-            else : #within boundary
-                for i in range(len(self._times)):
-                    if self._times[i] > time:
-                        left_value = self._values[i-1]
-                        right_value = self._values[i]
-                        left_time = self._times[i-1]
-                        right_time = self._times[i]
-                        #interpolate
-                        new_values.append(left_value + (right_value - left_value)/(right_time - left_time)*(time - left_time))
-                        break
-        return TimeSeries(times, new_values)
-        
-    def checkTime(self,rhs):
+        def checkTime(self,rhs):
         '''
         Tool function checking wether the given parameter 'rhs' and self have the same time points
 
@@ -548,3 +541,23 @@ DESCRIPTION
             the TimeSeries instance itself
         '''
         return (self)
+
+
+    # Lab19
+    def std(self):
+        '''
+        Returns the standard-deviation of self.values
+
+        Returns
+        -------
+        float
+            the standard deviation of self.values
+
+        Raises
+        ------
+        ValueError
+            If self.values is empty
+        '''
+        if(len(self._values) == 0):
+            raise ValueError("cant calculate standard deviation of length 0 list")
+        return np.std(self._values)

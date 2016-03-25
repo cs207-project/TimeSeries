@@ -5,16 +5,15 @@ from timeseries.lazy import *
 import collections
 
 # Test data
+ts0 = TS.TimeSeries([],[])
 ts1 = TS.TimeSeries(range(0,4),range(1,5))
 ts2 = TS.TimeSeries(range(0,4),[10,20,30,40,50])
 ts3 = TS.TimeSeries([0,5,10], [1,2,3])
 ts4 = TS.TimeSeries([2.5,7.5], [100, -100])
 
+# Lab 07
 def test_len():
     assert len(ts1) == 4
-
-def test_contains():
-    assert (2 in ts1) == True
 
 def test_getitem():
     assert ts1[0] == 1
@@ -24,30 +23,48 @@ def test_setitem():
     tmpTestSeries[0]=5
     assert tmpTestSeries[0] == 5
 
-def test_equal():
-    tmpTestSeries = TS.TimeSeries(range(0,4),range(1,5))
-    assert tmpTestSeries == ts1
+# Lab 08 same as Lab 07
+
+
+# Lab 10
+def test_contains():
+    assert (2 in ts1) == True
 
 def test_values():
     assert np.array_equal(ts1.values(), range(1,5)) == True
 
-def test_time():
+def test_times():
     assert np.array_equal(ts1.times(), range(0,4)) == True
 
-def test_mean_empty():
-    with raises(ValueError):
-         TS.TimeSeries([],[]).mean() 
+def test_interpolation():
+    # Simple cases
+    c = TS.TimeSeries([1.],[1.2])
+    d = ts3.interpolate([1.])
+    assert c == d
+    assert ts3.interpolate(ts4.times()) == TS.TimeSeries([2.5,7.5], [1.5, 2.5])
+    # Boundary conditions
+    assert ts3.interpolate([-100,100]) == TS.TimeSeries([-100,100],[1,3])
 
-def test_median_empty():
-    with raises(ValueError):
-         TS.TimeSeries([],[]).median()
+@lazy
+def check_length(a,b):
+    return len(a)==len(b)
 
+def test_check_length():
+    thunk = check_length(TS.TimeSeries(range(0,4),range(1,5)).lazy, TS.TimeSeries(range(1,5),range(2,6)))
+
+# Lab 11
 def test_mean():
     assert ts1.mean() == 2.5
+    with raises(ValueError):
+         ts0.mean() 
 
 def test_median():
     assert ts1.median() == 2.5
+    with raises(ValueError):
+         ts0.median()
 
+
+# Lab 12
 def test_itertimes():
     ti=ts1.itertimes()
     assert next(ti)==0
@@ -60,14 +77,11 @@ def test_iteritems():
     iti=ts1.iteritems()
     assert next(iti)==(0,1)
 
-def test_interpolation():
-    # Simple cases
-    c = TS.TimeSeries([1.],[1.2])
-    d = ts3.interpolate([1.])
-    assert c == d
-    assert ts3.interpolate(ts4.times()) == TS.TimeSeries([2.5,7.5], [1.5, 2.5])
-    # Boundary conditions
-    assert ts3.interpolate([-100,100]) == TS.TimeSeries([-100,100],[1,3])
+
+# Lab 15
+def test_equal():
+    tmpTestSeries = TS.TimeSeries(range(0,4),range(1,5))
+    assert tmpTestSeries == ts1
     
 def test_add():
     c = 100
@@ -113,6 +127,8 @@ def test_mul():
     assert c*a == a*c
     with raises(ValueError):
         d*a
+    with raises(TypeError):
+        d*'a'
 
 def test_abs():
     a = TS.TimeSeries([0,5], [3,4])
@@ -131,9 +147,13 @@ def test_pos():
     a = TS.TimeSeries([0,5,10], [-1,-2,3])
     assert +a == a
 
-@lazy
-def check_length(a,b):
-    return len(a)==len(b)
+# Lab 19
+def test_std():
+    assert testSeries.std() == 1.1180339887498949
+    with raises(ValueError):
+        ts0.std()
 
-def test_check_length():
-    thunk = check_length(TS.TimeSeries(range(0,4),range(1,5)).lazy, TS.TimeSeries(range(1,5),range(2,6)))
+def test_mean():
+    assert testSeries.mean() == 2.5
+    with raises(ValueError):
+        ts0.mean() 
