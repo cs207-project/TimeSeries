@@ -346,7 +346,7 @@ DESCRIPTION
         """
         return np.array_equal(self._TimeSeries, other._TimeSeries)
 
-        def checkTime(self,rhs):
+    def checkTime(self,rhs):
         '''
         Tool function checking wether the given parameter 'rhs' and self have the same time points
 
