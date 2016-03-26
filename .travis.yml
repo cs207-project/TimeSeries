@@ -20,7 +20,7 @@ before_install:
     - pip install pytest pytest-cov
     - pip install coveralls
 install:
-  - source tests/travis_install.sh
+  - source test/travis_install.sh
   - pip install -r requirements.txt
   - conda install --yes numpy ply
 before_script:
