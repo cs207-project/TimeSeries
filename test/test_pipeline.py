@@ -12,7 +12,7 @@ def test_lexer():
     for token, line in zip(lexer, output):
         assert str(token) == line.strip()
 
-def test_example0(example0_ppl):
+def test_example0():
     t=Pipeline(example0_ppl)
 
 def test_example1():

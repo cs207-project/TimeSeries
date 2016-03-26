@@ -7,14 +7,26 @@ from .symtab import *
 ATTRIB_COMPONENT = '_pype_component'
 
 def component(func):
-  'Marks a functions as compatible for exposing as a component in PyPE.'
-  # TODO
+  """
+    Marks a functions as compatible for exposing as a component in PyPE.
+
+    Parameters
+    ----------
+    func: function
+        Function to be marked as compatible for exposing as a component in PyPE.
+  """
   func._attributes={'_pype_component':True}
   return func
 
 def is_component(func):
-  'Checks whether the @component decorator was applied to a function.'
-  # TODO
+  """
+    Checks whether the @component decorator was applied to a function..
+
+    Parameters
+    ----------
+    func: function
+        Function needs to be checked.
+  """
   if '_attributes' in dir(func):
     if isinstance(func._attributes, dict) and '_pype_component' in func._attributes:
       return func._attributes['_pype_component']
