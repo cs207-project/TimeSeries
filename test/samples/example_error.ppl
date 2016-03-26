@@ -1,1 +1,12 @@
+{ standardize
+  (input)
+  (:= s 'a')
+  (:= t 1)
+  (:= mu (+ 1 t))
+  (:= sig (* 2 t))
+  (:= new_t (/ (- t mu) sig))
+  (output)
+}
+
 >><> 
+
