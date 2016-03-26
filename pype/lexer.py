@@ -53,18 +53,22 @@ def t_NUMBER(t):
 
 
 
-# TODO Ignore whitespace.
+# Ignore whitespace. Note that in ply.lex ignore is a special name
 t_ignore  = ' '
 
 
 
-# TODO Write one rule for IDs and reserved keywords. Section 4.3 has an example.
-t_ID = r'[A-Za-z_][A-Za-z0-9_]*'
+# Write one rule for IDs and reserved keywords. Section 4.3 has an example.
+def t_ID(t):
+    r'[a-zA-Z_][a-zA-Z_0-9]*'
+    t.type = reserved.get(t.value,'ID')    # Check for reserved words
+    return t
 
 
 
-# TODO Ignore comments. Comments in PyPE are just like in Python. Section 4.5.
+# Ignore comments. Comments in PyPE are just like in Python. Section 4.5.
 t_ignore_COMMENT = r'\#.*'
+
 
 
 # Helper function in finding columns
@@ -77,14 +81,14 @@ def find_column(input,token):
 
 
 
-# TODO Write a rule for newlines that track line numbers. Section 4.6.
+# Write a rule for newlines that track line numbers. Section 4.6.
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
 
 
 
-# TODO Write an error-handling routine. It should print both line and column numbers.
+# Write an error-handling routine. It should print both line and column numbers.
 def t_error(t):
     print("Illegal character '%s'" % t.value[0], "Error Line", t.lexer.lineno, "Error Column", find_column(data,t))
     t.lexer.skip(1)
@@ -93,8 +97,8 @@ def t_error(t):
 # This actually builds the lexer.
 lexer = ply.lex.lex()
 
-
 """
+# Testcases including all the specifications
 data = '''
 3 + 4 * 10
   + -20 *2
@@ -102,8 +106,8 @@ abcdefg := 22         #test assign and comment
 >><>                  #test illegal sign
 
                       #test comment to see if this line is working or not
-22
-        
+22 + - * \ = {} ()    #test string, delimeters, and operators
+"teststring"
 '''
 
 
@@ -121,3 +125,4 @@ while True:
         break      # No more input
     print(tok,'\n')
 """
+
