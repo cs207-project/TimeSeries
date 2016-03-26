@@ -1,10 +1,16 @@
 from pype.lexer import lexer
 from pype.pipeline import Pipeline
 
+example_error_ppl='test/samples/example_error.ppl'
 example0_ppl='test/samples/example0.ppl'
 example0_token='test/samples/example0.tokens'
 example1_ppl='test/samples/example1.ppl'
 example1_token='test/samples/example1.tokens'
+
+def test_lexer_error:
+    lexer.input(open(example_error_ppl).read())
+    for token in lexer:
+        print (token)
 
 def test_lexer():
     lexer.input(open(example1_ppl).read())
