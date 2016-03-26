@@ -2,7 +2,10 @@
 [run]
 branch = True
 source = timeseries, pype
-# omit = bad_file.py
+omit = 
+    pype/parsetab.py
+    pype/__init__.py
+    timeseries/__init__.py
 
 [report]
 # Regexes for lines to exclude from consideration

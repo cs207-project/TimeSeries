@@ -5,9 +5,11 @@ SymbolType = enum.Enum('SymbolType', 'component var input output libraryfunction
 Symbol = collections.namedtuple('Symbol','name type ref')
 
 class SymbolTable(object):
-  # A symbol table is a dictionary of scoped symbol tables.
-  # Each scoped symbol table is a dictionary of metadata for each variable.
-
+  """
+    A symbol table is a dictionary of scoped symbol tables.
+    Each scoped symbol table is a dictionary of metadata for each variable.
+  """
+ 
   def __init__(self):
     self.T = {} # {scope: {name:str => {type:SymbolType => ref:object} }}
     self.T['global'] = {}
