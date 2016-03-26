@@ -20,7 +20,12 @@ class ASTNode(object):
       child.parent = self
 
   def pprint(self,indent=''):
-    '''Recursively prints a formatted string representation of the AST.'''
+    """
+    Recursively prints a formatted string representation of the AST.
+
+    Parameters
+    ----------
+    """
     if self is not None:
         print (indent+self.__class__.__name__)
         indent+='\t'
@@ -31,12 +36,18 @@ class ASTNode(object):
                 child.pprint(indent)
 
   def walk(self, visitor):
-    '''Traverses an AST, calling visitor.visit() on every node.
-
+    """
+    Traverses an AST, calling visitor.visit() on every node.
     This is a depth-first, pre-order traversal. Parents will be visited before
     any children, children will be visited in order, and (by extension) a node's
     children will all be visited before its siblings.
-    The visitor may modify attributes, but may not add or delete nodes.'''
+    The visitor may modify attributes, but may not add or delete nodes.
+
+    Parameters
+    ----------
+    visitor : ASTVisitor
+      visitor for a single AST node
+    """
     if self is not None:
         visitor.visit(self)
         for child in self.children:
@@ -58,6 +69,16 @@ class ASTImport(ASTNode):
 
 class ASTComponent(ASTNode): 
   def __init__(self, name, expressions):
+    """
+    Initialize an ASTComponent node with name and expressions
+
+    Parameters
+    ----------
+    name : ASTID
+      ASTID node repreesnts the name of ASTComponent
+    expressions : list
+      list of AST Expression nodes
+    """
     super().__init__()
     expressions.insert(0,ASTID(name))
     self.children=expressions
@@ -81,6 +102,16 @@ class ASTOutputExpr(ASTNode):
 
 class ASTAssignmentExpr(ASTNode): 
   def __init__(self, binding, value):
+    """
+    Initialize an ASTAssignmentExpr node with binding and value
+
+    Parameters
+    ----------
+    binding : ASTID
+      ASTID node represents binding of ASTAssignmentExpr node
+    value : ASTID or ASTLiteral
+      ASTID node represents the binded value
+    """
     super().__init__()
     self.children=[ASTID(binding),value]
   @property
@@ -92,6 +123,16 @@ class ASTAssignmentExpr(ASTNode):
 
 class ASTEvalExpr(ASTNode): 
   def __init__(self, op, args):
+    """
+    Initialize an ASTEvalExpr node with op and args
+
+    Parameters
+    ----------
+    op : ASTID
+      ASTID node represents the operation
+    args : list of ASTID or ASTLiteral
+      list of ASTID or ASTLiteral represents the args
+    """
     super().__init__()
     if args is not None:
         args.insert(0,ASTID(op))
@@ -110,7 +151,7 @@ class ASTEvalExpr(ASTNode):
 class ASTID(ASTNode):
   def __init__(self, name, typedecl=None):
     """
-    This initialize an ASTID node with name and type declaration
+    Initialize an ASTID node with name and type declaration
 
     Parameters
     ----------
@@ -126,7 +167,7 @@ class ASTID(ASTNode):
 class ASTLiteral(ASTNode):
   def __init__(self, value):
     """
-    This initialize an ASTLiteral node with value
+    Initialize an ASTLiteral node with value
 
     Parameters
     ----------
