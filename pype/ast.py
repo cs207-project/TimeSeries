@@ -109,12 +109,30 @@ class ASTEvalExpr(ASTNode):
 # These are already complete.
 class ASTID(ASTNode):
   def __init__(self, name, typedecl=None):
+    """
+    This initialize an ASTID node with name and type declaration
+
+    Parameters
+    ----------
+    name : string
+      name of ASTID node
+    typedecl : str
+      data type of ASTID node
+    """
     super().__init__()
     self.name = name
     self.type = typedecl
 
 class ASTLiteral(ASTNode):
   def __init__(self, value):
+    """
+    This initialize an ASTLiteral node with value
+
+    Parameters
+    ----------
+    value : number or string
+      value of ASTLiteral node
+    """
     super().__init__()
     self.value = value
     self.type = 'Scalar'
