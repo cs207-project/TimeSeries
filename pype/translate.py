@@ -11,22 +11,30 @@ class SymbolTableVisitor(ASTVisitor):
     return self.symbol_table
 
   def visit(self, node):
+    """
+    Add symbols for the following types of names:
+      inputs: anything in an input expression
+        the SymbolType should be input, and the ref can be None
+        the scope should be the enclosing component
+      assigned names: the bound name in an assignment expression
+        the SymbolType should be var, and the ref can be None
+        the scope should be the enclosing component
+      components: the name of each component
+        the SymbolType should be component, and the ref can be None
+        the scope sould be *global*
+
+
+    Parameters
+    ----------
+    node : ASTNode
+      a single AST node
+    """
+
     if isinstance(node, ASTImport):
       # Import statements make library functions available to PyPE
       imp = LibraryImporter(node.module)
       imp.add_symbols(self.symbol_table)
 
-    # TODO
-    # Add symbols for the following types of names:
-    #   inputs: anything in an input expression
-    #     the SymbolType should be input, and the ref can be None
-    #     the scope should be the enclosing component
-    #   assigned names: the bound name in an assignment expression
-    #     the SymbolType should be var, and the ref can be None
-    #     the scope should be the enclosing component
-    #   components: the name of each component
-    #     the SymbolType should be component, and the ref can be None
-    #     the scope sould be *global*
     if isinstance(node, ASTProgram):
       for child in node.children:
         self.visit(child)
