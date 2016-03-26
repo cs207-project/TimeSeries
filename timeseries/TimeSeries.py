@@ -1,6 +1,7 @@
 import numpy as np
 from .lazy import *
 import numbers
+import pype
 
 class TimeSeries():
     '''
@@ -268,6 +269,7 @@ DESCRIPTION
 
 
     # Lab11
+    @pype.component
     def mean(self):
         """
         Returns the mean value of self.values
@@ -556,6 +558,7 @@ DESCRIPTION
 
 
     # Lab19
+    @pype.component
     def std(self):
         '''
         Returns the standard-deviation of self.values
