@@ -10,7 +10,7 @@ def test_lexer():
     lexer.input(open(example1_ppl).read())
     output=open(example1_token)
     for token, line in zip(lexer, output):
-        assertEqual(str(token), line.strip())
+        assert str(token) == line.strip()
 
 def test_example0(example0_ppl):
     t=Pipeline(example0_ppl)
