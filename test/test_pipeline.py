@@ -7,7 +7,7 @@ example0_token='test/samples/example0.tokens'
 example1_ppl='test/samples/example1.ppl'
 example1_token='test/samples/example1.tokens'
 
-def test_lexer_error:
+def test_lexer_error():
     lexer.input(open(example_error_ppl).read())
     for token in lexer:
         print (token)
