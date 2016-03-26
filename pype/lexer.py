@@ -90,7 +90,7 @@ def t_newline(t):
 
 # Write an error-handling routine. It should print both line and column numbers.
 def t_error(t):
-    print("Illegal character '%s'" % t.value[0], "Error Line", t.lexer.lineno, "Error Column", find_column(data,t))
+    print("Illegal character '%s'" % t.value[0], "Error Line", t.lexer.lineno, "Error Column", find_column(t.lexer.lexdata,t))
     t.lexer.skip(1)
 
 
