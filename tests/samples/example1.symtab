@@ -1,0 +1,10 @@
+---SYMBOL TABLE---
+global
+  std => Symbol(name='std', type=<SymbolType.librarymethod: 6>, ref=<function TimeSeries.std at 0x103ca0bf8>)
+  mean => Symbol(name='mean', type=<SymbolType.librarymethod: 6>, ref=<function TimeSeries.mean at 0x103ca0b70>)
+  standardize => Symbol(name='standardize', type=<SymbolType.component: 1>, ref=None)
+standardize
+  mu => Symbol(name='mu', type=<SymbolType.var: 2>, ref=None)
+  sig => Symbol(name='sig', type=<SymbolType.var: 2>, ref=None)
+  t => Symbol(name='t', type=<SymbolType.input: 3>, ref=None)
+  new_t => Symbol(name='new_t', type=<SymbolType.output: 4>, ref=None)
