@@ -6,15 +6,13 @@ timeseries
     :target: https://travis-ci.org/cs207-project/timeseries-package
 .. image:: https://coveralls.io/repos/github/cs207-project/timeseries-package/badge.svg?branch=master :target: https://coveralls.io/github/cs207-project/timeseries-package?branch=master
 
-w
-Add a short description here!
+Timeseries project delivery for milestone1.
 
 
 Description
 ===========
 
-A LONGER DESCRIPTION OF YOUR PROJECT GOES HERE...
-
+Timeseries package includes two modules: 'timeseries' and 'pype'.
 
 Note
 ====

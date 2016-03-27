@@ -39,3 +39,7 @@ docs/api/*
 docs/_build/*
 cover/*
 MANIFEST
+
+# Pype Auto-generated files
+pype/parsetab.py
+pype/parser.out
