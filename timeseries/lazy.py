@@ -1,5 +1,15 @@
 class LazyOperation():
     '''
+    A class that supports TimeSeries class to compute in lazy mode.
+
+    Attribute
+    ---------
+    function : function
+        function that this LazyOperation() instance actually operates as
+    args : int or float
+        arguments for LazyOperation() function
+    kwargs : int or float
+        arguemtns for LazyOperation() function
     '''
     def __init__(self, function, *args, **kwargs):
         '''
