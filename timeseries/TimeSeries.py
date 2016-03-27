@@ -1,6 +1,5 @@
 import numpy as np
-from lazy import *
-# import lazy
+from .lazy import *
 import numbers
 import pype
 
@@ -71,7 +70,7 @@ DESCRIPTION
         Examples
         --------
 
-        >>> ts0 = TS.TimeSeries([],[])
+        >>> ts0 = TimeSeries([],[])
         >>> ts1 = TS.TimeSeries(range(0,4),range(1,5))
         >>> ts2 = TS.TimeSeries(range(0,4),[10,20,30,40,50])
         >>> ts3 = TS.TimeSeries([0,5,10], [1,2,3])
