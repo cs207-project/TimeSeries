@@ -1,5 +1,5 @@
 import numpy as np
-from .lazy import *
+from lazy import *
 import numbers
 import pype
 
@@ -155,6 +155,9 @@ DESCRIPTION
 
         Examples
         --------
+        >>> print repr(ts1)
+        array([[0, 1, 2, 3],
+               [1, 2, 3, 4]])
 
         """
         return "%r"%(self._TimeSeries)
@@ -169,7 +172,10 @@ DESCRIPTION
 
         Examples
         --------
-
+        >>> ts1 = TimeSeries(range(0,4),range(1,5))
+        >>> print ts1
+        [[0 1 2 3]
+         [1 2 3 4]]
         """
 
         className = type(self).__name__
@@ -195,7 +201,9 @@ DESCRIPTION
 
         Examples
         --------
-
+        >>> ts1 = TimeSeries(range(0,4),range(1,5))
+        >>> print ts1[0]
+        [1]
         """
         if (time in self):
             index = np.where(self._TimeSeries[0]==time)
@@ -215,7 +223,10 @@ DESCRIPTION
 
         Examples
         --------
-
+        >>> ts1 = TimeSeries(range(0,4),range(1,5))
+        >>> ts1[0] = 2
+        >>> print ts1[0]
+        2
         """
         if (time in self):
             index = np.where(self._TimeSeries[0]==time)
@@ -270,8 +281,8 @@ DESCRIPTION
         Examples
         --------
         >>> ts1 = TimeSeries(range(0,4),range(1,5))
-        >>> ts1.items()==list((t,v) for t,v in zip(range(0,4), range(1,5)))
-        True
+        >>> ts1.items()
+        list((t,v) for t,v in zip(range(0,4), range(1,5)))
         """
         return list((t, v) for t, v in zip(self._times, self._values))
 
@@ -298,11 +309,11 @@ DESCRIPTION
         >>> d = ts3.interpolate([1.])
         >>> c == d
         True
-        >>> assert ts3.interpolate(ts4.times()) == TS.TimeSeries([2.5,7.5], [1.5, 2.5])
-        True
+        >>> ts3.interpolate(ts4.times())
+        TS.TimeSeries([2.5,7.5], [1.5, 2.5])
         # Boundary conditions
-        >>> ts3.interpolate([-100,100]) == TS.TimeSeries([-100,100],[1,3])
-        True
+        >>> ts3.interpolate([-100,100])
+        TS.TimeSeries([-100,100],[1,3])
         >>> ts1+d
         ValueError: [[0 1 2 3]
          [1 2 3 4]] and [[0 1 2]
@@ -511,8 +522,9 @@ DESCRIPTION
 
         Examples
         --------
-
-
+        >>> ts1 = TimeSeries(range(0,4),range(1,5))
+        >>> print ts1.checkTime(TimeSeries(range(0,4),range(1,5)))
+        True
         '''
         return np.array_equal(self._times, rhs._times)
 
@@ -542,15 +554,10 @@ DESCRIPTION
         >>> ts1 = TimeSeries(range(0,4),range(1,5))
         >>> ts2 = TimeSeries(range(0,4),[10,20,30,40,50])
         >>> c = 100
-        >>> d = TimeSeries([0,1,2], [1,2,3])
         >>> ts1+ts2
         TS.TimeSeries(range(0,4),[11,22,33,44,55])
         >>> ts1+c
         TS.TimeSeries(range(0,4),[101,102,103,104,105])
-        >>> ts1+ts2 == ts2+ts1
-        True
-        >>> c+ts1 == ts1+c
-        True
         '''
         try:
             
@@ -586,7 +593,13 @@ DESCRIPTION
 
         Examples
         --------
-
+        >>> ts1 = TimeSeries(range(0,4),range(1,5))
+        >>> ts2 = TimeSeries(range(0,4),[10,20,30,40,50])
+        >>> c = 100
+        >>> ts1+ts2 == ts2+ts1
+        True
+        >>> c+ts1 == ts1+c
+        True
         '''
         return self + other
 
@@ -618,10 +631,10 @@ DESCRIPTION
         >>> b = TimeSeries([0,5,10], [10,20,30])
         >>> c = 100
         >>> d = TimeSeries([0,1,2], [1,2,3])
-        >>> b-a == TimeSeries([0,5,10],[9,18,27])
-        True
-        >>> a-c == TimeSeries([0,5,10],[-99,-98,-97])
-        True
+        >>> b-a
+        TimeSeries([0,5,10],[9,18,27])
+        >>> a-c
+        TimeSeries([0,5,10],[-99,-98,-97])
         >>> a-d
         ValueError: [[ 0  5 10]
          [ 1  2  3]] and [[0 1 2]
@@ -666,14 +679,10 @@ DESCRIPTION
         >>> b = TimeSeries([0,5,10], [10,20,30])
         >>> c = 100
         >>> d = TimeSeries([0,1,2], [1,2,3])
-        >>> a*b == TimeSeries([0,5,10],[10,40,90])
-        True
-        >>> a*c == TimeSeries([0,5,10],[100,200,300])
-        True
-        >>> a*b == b*a
-        True
-        >>> c*a == a*c
-        True
+        >>> a*b
+        TimeSeries([0,5,10],[10,40,90])
+        >>> a*c
+        TimeSeries([0,5,10],[100,200,300])
         >>> a*d
         ValueError: [[ 0  5 10]
          [ 1  2  3]] and [[0 1 2]
@@ -708,7 +717,13 @@ DESCRIPTION
 
         Examples
         --------
-
+        >>> a = TimeSeries([0,5,10], [1,2,3])
+        >>> b = TimeSeries([0,5,10], [10,20,30])
+        >>> c = 100
+        >>> a*b == b*a
+        True
+        >>> c*a == a*c
+        True
         '''
 
         return self * other
@@ -755,8 +770,8 @@ DESCRIPTION
         --------
         >>> a = TimeSeries([0,5,10], [1,2,3])
         >>> b = TimeSeries([0,5,10], [10,20,30])
-        >>> -a == TimeSeries([0,5,10],[-1,-2,-3])
-        True
+        >>> -a
+        TimeSeries([0,5,10],[-1,-2,-3])
         '''
         return TimeSeries(self._times,-1*self._values)
         
