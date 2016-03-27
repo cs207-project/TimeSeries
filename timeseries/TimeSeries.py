@@ -1,5 +1,5 @@
 import numpy as np
-from .lazy import *
+from lazy import *
 import numbers
 import pype
 
@@ -67,6 +67,17 @@ DESCRIPTION
         values : list of floats
             sequence of values corresponding to each time value
 
+        Examples
+        --------
+        Examples should be written in doctest format, and should illustrate how
+        to use the function.
+
+        >>> ts0 = TS.TimeSeries([],[])
+        >>> ts1 = TS.TimeSeries(range(0,4),range(1,5))
+        >>> ts2 = TS.TimeSeries(range(0,4),[10,20,30,40,50])
+        >>> ts3 = TS.TimeSeries([0,5,10], [1,2,3])
+        >>> ts4 = TS.TimeSeries([2.5,7.5], [100, -100])
+
         """
         if (iter(times) and iter(values)):
             # reorder according to Time step
@@ -122,8 +133,10 @@ DESCRIPTION
     
     def __repr__(self):
         """
+
         Representation method.
         Refer to __str__ method.
+
         """
         return "%r"%(self._TimeSeries)
     
