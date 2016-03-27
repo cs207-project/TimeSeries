@@ -69,8 +69,6 @@ DESCRIPTION
 
         Examples
         --------
-        Examples should be written in doctest format, and should illustrate how
-        to use the function.
 
         >>> ts0 = TS.TimeSeries([],[])
         >>> ts1 = TS.TimeSeries(range(0,4),range(1,5))
@@ -101,6 +99,12 @@ DESCRIPTION
         -------
         int
             length
+
+        Examples
+        --------
+        >>> len(ts1)
+        4
+
         """
         return len(self._TimeSeries[0])
     
@@ -117,6 +121,11 @@ DESCRIPTION
         -------
         bool
             True if 'time' is in, False otherwise.
+
+        Examples
+        --------
+        >>> ts1[0]
+        1
         """
         index = np.where(self._TimeSeries[0]==time)
         return index[0].size>0
@@ -128,6 +137,11 @@ DESCRIPTION
         Returns
         -------
         iter()
+
+        Examples
+        --------
+
+
         """
         return iter(self._TimeSeries[1])
     
@@ -136,6 +150,9 @@ DESCRIPTION
 
         Representation method.
         Refer to __str__ method.
+
+        Examples
+        --------
 
         """
         return "%r"%(self._TimeSeries)
@@ -147,7 +164,12 @@ DESCRIPTION
         Returns
         -------
         ex) TimeSeries([1, 2, ...])
+
+        Examples
+        --------
+
         """
+
         className = type(self).__name__
         if len(self)>100:
             return "%s" %('['+(str(self._values[:99]))[1:-1]+'...'+']')
@@ -168,6 +190,10 @@ DESCRIPTION
         -------
         float
             value
+
+        Examples
+        --------
+
         """
         if (time in self):
             index = np.where(self._TimeSeries[0]==time)
@@ -184,6 +210,9 @@ DESCRIPTION
         ----------
         time : float
         value : float
+
+        Examples
+        --------
 
         """
         if (time in self):
@@ -202,6 +231,11 @@ DESCRIPTION
         -------
         list
             value_list
+
+        Examples
+        --------
+        >>> np.array_equal(ts1.values(), range(1,5))
+        True
         """
         return self._values
     
@@ -213,6 +247,11 @@ DESCRIPTION
         -------
         list
             time_list
+
+        Examples
+        --------
+        >>> np.array_equal(ts1.times(), range(0,4))
+        True
         """
         return self._times
 
@@ -224,6 +263,11 @@ DESCRIPTION
         -------
         list
             (time, value)
+
+        Examples
+        --------
+        >>> ts1.items()==list((t,v) for t,v in zip(range(0,4), range(1,5)))
+        True
         """
         return list((t, v) for t, v in zip(self._times, self._values))
 
@@ -242,6 +286,17 @@ DESCRIPTION
         TimeSeries
              New TimeSeries instance with parameter 'times' and interpolated 'values' added
 
+        Examples
+        --------
+        >>> c = TS.TimeSeries([1.],[1.2])
+        >>> d = ts3.interpolate([1.])
+        >>> c == d
+        True
+        >>> assert ts3.interpolate(ts4.times()) == TS.TimeSeries([2.5,7.5], [1.5, 2.5])
+        True
+        # Boundary conditions
+        >>> ts3.interpolate([-100,100]) == TS.TimeSeries([-100,100],[1,3])
+        True
         '''
         new_values = []
         for time in times:
@@ -276,6 +331,10 @@ DESCRIPTION
         -------
         instance
             lazyOperation()
+
+        Examples
+        --------
+
         """
         return self
 
@@ -296,6 +355,11 @@ DESCRIPTION
         ------
         ValueError
             If self.values is empty
+
+        Examples
+        --------
+        >>> ts1.mean()
+        2.5
         """
         if(len(self._values) == 0):
             raise ValueError("cant calculate mean of length 0 list")
@@ -314,6 +378,11 @@ DESCRIPTION
         ------
         ValueError
             If self.values is empty
+
+        Examples
+        --------
+        >>> ts1.median()
+        2.5
         '''
         if(len(self._values) == 0):
             raise ValueError("cant calculate median of length 0 list")
@@ -328,6 +397,12 @@ DESCRIPTION
         -------
         float
             value
+
+        Examples
+        --------
+        >>> vi=ts1.itervalues()
+        >>> next(vi)
+        1
         """
         for v in self._values:
             yield v
@@ -340,6 +415,12 @@ DESCRIPTION
         -------
         float
             time
+
+        Examples
+        --------
+        >>> ti=ts1.itertimes()
+        >>> next(ti)
+        0
         """
         for t in self._times:
             yield t
@@ -352,6 +433,13 @@ DESCRIPTION
         -------
         tuple
             (value, time)
+
+        Examples
+        --------
+        >>> iti=ts1.iteritems()
+        >>> next(iti)
+        (0,1)
+
         """
         for t,v in zip(self._times,self._values):
             yield (t,v)
@@ -370,6 +458,13 @@ DESCRIPTION
         -------
         bool
             True if they are equal, False otherwise
+
+        Examples
+        --------
+        >>> tmpTestSeries = TS.TimeSeries(range(0,4),range(1,5))
+        >>> tmpTestSeries == ts1
+        True
+
         """
         return np.array_equal(self._TimeSeries, other._TimeSeries)
 
@@ -386,6 +481,10 @@ DESCRIPTION
         -------
         bool
              True if rhs and self have the same 'times' list, False otherwise
+
+        Examples
+        --------
+
 
         '''
         return np.array_equal(self._times, rhs._times)
@@ -411,6 +510,18 @@ DESCRIPTION
         ValueError
             If time points in self and rhs do not match
 
+        Examples
+        --------
+        >>> c = 100
+        >>> d = TS.TimeSeries([0,1,2], [1,2,3])
+        >>> ts1+ts2
+        TS.TimeSeries(range(0,4),[11,22,33,44,55])
+        >>> ts1+c
+        TS.TimeSeries(range(0,4),[101,102,103,104,105])
+        >>> ts1+ts2 == ts2+ts1
+        True
+        >>> c+ts1 == ts1+c
+        True
         '''
         try:
             
@@ -443,6 +554,10 @@ DESCRIPTION
         -------
         TimeSeries
              result of self added by parameter 'other', 'values' of which are the sum of two 'values' lists
+
+        Examples
+        --------
+
         '''
         return self + other
 
@@ -467,6 +582,17 @@ DESCRIPTION
             If values in rhs are not real number
         ValueError
             If time points in self and rhs do not match
+
+        Examples
+        --------
+        >>> a = TS.TimeSeries([0,5,10], [1,2,3])
+        >>> b = TS.TimeSeries([0,5,10], [10,20,30])
+        >>> c = 100
+        >>> d = TS.TimeSeries([0,1,2], [1,2,3])
+        >>> b-a == TS.TimeSeries([0,5,10],[9,18,27])
+        True
+        >>> a-c == TS.TimeSeries([0,5,10],[-99,-98,-97])
+        True
 
         '''
 
@@ -501,6 +627,22 @@ DESCRIPTION
             If values in rhs are not real number
         ValueError
             If time points in self and rhs do not match
+
+        Examples
+        --------
+        >>> a = TS.TimeSeries([0,5,10], [1,2,3])
+        >>> b = TS.TimeSeries([0,5,10], [10,20,30])
+        >>> c = 100
+        >>> d = TS.TimeSeries([0,1,2], [1,2,3])
+        >>> a*b == TS.TimeSeries([0,5,10],[10,40,90])
+        True
+        >>> a*c == TS.TimeSeries([0,5,10],[100,200,300])
+        True
+        >>> a*b == b*a
+        True
+        >>> c*a == a*c
+        True
+
         '''
         try: 
             if isinstance(rhs, numbers.Real):
@@ -528,6 +670,10 @@ DESCRIPTION
         -------
         TimeSeries
              result of TimeSeries Class multiplied by parameter 'other'
+
+        Examples
+        --------
+
         '''
 
         return self * other
@@ -538,6 +684,12 @@ DESCRIPTION
         -------
         float
             The square root of the sum of all squared values in TimeSeries values list
+
+        Examples
+        --------
+        >>> a = TS.TimeSeries([0,5], [3,4])
+        >>> abs(a)
+        5.
         '''
 
         return np.sqrt(np.sum(np.power(self._values,2)))
@@ -548,6 +700,12 @@ DESCRIPTION
         -------
         bool
             True if the abs value of TimeSeries is greater than zero, False otherwise
+
+        Examples
+        --------
+        >>> a = TS.TimeSeries([0],[0])
+        >>> abs(a)
+        False
         '''
         return bool(abs(self))
 
@@ -557,6 +715,13 @@ DESCRIPTION
         -------
         TimeSeries
             the TimeSeries instance with the same 'times' list but negative (opposite sign) 'values' list
+
+        Examples
+        --------
+        >>> a = TS.TimeSeries([0,5,10], [1,2,3])
+        >>> b = TS.TimeSeries([0,5,10], [10,20,30])
+        >>> -a == TS.TimeSeries([0,5,10],[-1,-2,-3])
+        True
         '''
         return TimeSeries(self._times,-1*self._values)
         
@@ -566,6 +731,13 @@ DESCRIPTION
         -------
         TimeSeries
             the TimeSeries instance itself
+
+        Examples
+        --------
+        >>> a = TS.TimeSeries([0,5,10], [-1,-2,3])
+        >>> +a == a
+        True
+
         '''
         return (self)
 
@@ -585,6 +757,10 @@ DESCRIPTION
         ------
         ValueError
             If self.values is empty
+
+        Examples
+        --------
+        >>> ts1.std() == 1.1180339887498949
         '''
         if(len(self._values) == 0):
             raise ValueError("cant calculate standard deviation of length 0 list")
