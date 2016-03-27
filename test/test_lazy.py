@@ -1,5 +1,6 @@
 from pytest import raises
 import numpy as np
+from timeseries.TimeSeries import *
 from timeseries.lazy import *
 
 @lazy
