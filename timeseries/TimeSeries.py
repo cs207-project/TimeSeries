@@ -1,5 +1,6 @@
 import numpy as np
-from .lazy import *
+from lazy import *
+# import lazy
 import numbers
 import pype
 
@@ -297,6 +298,10 @@ DESCRIPTION
         # Boundary conditions
         >>> ts3.interpolate([-100,100]) == TS.TimeSeries([-100,100],[1,3])
         True
+        >>> ts1+d
+        ValueError: [[0 1 2 3]
+         [1 2 3 4]] and [[0 1 2]
+         [1 2 3]] must have the same time points
         '''
         new_values = []
         for time in times:
@@ -360,6 +365,8 @@ DESCRIPTION
         --------
         >>> ts1.mean()
         2.5
+        >>> ts0.mean()
+        ValueError: cant calculate mean of length 0 list
         """
         if(len(self._values) == 0):
             raise ValueError("cant calculate mean of length 0 list")
@@ -383,6 +390,9 @@ DESCRIPTION
         --------
         >>> ts1.median()
         2.5
+        >>>ts0.median()
+        ValueError: cant calculate median of length 0 list
+
         '''
         if(len(self._values) == 0):
             raise ValueError("cant calculate median of length 0 list")
@@ -593,7 +603,10 @@ DESCRIPTION
         True
         >>> a-c == TS.TimeSeries([0,5,10],[-99,-98,-97])
         True
-
+        >>> a-d
+        ValueError: [[ 0  5 10]
+         [ 1  2  3]] and [[0 1 2]
+         [1 2 3]] must have the same time points
         '''
 
         try:
@@ -642,7 +655,10 @@ DESCRIPTION
         True
         >>> c*a == a*c
         True
-
+        >>> a*d
+        ValueError: [[ 0  5 10]
+         [ 1  2  3]] and [[0 1 2]
+         [1 2 3]] must have the same time points
         '''
         try: 
             if isinstance(rhs, numbers.Real):
@@ -761,8 +777,10 @@ DESCRIPTION
         Examples
         --------
         >>> ts1.std() == 1.1180339887498949
+        >>> ts0.std()
+        ValueError: cant calculate standard deviation of length 0 list
+
         '''
         if(len(self._values) == 0):
             raise ValueError("cant calculate standard deviation of length 0 list")
         return np.std(self._values)
-
