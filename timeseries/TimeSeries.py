@@ -71,10 +71,10 @@ DESCRIPTION
         --------
 
         >>> ts0 = TimeSeries([],[])
-        >>> ts1 = TS.TimeSeries(range(0,4),range(1,5))
-        >>> ts2 = TS.TimeSeries(range(0,4),[10,20,30,40,50])
-        >>> ts3 = TS.TimeSeries([0,5,10], [1,2,3])
-        >>> ts4 = TS.TimeSeries([2.5,7.5], [100, -100])
+        >>> ts1 = TimeSeries(range(0,4),range(1,5))
+        >>> ts2 = TimeSeries(range(0,4),[10,20,30,40,50])
+        >>> ts3 = TimeSeries([0,5,10], [1,2,3])
+        >>> ts4 = TimeSeries([2.5,7.5], [100, -100])
 
         """
         if (iter(times) and iter(values)):
@@ -102,6 +102,7 @@ DESCRIPTION
 
         Examples
         --------
+        >>> ts1 = TimeSeries(range(0,4),range(1,5))
         >>> len(ts1)
         4
 
@@ -124,6 +125,7 @@ DESCRIPTION
 
         Examples
         --------
+        >>> ts1 = TimeSeries(range(0,4),range(1,5))
         >>> ts1[0]
         1
         """
@@ -234,6 +236,7 @@ DESCRIPTION
 
         Examples
         --------
+        >>> ts1 = TimeSeries(range(0,4),range(1,5))
         >>> np.array_equal(ts1.values(), range(1,5))
         True
         """
@@ -266,6 +269,7 @@ DESCRIPTION
 
         Examples
         --------
+        >>> ts1 = TimeSeries(range(0,4),range(1,5))
         >>> ts1.items()==list((t,v) for t,v in zip(range(0,4), range(1,5)))
         True
         """
@@ -288,7 +292,9 @@ DESCRIPTION
 
         Examples
         --------
-        >>> c = TS.TimeSeries([1.],[1.2])
+        >>> ts1 = TimeSeries(range(0,4),range(1,5))
+        >>> ts3 = TimeSeries([0,5,10], [1,2,3])
+        >>> c = TimeSeries([1.],[1.2])
         >>> d = ts3.interpolate([1.])
         >>> c == d
         True
@@ -338,7 +344,11 @@ DESCRIPTION
 
         Examples
         --------
-
+        >>> @lazy
+            def lazy_add(a,b):
+                return a+b
+        >>> lazy_add(2,4).eval()
+        6
         """
         return self
 
@@ -362,6 +372,8 @@ DESCRIPTION
 
         Examples
         --------
+        >>> ts0 = TimeSeries([],[])
+        >>> ts1 = TimeSeries(range(0,4),range(1,5))
         >>> ts1.mean()
         2.5
         >>> ts0.mean()
@@ -387,6 +399,8 @@ DESCRIPTION
 
         Examples
         --------
+        >>> ts0 = TimeSeries([],[])
+        >>> ts1 = TimeSeries(range(0,4),range(1,5))
         >>> ts1.median()
         2.5
         >>>ts0.median()
@@ -409,6 +423,7 @@ DESCRIPTION
 
         Examples
         --------
+        >>> ts1 = TimeSeries(range(0,4),range(1,5))
         >>> vi=ts1.itervalues()
         >>> next(vi)
         1
@@ -427,6 +442,7 @@ DESCRIPTION
 
         Examples
         --------
+        >>> ts1 = TimeSeries(range(0,4),range(1,5))
         >>> ti=ts1.itertimes()
         >>> next(ti)
         0
@@ -445,6 +461,7 @@ DESCRIPTION
 
         Examples
         --------
+        >>> ts1 = TimeSeries(range(0,4),range(1,5))
         >>> iti=ts1.iteritems()
         >>> next(iti)
         (0,1)
@@ -470,7 +487,8 @@ DESCRIPTION
 
         Examples
         --------
-        >>> tmpTestSeries = TS.TimeSeries(range(0,4),range(1,5))
+        >>> ts1 = TimeSeries(range(0,4),range(1,5))
+        >>> tmpTestSeries = TimeSeries(range(0,4),range(1,5))
         >>> tmpTestSeries == ts1
         True
 
@@ -521,8 +539,10 @@ DESCRIPTION
 
         Examples
         --------
+        >>> ts1 = TimeSeries(range(0,4),range(1,5))
+        >>> ts2 = TimeSeries(range(0,4),[10,20,30,40,50])
         >>> c = 100
-        >>> d = TS.TimeSeries([0,1,2], [1,2,3])
+        >>> d = TimeSeries([0,1,2], [1,2,3])
         >>> ts1+ts2
         TS.TimeSeries(range(0,4),[11,22,33,44,55])
         >>> ts1+c
@@ -594,13 +614,13 @@ DESCRIPTION
 
         Examples
         --------
-        >>> a = TS.TimeSeries([0,5,10], [1,2,3])
-        >>> b = TS.TimeSeries([0,5,10], [10,20,30])
+        >>> a = TimeSeries([0,5,10], [1,2,3])
+        >>> b = TimeSeries([0,5,10], [10,20,30])
         >>> c = 100
-        >>> d = TS.TimeSeries([0,1,2], [1,2,3])
-        >>> b-a == TS.TimeSeries([0,5,10],[9,18,27])
+        >>> d = TimeSeries([0,1,2], [1,2,3])
+        >>> b-a == TimeSeries([0,5,10],[9,18,27])
         True
-        >>> a-c == TS.TimeSeries([0,5,10],[-99,-98,-97])
+        >>> a-c == TimeSeries([0,5,10],[-99,-98,-97])
         True
         >>> a-d
         ValueError: [[ 0  5 10]
@@ -642,13 +662,13 @@ DESCRIPTION
 
         Examples
         --------
-        >>> a = TS.TimeSeries([0,5,10], [1,2,3])
-        >>> b = TS.TimeSeries([0,5,10], [10,20,30])
+        >>> a = TimeSeries([0,5,10], [1,2,3])
+        >>> b = TimeSeries([0,5,10], [10,20,30])
         >>> c = 100
-        >>> d = TS.TimeSeries([0,1,2], [1,2,3])
-        >>> a*b == TS.TimeSeries([0,5,10],[10,40,90])
+        >>> d = TimeSeries([0,1,2], [1,2,3])
+        >>> a*b == TimeSeries([0,5,10],[10,40,90])
         True
-        >>> a*c == TS.TimeSeries([0,5,10],[100,200,300])
+        >>> a*c == TimeSeries([0,5,10],[100,200,300])
         True
         >>> a*b == b*a
         True
@@ -702,7 +722,7 @@ DESCRIPTION
 
         Examples
         --------
-        >>> a = TS.TimeSeries([0,5], [3,4])
+        >>> a = TimeSeries([0,5], [3,4])
         >>> abs(a)
         5.
         '''
@@ -718,7 +738,7 @@ DESCRIPTION
 
         Examples
         --------
-        >>> a = TS.TimeSeries([0],[0])
+        >>> a = TimeSeries([0],[0])
         >>> abs(a)
         False
         '''
@@ -733,9 +753,9 @@ DESCRIPTION
 
         Examples
         --------
-        >>> a = TS.TimeSeries([0,5,10], [1,2,3])
-        >>> b = TS.TimeSeries([0,5,10], [10,20,30])
-        >>> -a == TS.TimeSeries([0,5,10],[-1,-2,-3])
+        >>> a = TimeSeries([0,5,10], [1,2,3])
+        >>> b = TimeSeries([0,5,10], [10,20,30])
+        >>> -a == TimeSeries([0,5,10],[-1,-2,-3])
         True
         '''
         return TimeSeries(self._times,-1*self._values)
@@ -749,7 +769,7 @@ DESCRIPTION
 
         Examples
         --------
-        >>> a = TS.TimeSeries([0,5,10], [-1,-2,3])
+        >>> a = TimeSeries([0,5,10], [-1,-2,3])
         >>> +a == a
         True
 
@@ -775,6 +795,8 @@ DESCRIPTION
 
         Examples
         --------
+        >>> ts0 = TimeSeries([],[])
+        >>> ts1 = TimeSeries(range(0,4),range(1,5))
         >>> ts1.std() == 1.1180339887498949
         >>> ts0.std()
         ValueError: cant calculate standard deviation of length 0 list
