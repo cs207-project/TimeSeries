@@ -1,3 +1,4 @@
+from pytest import raises
 from pype.lexer import lexer
 from pype.pipeline import Pipeline
 
@@ -17,7 +18,9 @@ def test_lexer():
         print (token)
 
 def test_example0():
-    t=Pipeline(example0_ppl)
+    with raises(PypeSyntaxError):
+        t=Pipeline(example0_ppl)
 
 def test_example1():
-    t=Pipeline(example1_ppl)
+    with raises(PypeSyntaxError):
+        t=Pipeline(example1_ppl)
