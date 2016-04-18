@@ -1,4 +1,5 @@
 from .ast import *
+from .error import *
 
 class PrettyPrint(ASTVisitor):
   def __init__(self):
