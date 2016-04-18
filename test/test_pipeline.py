@@ -16,11 +16,3 @@ def test_lexer():
     lexer.input(open(example_error_ppl).read())
     for token in lexer:
         print (token)
-
-def test_example0():
-    with raises(PypeSyntaxError):
-        t=Pipeline(example0_ppl)
-
-def test_example1():
-    with raises(PypeSyntaxError):
-        t=Pipeline(example1_ppl)
