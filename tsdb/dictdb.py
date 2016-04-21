@@ -93,5 +93,5 @@ class DictDB:
                 raise KeyError("Meta's field not supported by schema")
         if not bool(pks):
             return None
-        return pks
+        return list(pks)
 

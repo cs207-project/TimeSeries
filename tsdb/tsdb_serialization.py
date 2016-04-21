@@ -8,8 +8,18 @@ def serialize(json_obj):
 
     Includes a fixed-width length field to simplify reconstruction on the other
     end of the wire.'''
-    #your code here. Returns the bytes on the wire
 
+
+    # Maybe useful to solve - Tang
+    # S> data received [66]: b'B\x00\x00\x00{"ts": [[1, 2, 3], [1, 4, 9]], "pk": "one", "op": "insert_ts"}'
+    #your code here. Returns the bytes on the wire
+    jsonfile = json.dumps(json_obj)
+
+    # pseudo-code added by Tang
+    # Find out length, then add LENGTH_FIELD_LENGTH
+    # use answer of last and .to_byte() method
+    # merge Length and jsonfile data
+    # return to wire
 
 class Deserializer(object):
     '''A buffering and bytes-to-json engine.
