@@ -17,9 +17,12 @@ def serialize(json_obj):
 
     # pseudo-code added by Tang
     # Find out length, then add LENGTH_FIELD_LENGTH
+    output_length = len(jsonfile.encode()) + LENGTH_FIELD_LENGTH
     # use answer of last and .to_byte() method
+    bytes_on_wire = (output_length).to_bytes(LENGTH_FIELD_LENGTH, byteorder='little')
     # merge Length and jsonfile data
     # return to wire
+    return bytes_on_wire
 
 class Deserializer(object):
     '''A buffering and bytes-to-json engine.
