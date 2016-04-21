@@ -14,17 +14,30 @@ schema = {
   'len': {'convert': int, 'index':4}
 }
 testDb = DictDB(schema)
+class TimeSeries():
 
+    def __init__(self, times, values):
 
-testDb.insert_ts('1-2', np.arange(2))
-testDb.insert_ts('1-3', np.arange(3))
-testDb.insert_ts('1-4', np.arange(4))
+        if (iter(times) and iter(values)):
+            # reorder according to Time step
+            idx = np.argsort(times)
+            times = np.array(times)[idx]
+            values = np.array(values)[idx]
 
-testDb.upsert_meta('1-2', {'mean':1.5, 'len':len(np.arange(2))})
-testDb.upsert_meta('1-3', {'mean':2, 'len':len(np.arange(3))})
-testDb.upsert_meta('1-4', {'mean':2.5, 'len':len(np.arange(4))})
+            self._TimeSeries=np.vstack((times,values))
+            self._vindex = 0
+            self._values = self._TimeSeries[1]
+            self._times = self._TimeSeries[0]
 
-#print(ddb.select({'len':5}))  # Should be {'fakets1', 'fakets3'}
-print(testDb.select({'len':4, 'mean':2.5}))  # Should be {'fakets1'}
-#print(ddb.select({'len':5, 'mean':5}))  # Should be empty set
-print(testDb.select({'mean':1}))
+testDb.insert_ts('one', TimeSeries([1, 2, 3], [1, 4, 9]))
+testDb.insert_ts('two', TimeSeries([2, 3, 4], [4, 9, 16]))
+testDb.insert_ts('three', TimeSeries([9, 3, 4], [4, 0, 16]))
+testDb.insert_ts('four', TimeSeries([0, 0, 4], [1, 0, 4]))
+
+testDb.upsert_meta('one', {'order': 1, 'blarg': 1})
+testDb.upsert_meta('two', {'order': 2})
+testDb.upsert_meta('three', {'order': 1, 'blarg': 2})
+testDb.upsert_meta('four', {'order': 2, 'blarg': 2})
+#print(testDb.select())
+print(testDb.select({'order': 1}))
+print(testDb.select({'blarg': 1}))
