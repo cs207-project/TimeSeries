@@ -23,15 +23,15 @@ class TSDBClient(object):
 
     def select(self, metadata_dict={}):
         # your code here
-        status, payload = self._send(TSDBOp_Select(metadata_dict).to_json())
+        # written by tyh, but not verified yet... - Qing & Grace
+        # status, payload = self._send(TSDBOp_Select(metadata_dict).to_json())
+        # return TSDBStatus(status), payload
+        pass
 
-
-        return TSDBStatus(status), payload
 
     # Feel free to change this to be completely synchronous
     # from here onwards. Return the status and the payload
     async def _send_coro(self, msg, loop):
-
         # Might be useful - Tang
         # open_connection to socket first
         # Print message accordingly(check output.md)
@@ -51,7 +51,23 @@ class TSDBClient(object):
         """
         # Above is how to deserialize
         # print status and payload as the shown message
-        return status, payload
+
+
+
+        reader, writer = await asyncio.open_connection('', self.port, loop=loop)
+        writer.write(serialize(msg))
+        await writer.drain()
+        writer.close()
+
+        # Qing & Grace : We could not figure out how response work.
+        # `await reader.read()` actually should be put before writer.close()
+        # And using this `response` and `TSOBDp_Return`,
+        # we should be able to figure out payload and status.
+        response = await reader.read()
+
+        print('-----------')
+        print('C> writing')
+
 
     #call `_send` with a well formed message to send.
     #once again replace this function if appropriate

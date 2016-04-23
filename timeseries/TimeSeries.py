@@ -2,6 +2,7 @@ import numpy as np
 from .lazy import *
 import numbers
 import pype
+import json
 
 class TimeSeries():
     '''
@@ -87,7 +88,9 @@ DESCRIPTION
             self._vindex = 0
             self._values = self._TimeSeries[1]
             self._times = self._TimeSeries[0]
-    
+
+    def to_json(self):
+        return json.dumps(self._TimeSeries.tolist())
     # Lab 07
 
     # Lab 08 

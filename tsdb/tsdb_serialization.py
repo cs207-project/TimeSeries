@@ -14,15 +14,15 @@ def serialize(json_obj):
     # S> data received [66]: b'B\x00\x00\x00{"ts": [[1, 2, 3], [1, 4, 9]], "pk": "one", "op": "insert_ts"}'
     #your code here. Returns the bytes on the wire
     jsonfile = json.dumps(json_obj)
-
-    # pseudo-code added by Tang
-    # Find out length, then add LENGTH_FIELD_LENGTH
+    #
+    # # pseudo-code added by Tang
+    # # Find out length, then add LENGTH_FIELD_LENGTH
     output_length = len(jsonfile.encode()) + LENGTH_FIELD_LENGTH
     # use answer of last and .to_byte() method
-    bytes_on_wire = (output_length).to_bytes(LENGTH_FIELD_LENGTH, byteorder='little')
+    bytes_on_wire = (output_length).to_bytes(LENGTH_FIELD_LENGTH, byteorder='big')
     # merge Length and jsonfile data
     # return to wire
-    return bytes_on_wire
+    return bytes_on_wire + jsonfile.encode()
 
 class Deserializer(object):
     '''A buffering and bytes-to-json engine.

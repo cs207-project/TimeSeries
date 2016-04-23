@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from tsdb import TSDBClient
-import timeseries as ts
+import timeseries.TimeSeries as ts
 
 def main():
     client = TSDBClient()
