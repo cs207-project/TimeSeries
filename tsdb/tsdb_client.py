@@ -34,7 +34,7 @@ class TSDBClient(object):
         # return TSDBStatus(status), payload
         ts_select = TSDBOp_Select(metadata_dict)
         serialize_ts_select = serialize(ts_select.to_json())
-        return self._send(serialize_ts_select
+        return self._send(serialize_ts_select)
 
 
     # Feel free to change this to be completely synchronous
