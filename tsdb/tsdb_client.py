@@ -12,21 +12,15 @@ class TSDBClient(object):
         self.deserializer = Deserializer()
 
     def insert_ts(self, primary_key, ts):
-        # your code here, construct from the code in tsdb_ops.py
         ts_insert = TSDBOp_InsertTS(primary_key, ts)
         self._send(ts_insert.to_json())
 
     def upsert_meta(self, primary_key, metadata_dict):
-        # your code here
         ts_update = TSDBOp_UpsertMeta(primary_key, metadata_dict)
         self._send(ts_update.to_json())
 
 
     def select(self, metadata_dict={}):
-        # your code here
-        # written by tyh, but not verified yet... - Qing & Grace
-        # status, payload = self._send(TSDBOp_Select(metadata_dict).to_json())
-        # return TSDBStatus(status), payload
         ts_select = TSDBOp_Select(metadata_dict)
         return self._send(ts_select.to_json())
     
@@ -42,29 +36,10 @@ class TSDBClient(object):
     # Feel free to change this to be completely synchronous
     # from here onwards. Return the status and the payload
     async def _send_coro(self, msg, loop):
-        # Might be useful - Tang
-        # open_connection to socket first
-        # Print message accordingly(check output.md)
-        """
-        C> writing
-        S> data received [67]: b'C\x00\x00\x00{"ts": [[2, 3, 4], [4, 9, 16]], "pk": "two", "op": "insert_ts"}'
-        S> connection lost
-        C> status: TSDBStatus.OK
-        C> payload: None
-        """
-        # wait response
-        """
-        print('S> data received ['+str(len(data))+']: '+str(data))
-        self.deserializer.append(data)
-        if self.deserializer.ready():
-            msg = self.deserializer.deserialize()
-        """
-        # Above is how to deserialize
-        # print status and payload as the shown message
-
+        # Open connection and write the serialized message
         reader, writer = await asyncio.open_connection('', self.port, loop=loop)
         writer.write(serialize(msg))
-
+        # Wait for response
         response = await reader.read(8192)
         # Deserialize response
         self.deserializer.append(response)
@@ -72,14 +47,9 @@ class TSDBClient(object):
             deserialized_response = self.deserializer.deserialize()
             status = deserialized_response['status']
             payload = deserialized_response['payload']
-
+        # Print out status and payload
         print('C> status:',str(TSDBStatus(status)))
         print('C> payload:',payload)
-
-        # Qing & Grace : We could not figure out how response work.
-        # `await reader.read()` actually should be put before writer.close()
-        # And using this `response` and `TSOBDp_Return`,
-        # we should be able to figure out payload and status.
 
         return status, payload
 
