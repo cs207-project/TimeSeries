@@ -14,14 +14,12 @@ class TSDBClient(object):
     def insert_ts(self, primary_key, ts):
         # your code here, construct from the code in tsdb_ops.py
         ts_insert = TSDBOp_InsertTS(primary_key, ts)
-        serialize_ts_insert = serialize(ts_insert.to_json())
-        self._send(serialize_ts_insert)
+        self._send(ts_insert.to_json())
 
     def upsert_meta(self, primary_key, metadata_dict):
         # your code here
         ts_update = TSDBOp_UpsertMeta(primary_key, metadata_dict)
-        serialize_ts_update = serialize(ts_update.to_json())
-        self._send(serialize_ts_update)
+        self._send(ts_update.to_json())
 
 
     def select(self, metadata_dict={}):
@@ -30,8 +28,15 @@ class TSDBClient(object):
         # status, payload = self._send(TSDBOp_Select(metadata_dict).to_json())
         # return TSDBStatus(status), payload
         ts_select = TSDBOp_Select(metadata_dict)
-        serialize_ts_select = serialize(ts_select.to_json())
-        return self._send(serialize_ts_select)
+        return self._send(ts_select.to_json())
+    
+    def add_trigger(self, proc, onwhat, target, arg):
+        # your code here
+        pass
+
+    def remove_trigger(self, proc, onwhat):
+        # your code here
+        pass
 
 
     # Feel free to change this to be completely synchronous
@@ -58,7 +63,7 @@ class TSDBClient(object):
         # print status and payload as the shown message
 
         reader, writer = await asyncio.open_connection('', self.port, loop=loop)
-        writer.write(msg)
+        writer.write(serialize(msg))
 
         response = await reader.read(8192)
         # Deserialize response

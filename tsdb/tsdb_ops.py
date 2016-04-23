@@ -88,10 +88,38 @@ class TSDBOp_Select(TSDBOp):
         return cls(json_dict['md'])
 
 
+class TSDBOp_AddTrigger(TSDBOp):
+
+    def __init__(self, proc, onwhat, target, arg):
+        super().__init__('add_trigger')
+        self['proc'] = proc
+        self['onwhat'] = onwhat
+        self['target'] = target
+        self['arg'] = arg
+
+    @classmethod
+    def from_json(cls, json_dict):
+        return cls(json_dict['proc'], json_dict['onwhat'], json_dict['target'], json_dict['arg'])
+
+class TSDBOp_RemoveTrigger(TSDBOp):
+
+    def __init__(self, proc, onwhat):
+        super().__init__('remove_trigger')
+        self['proc'] = proc
+        self['onwhat'] = onwhat
+
+
+    @classmethod
+    def from_json(cls, json_dict):
+        return cls(json_dict['proc'], json_dict['onwhat'])
+
+
 
 # This simplifies reconstructing TSDBOp instances from network data.
 typemap = {
   'insert_ts': TSDBOp_InsertTS,
   'upsert_meta': TSDBOp_UpsertMeta,
   'select': TSDBOp_Select,
+  'add_trigger': TSDBOp_AddTrigger,
+  'remove_trigger': TSDBOp_RemoveTrigger,
 }

@@ -3,6 +3,16 @@ from operator import and_
 from functools import reduce
 import operator
 
+# this dictionary will help you in writing a generic select operation
+OPMAP = {
+    '<': operator.lt,
+    '>': operator.le,
+    '==': operator.eq,
+    '!=': operator.ne,
+    '<=': operator.le,
+    '>=': operator.ge
+}
+
 class DictDB:
     "Database implementation in a dict"
     def __init__(self, schema):
