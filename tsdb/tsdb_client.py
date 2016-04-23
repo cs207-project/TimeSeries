@@ -9,16 +9,22 @@ class TSDBClient(object):
     """
     def __init__(self, port=9999):
         self.port = port
+        self.deserializer = Deserializer()
 
     def insert_ts(self, primary_key, ts):
         # your code here, construct from the code in tsdb_ops.py
-        message = TSDBOp_InsertTS(primary_key, ts)
-        self._send(message.to_json())
+        times, values = ts.times(), ts.values()
+        times_dict, values_dict = map(str, times), map(str, values)
+        ts_dict = dict(zip(times_dict, values_dict))
+        ts_insert = TSDBOp_InsertTS(primary_key, ts)
+        serialize_ts_insert = serialize(ts_insert.to_json())
+        self._send(serialize_ts_insert)
 
     def upsert_meta(self, primary_key, metadata_dict):
         # your code here
-        message = TSDBOp_UpsertMeta(primary_key, metadata_dict)
-        self._send(message)
+        ts_update = TSDBOp_UpsertMeta(primary_key, metadata_dict)
+        serialize_ts_update = serialize(ts_update.to_json())
+        self._send(serialize_ts_update)
 
 
     def select(self, metadata_dict={}):
@@ -26,7 +32,9 @@ class TSDBClient(object):
         # written by tyh, but not verified yet... - Qing & Grace
         # status, payload = self._send(TSDBOp_Select(metadata_dict).to_json())
         # return TSDBStatus(status), payload
-        pass
+        ts_select = TSDBOp_Select(metadata_dict)
+        serialize_ts_select = serialize(ts_select.to_json())
+        return self._send(serialize_ts_select
 
 
     # Feel free to change this to be completely synchronous
@@ -52,21 +60,24 @@ class TSDBClient(object):
         # Above is how to deserialize
         # print status and payload as the shown message
 
+        reader, writer = await asyncio.open_connection('127.0.0.1', self.port, loop=loop)
+        writer.write(msg)
 
+        response = await reader.read(8192)
+        # Deserialize response
+        self.deserializer.append(response)
+        if self.deserializer.ready():
+            deserialized_response = self.deserializer.deserialize()
+            status = deserialized_response['status']
+            payload = deserialized_response['payload']
 
-        reader, writer = await asyncio.open_connection('', self.port, loop=loop)
-        writer.write(serialize(msg))
-        await writer.drain()
-        writer.close()
 
         # Qing & Grace : We could not figure out how response work.
         # `await reader.read()` actually should be put before writer.close()
         # And using this `response` and `TSOBDp_Return`,
         # we should be able to figure out payload and status.
-        response = await reader.read()
 
-        print('-----------')
-        print('C> writing')
+        return status, payload
 
 
     #call `_send` with a well formed message to send.
