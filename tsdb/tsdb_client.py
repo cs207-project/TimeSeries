@@ -68,6 +68,8 @@ class TSDBClient(object):
             status = deserialized_response['status']
             payload = deserialized_response['payload']
 
+        print('C> status:',str(TSDBStatus(status)))
+        print('C> payload:',payload)
 
         # Qing & Grace : We could not figure out how response work.
         # `await reader.read()` actually should be put before writer.close()

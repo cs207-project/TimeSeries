@@ -52,7 +52,7 @@ class TSDBOp_InsertTS(TSDBOp):
 
     @classmethod
     def from_json(cls, json_dict):
-        return cls(json_dict['pk'], ts.TimeSeries(*(json_dict['ts'])))
+        return cls(json_dict['pk'], ts.TimeSeries.TimeSeries(*(json_dict['ts'])))
 
 
 class TSDBOp_Return(TSDBOp):
