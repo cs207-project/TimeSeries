@@ -77,6 +77,13 @@ class DictDB:
         #implement select, AND'ing over the filters in the md metadata dict
         #remember that each item in the dictionary looks like key==value
         pks = set()
+        #print('selffffffffffff indexes',self.indexes)
+            #self.indexes
+        if not meta:
+            
+            return list(self.rows.keys())
+
+
         for field, value in meta.items():
             if field in self.schema:
 
@@ -85,13 +92,18 @@ class DictDB:
                 # idx is a set
                 # print(idx,pks)
                 if not bool(pks):
+                    #print(idx,'=====idx=====')
                     pks = idx
                 else:
                     #print(pks & (idx))
+                    #print('*******arrived there********')
                     pks = pks & idx
             else:
                 raise KeyError("Meta's field not supported by schema")
-        if not bool(pks):
-            return None
+        #if not bool(pks):
+         #   return None
+
+
+
         return list(pks)
 
