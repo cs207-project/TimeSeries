@@ -13,9 +13,6 @@ class TSDBClient(object):
 
     def insert_ts(self, primary_key, ts):
         # your code here, construct from the code in tsdb_ops.py
-        times, values = ts.times(), ts.values()
-        times_dict, values_dict = map(str, times), map(str, values)
-        ts_dict = dict(zip(times_dict, values_dict))
         ts_insert = TSDBOp_InsertTS(primary_key, ts)
         serialize_ts_insert = serialize(ts_insert.to_json())
         self._send(serialize_ts_insert)
@@ -60,7 +57,7 @@ class TSDBClient(object):
         # Above is how to deserialize
         # print status and payload as the shown message
 
-        reader, writer = await asyncio.open_connection('127.0.0.1', self.port, loop=loop)
+        reader, writer = await asyncio.open_connection('', self.port, loop=loop)
         writer.write(msg)
 
         response = await reader.read(8192)

@@ -89,8 +89,6 @@ DESCRIPTION
             self._values = self._TimeSeries[1]
             self._times = self._TimeSeries[0]
 
-    def to_json(self):
-        return json.dumps(self._TimeSeries.tolist())
     # Lab 07
 
     # Lab 08 
@@ -823,3 +821,8 @@ DESCRIPTION
         if(len(self._values) == 0):
             raise ValueError("cant calculate standard deviation of length 0 list")
         return np.std(self._values)
+
+    # TSDB Part 1
+    def to_json(self):
+        return [[float(i) for i in self.times()],[float(i) for i in self.values()]]
+
