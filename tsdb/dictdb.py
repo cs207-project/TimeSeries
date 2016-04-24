@@ -67,7 +67,6 @@ class DictDB:
                 convert_function = self.schema[field]['convert'] # schema['order']['convert'] = int
                 self.rows[pk][field] = convert_function(meta[field])# self.row['one']['order'] = int(1)
             else:
-                print(field)
                 raise ValueError("Meta's field not supported by schema")
 
         self.update_indices(pk)
@@ -90,10 +89,10 @@ class DictDB:
         pks_ret = []
         fields_ret = []
         if fields_to_ret is None:
-            print ('no field')
+            print ('S> D> NO FIELDS')
             pks_ret, fields_ret = list(pks), [{}]*len(pks)
         elif fields_to_ret == []:
-            print ('all field')
+            print ('S> D> ALL FIELDS')
             for pk, fields_dict in self.rows.items():
                 if pk in pks:
                     pks_ret.append(pk)
@@ -102,7 +101,8 @@ class DictDB:
                         if f_pk != 'ts':
                             field_dict_ret[f_pk] = fields_dict[f_pk]
                     fields_ret.append(field_dict_ret)
-        else:
+        elif isinstance(fields_to_ret,list):
+            print ('S> D> FIELDS {}'.format(fields_to_ret))
             for pk, fields_dict in self.rows.items():
                 if pk in pks:
                     pks_ret.append(pk)

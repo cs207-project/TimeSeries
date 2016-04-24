@@ -12,6 +12,7 @@ def trigger_callback_maker(pk, target, calltomake):
         result = future.result()
         if target is not None:
             calltomake(pk, dict(zip(target, result)))
+            #print (result)
         return result
     return callback_
 
@@ -51,6 +52,7 @@ class TSDBProtocol(asyncio.Protocol):
         # FIXME: this import should have error handling
         mod = import_module('procs.'+trigger_proc)
         storedproc = getattr(mod,'main')
+        #print storedproc
         self.server.triggers[trigger_onwhat].append((trigger_proc, storedproc, trigger_arg, trigger_target))
         return TSDBOp_Return(TSDBStatus.OK, op['op'])
 
