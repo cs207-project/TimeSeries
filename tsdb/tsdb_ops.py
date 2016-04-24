@@ -1,4 +1,4 @@
-import timeseries as ts
+import timeseries.TimeSeries as ts
 from .tsdb_error import *
 
 # Interface classes for TSDB network operations.
@@ -52,7 +52,7 @@ class TSDBOp_InsertTS(TSDBOp):
 
     @classmethod
     def from_json(cls, json_dict):
-        return cls(json_dict['pk'], ts.TimeSeries.TimeSeries(*(json_dict['ts'])))
+        return cls(json_dict['pk'], ts.TimeSeries(*(json_dict['ts'])))
 
 
 class TSDBOp_Return(TSDBOp):
@@ -79,13 +79,14 @@ class TSDBOp_UpsertMeta(TSDBOp):
 
 class TSDBOp_Select(TSDBOp):
 
-    def __init__(self, md):
+    def __init__(self, md, fields):
         super().__init__('select')
         self['md'] = md #we abuse the metadata dict to carry the payload for `select`
+        self['fields'] = fields
 
     @classmethod
     def from_json(cls, json_dict):
-        return cls(json_dict['md'])
+        return cls(json_dict['md'], json_dict['fields'])
 
 
 class TSDBOp_AddTrigger(TSDBOp):

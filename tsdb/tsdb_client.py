@@ -20,18 +20,17 @@ class TSDBClient(object):
         self._send(ts_update.to_json())
 
 
-    def select(self, metadata_dict={}):
-        ts_select = TSDBOp_Select(metadata_dict)
+    def select(self, metadata_dict={},fields=None):
+        ts_select = TSDBOp_Select(metadata_dict,fields)
         return self._send(ts_select.to_json())
     
     def add_trigger(self, proc, onwhat, target, arg):
-        # your code here
-        pass
+        msg = TSDBOp_AddTrigger(proc, onwhat, target, arg)
+        return self._send(msg.to_json())
 
     def remove_trigger(self, proc, onwhat):
-        # your code here
-        pass
-
+        msg = TSDBOp_RemoveTrigger(proc, onwhat)
+        return self._send(msg.to_json())
 
     # Feel free to change this to be completely synchronous
     # from here onwards. Return the status and the payload
@@ -50,6 +49,8 @@ class TSDBClient(object):
         # Print out status and payload
         print('C> status:',str(TSDBStatus(status)))
         print('C> payload:',payload)
+        print('-----------')
+        print('C> writing')
 
         return status, payload
 

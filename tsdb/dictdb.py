@@ -2,6 +2,7 @@ from collections import defaultdict
 from operator import and_
 from functools import reduce
 import operator
+import numbers
 
 # this dictionary will help you in writing a generic select operation
 OPMAP = {
@@ -15,17 +16,20 @@ OPMAP = {
 
 class DictDB:
     "Database implementation in a dict"
-    def __init__(self, schema):
+    def __init__(self, schema,pk_field = 'pk'):
         "initializes database with indexed and schema"
         self.indexes = {}
-        self.rows = {}
-        self.schema = schema
-        self.pkfield = 'pk'
+        self.rows = {} # contains the row data, each entry points to another dictionary
+        self.schema = schema # DNY: see go_server.py for example schema
+        self.pkfield = pk_field
         for s in schema:
             indexinfo = schema[s]['index']
+            # convert = schema[s]['convert']
+            # later use binary search trees for highcard/numeric
+            # bitmaps for lowcard/str_or_factor
             if indexinfo is not None:
-                self.indexes[s] = defaultdict(set)
-
+                self.indexes[s] = defaultdict(set)# create an index for every non-None schema
+                
     def insert_ts(self, pk, ts):
         "given a pk and a timeseries, insert them"
         if pk not in self.rows:
@@ -82,38 +86,59 @@ class DictDB:
                 idx = self.indexes[field]
                 idx[v].add(pk)
 
-    def select(self, meta):
+    def _rows_to_return(self, pks, fields_to_ret):
+        pks_ret = []
+        fields_ret = []
+        if fields_to_ret is None:
+            print ('no field')
+            pks_ret, fields_ret = list(pks), [{}]*len(pks)
+        elif fields_to_ret == []:
+            print ('all field')
+            for pk, fields_dict in self.rows.items():
+                if pk in pks:
+                    pks_ret.append(pk)
+                    field_dict_ret = {}
+                    for f_pk in fields_dict.keys():
+                        if f_pk != 'ts':
+                            field_dict_ret[f_pk] = fields_dict[f_pk]
+                    fields_ret.append(field_dict_ret)
+        else:
+            for pk, fields_dict in self.rows.items():
+                if pk in pks:
+                    pks_ret.append(pk)
+                    field_dict_ret = {}
+                    for f_pk in fields_dict.keys():
+                        if f_pk in fields_to_ret:
+                            field_dict_ret[f_pk] = fields_dict[f_pk]
+                    fields_ret.append(field_dict_ret)
+        return pks_ret, fields_ret
+
+    def select(self, meta, fields_to_ret):
         # bla = client.select({'order': 1, 'blarg': 2})
         #implement select, AND'ing over the filters in the md metadata dict
         #remember that each item in the dictionary looks like key==value
-        pks = set()
+        pks = set(self.rows.keys())
         #print('selffffffffffff indexes',self.indexes)
             #self.indexes
-        if not meta:
-            
-            return list(self.rows.keys())
-
-
-        for field, value in meta.items():
+        
+        for field, condition in meta.items():
+            filter_pks = set()
             if field in self.schema:
-
                 convert_function = self.schema[field]['convert']
-                idx = self.indexes[field][convert_function(value)]
-                # idx is a set
-                # print(idx,pks)
-                if not bool(pks):
-                    #print(idx,'=====idx=====')
-                    pks = idx
-                else:
-                    #print(pks & (idx))
-                    #print('*******arrived there********')
-                    pks = pks & idx
+                # Store filtered rows
+                
+                # Check if query is exact or range
+                if (isinstance(condition, numbers.Real)):
+                    for p in pks:
+                        if field in self.rows[p] and self.rows[p][field] == convert_function(condition):
+                            filter_pks.add(p)
+                    pks = pks & filter_pks
+                elif (isinstance(condition, dict)):
+                    op, val = list(condition.items())[0]
+                    for p in pks:
+                        if field in self.rows[p] and OPMAP[op](self.rows[p][field], convert_function(val)):
+                            filter_pks.add(p)                        
+                    pks = pks & filter_pks
             else:
                 raise KeyError("Meta's field not supported by schema")
-        #if not bool(pks):
-         #   return None
-
-
-
-        return list(pks)
-
+        return self._rows_to_return(pks, fields_to_ret)
