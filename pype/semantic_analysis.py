@@ -50,7 +50,7 @@ class CheckUndefinedVariables(ASTVisitor):
   def __init__(self, symtab):
     self.symtab = symtab
     self.scope=None
-
+    
   def visit(self, node):
     if isinstance(node, ASTComponent):
       self.scope = node.name.name

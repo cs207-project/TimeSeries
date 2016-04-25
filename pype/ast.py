@@ -43,14 +43,10 @@ class ASTNode(object):
     Parameters
     ----------
     """
-    if self is not None:
-        print (indent+self.__class__.__name__)
-        indent+='\t'
-        for child in self.children:
-            if isinstance(child, ASTID):
-                print (indent+child.__class__.__name__)
-            else:
-                child.pprint(indent)
+    print(indent + self.__class__.__name__)
+    indent = indent + '   '
+    for child in self._children:
+      child.pprint(indent)
 
   def walk(self, visitor):
     """
@@ -69,6 +65,17 @@ class ASTNode(object):
     for child in self.children:
       child.walk(visitor)
     return visitor.return_value()
+
+  def mod_walk(self, mod_visitor):
+    '''Traverses an AST, building up a return value from visitor methods.
+    Similar to walk(), but constructs a return value from the result of
+    postvisit() calls. This can be used to modify an AST by building up the
+    desired new AST with return values.'''
+
+    selfval = mod_visitor.visit(self)
+    child_values = [child.mod_walk(mod_visitor) for child in self.children]
+    retval = mod_visitor.post_visit(self, selfval, child_values)
+    return retval
 
 class ASTProgram(ASTNode):
   def __init__(self, statements):
@@ -150,11 +157,9 @@ class ASTEvalExpr(ASTNode):
       list of ASTID or ASTLiteral represents the args
     """
     super().__init__()
-    if args is not None:
-        args.insert(0,ASTID(op))
-        self.children=args
-    else:
-        self.children=[ASTID(op)]
+    self.children.append(op)
+    for arg in args:
+        self.children.append(arg)
 
   @property
   def op(self):

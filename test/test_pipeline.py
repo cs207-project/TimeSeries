@@ -1,7 +1,7 @@
 from pytest import raises
 from pype.pipeline import *
 from pype.pipeline import Pipeline
-import timeseries.TimeSeries as TS
+from timeseries.TimeSeries import TimeSeries
 
 input1 = """(import timeseries)
 { standardize
@@ -35,7 +35,7 @@ def test_pype4():
     for x in range(100):
         time.append(x)
         values.append(x-50)
-    a = TS.TimeSeries(time, values)
+    a = TimeSeries(time, values)
 
 
     ast = parser.parse(input1, lexer=lexer)

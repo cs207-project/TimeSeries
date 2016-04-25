@@ -15,7 +15,7 @@ def component(func):
     func: function
         Function to be marked as compatible for exposing as a component in PyPE.
   """
-  func._attributes={'_pype_component':True}
+  func._attributes={ATTRIB_COMPONENT:True}
   return func
 
 def is_component(func):
@@ -27,13 +27,8 @@ def is_component(func):
     func: function
         Function needs to be checked.
   """
-  if '_attributes' in dir(func):
-    if isinstance(func._attributes, dict) and '_pype_component' in func._attributes:
-      return func._attributes['_pype_component']
-    else:
-      return False
-  else:
-    return False
+  if hasattr(func, '_attributes'):
+    return func._attributes[ATTRIB_COMPONENT] == True
 
 class LibraryImporter(object):
   def __init__(self, modname=None):
@@ -66,6 +61,6 @@ class LibraryImporter(object):
         symtab.addsym( Symbol(name, SymbolType.libraryfunction, obj) )
       elif inspect.isclass(obj):
         for (methodname,method) in inspect.getmembers(obj):
-          if inspect.isroutine(method) and is_component(method):
-            symtab.addsym( Symbol(methodname, SymbolType.librarymethod, method) )
+            if inspect.isroutine(method) and is_component(method):
+                symtab.addsym( Symbol(methodname, SymbolType.librarymethod, method))
     return symtab

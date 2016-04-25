@@ -21,7 +21,7 @@ class PCodeOp(object):
     # hint: the same return value of the function is put in every output queue
     outputs = func(*inputs)
     for out_q in out_qs:
-      await out_q.put(output)
+      await out_q.put(outputs)
 
   @staticmethod
   async def forward(in_qs, out_qs):

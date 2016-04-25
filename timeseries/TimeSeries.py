@@ -603,7 +603,8 @@ DESCRIPTION
         True
         '''
         return self + other
-
+    
+    @pype.component
     def __sub__(self, rhs):
 
         '''
@@ -702,6 +703,7 @@ DESCRIPTION
         except TypeError:
             raise NotImplemented
 
+    @pype.component
     def __truediv__(self, rhs):
         try:
             if isinstance(rhs, numbers.Real):
@@ -713,7 +715,7 @@ DESCRIPTION
                 raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
         except:
             raise NotImplemented
-
+    
     def __rmul__(self, other):
         '''
         other * self delegates to __mul__

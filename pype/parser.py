@@ -87,11 +87,11 @@ def p_expression_parameter_list(p):
   r'''expression : LPAREN ID parameter_list RPAREN
                  | LPAREN ID RPAREN'''
   #TODO
-  if len(p)>4:
-    p[0] = ASTEvalExpr(p[2],p[3])
+  if len(p) > 4:
+    p[0] = ASTEvalExpr(ASTID(p[2]), p[3])
   else:
-    p[0] = ASTEvalExpr(p[2], [])
-
+    p[0] = ASTEvalExpr(ASTID(p[2]))
+    
 def p_op_add_expression(p):
   r'''expression : LPAREN OP_ADD parameter_list RPAREN'''
   p[0] = ASTEvalExpr(ASTID(name='__add__'), p[3])
@@ -124,7 +124,7 @@ def p_parameter_list(p):
   r'''parameter_list : parameter_list expression
                      | expression'''
   if len(p)>2:
-    p[0] = p[1].append(p[2])
+    p[1].append(p[2])
     p[0] = p[1]
   else:
     p[0] = [p[1]]
