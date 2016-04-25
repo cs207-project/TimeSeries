@@ -104,9 +104,11 @@ class DictDB:
             pks_ret, fields_ret = list(pks), [{}]*len(pks)
         elif fields_to_ret == []:
             print ('S> D> ALL FIELDS')
-            for pk, fields_dict in self.rows.items():
-                if pk in pks:
+            # Need to loop through pks first
+            for pk in pks:
+                if pk in self.rows.keys():
                     pks_ret.append(pk)
+                    fields_dict = self.rows[pk]
                     field_dict_ret = {}
                     for f_pk in fields_dict.keys():
                         if f_pk != 'ts':
@@ -114,9 +116,10 @@ class DictDB:
                     fields_ret.append(field_dict_ret)
         elif isinstance(fields_to_ret,list):
             print ('S> D> FIELDS {}'.format(fields_to_ret))
-            for pk, fields_dict in self.rows.items():
-                if pk in pks:
+            for pk in pks:
+                if pk in self.rows.keys():
                     pks_ret.append(pk)
+                    fields_dict = self.rows[pk]
                     field_dict_ret = {}
                     for f_pk in fields_dict.keys():
                         if f_pk in fields_to_ret:
