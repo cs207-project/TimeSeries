@@ -702,6 +702,17 @@ DESCRIPTION
         except TypeError:
             raise NotImplemented
 
+    def __truediv__(self, rhs):
+        try:
+            if isinstance(rhs, numbers.Real):
+                return TimeSeries(self._times, self._values / rhs)
+            elif self.checkTime(rhs) == True:
+                return TimeSeries(self._times, self._values / rhs._values)
+
+            else:
+                raise ValueError(str(self)+' and '+str(rhs)+' must have the same time points')
+        except:
+            raise NotImplemented
 
     def __rmul__(self, other):
         '''

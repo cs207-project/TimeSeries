@@ -30,8 +30,8 @@ class DictDB:
     def __init__(self, schema,pk_field = 'pk'):
         "initializes database with indexed and schema"
         self.indexes = {}
-        self.rows = {} # contains the row data, each entry points to another dictionary
-        self.schema = schema # DNY: see go_server.py for example schema
+        self.rows = {}
+        self.schema = schema
         self.pkfield = pk_field
         for s in schema:
             indexinfo = schema[s]['index']
@@ -39,7 +39,7 @@ class DictDB:
             # later use binary search trees for highcard/numeric
             # bitmaps for lowcard/str_or_factor
             if indexinfo is not None:
-                self.indexes[s] = defaultdict(set)# create an index for every non-None schema
+                self.indexes[s] = defaultdict(set)
                 
     def insert_ts(self, pk, ts):
         "given a pk and a timeseries, insert them"
@@ -152,4 +152,30 @@ class DictDB:
                     pks = pks & filter_pks
             else:
                 raise KeyError("Meta's field not supported by schema")
-        return self._rows_to_return(pks, fields_to_ret)
+        if additional is None:
+            return self._rows_to_return(pks, fields_to_ret)
+        else:
+            #print(additional, '=========*******========addtional')
+            # Limiting and sorting stuff goes here
+            # client.select({'order': {'>=': 4}}, fields=['order', 'blarg', 'mean'], additional={'sort_by': '-order'})
+
+            pks_list = list(pks)
+            if 'sort_by' in additional:
+                sorting_key = additional['sort_by']
+                if sorting_key[0] == '+':
+                    # + <- True, - <- False
+                    sorting_order_reversed = False
+                else:
+                    sorting_order_reversed = True
+
+                sorting_scheme = sorting_key[1:]
+
+                assert sorting_scheme in self.schema
+
+                pks_list = sorted(pks_list,key = lambda x: self.rows[x][sorting_scheme], reverse = sorting_order_reversed)
+
+            if 'limit' in additional:
+                pks_list = pks_list[:additional['limit']]
+            return self._rows_to_return(pks_list, fields_to_ret)
+
+
