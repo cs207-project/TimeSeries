@@ -1,15 +1,15 @@
 from pytest import raises
 import numpy as np
-import timeseries.TimeSeries as TS
+from timeseries.TimeSeries import TimeSeries
 from timeseries.lazy import *
 import collections
 
 # Test data
-ts0 = TS.TimeSeries([],[])
-ts1 = TS.TimeSeries(range(0,4),range(1,5))
-ts2 = TS.TimeSeries(range(0,4),[10,20,30,40,50])
-ts3 = TS.TimeSeries([0,5,10], [1,2,3])
-ts4 = TS.TimeSeries([2.5,7.5], [100, -100])
+ts0 = TimeSeries([],[])
+ts1 = TimeSeries(range(0,4),range(1,5))
+ts2 = TimeSeries(range(0,4),[10,20,30,40,50])
+ts3 = TimeSeries([0,5,10], [1,2,3])
+ts4 = TimeSeries([2.5,7.5], [100, -100])
 
 # Lab 07
 def test_len():
@@ -19,7 +19,7 @@ def test_getitem():
     assert ts1[0] == 1
 
 def test_setitem():
-    tmpTestSeries = TS.TimeSeries(range(0,4),range(1,5))
+    tmpTestSeries = TimeSeries(range(0,4),range(1,5))
     tmpTestSeries[0]=5
     assert tmpTestSeries[0] == 5
 
@@ -41,19 +41,19 @@ def test_items():
 
 def test_interpolation():
     # Simple cases
-    c = TS.TimeSeries([1.],[1.2])
+    c = TimeSeries([1.],[1.2])
     d = ts3.interpolate([1.])
     assert c == d
-    assert ts3.interpolate(ts4.times()) == TS.TimeSeries([2.5,7.5], [1.5, 2.5])
+    assert ts3.interpolate(ts4.times()) == TimeSeries([2.5,7.5], [1.5, 2.5])
     # Boundary conditions
-    assert ts3.interpolate([-100,100]) == TS.TimeSeries([-100,100],[1,3])
+    assert ts3.interpolate([-100,100]) == TimeSeries([-100,100],[1,3])
 
 @lazy
 def check_length(a,b):
     return len(a)==len(b)
 
 def test_check_length():
-    thunk = check_length(TS.TimeSeries(range(0,4),range(1,5)).lazy, TS.TimeSeries(range(1,5),range(2,6)))
+    thunk = check_length(TimeSeries(range(0,4),range(1,5)).lazy, TimeSeries(range(1,5),range(2,6)))
 
 # Lab 11
 def test_median():
@@ -78,14 +78,14 @@ def test_iteritems():
 
 # Lab 15
 def test_equal():
-    tmpTestSeries = TS.TimeSeries(range(0,4),range(1,5))
+    tmpTestSeries = TimeSeries(range(0,4),range(1,5))
     assert tmpTestSeries == ts1
     
 def test_add():
     c = 100
-    d = TS.TimeSeries([0,1,2], [1,2,3])
-    assert ts1+ts2 == TS.TimeSeries(range(0,4),[11,22,33,44,55])
-    assert ts1+c == TS.TimeSeries(range(0,4),[101,102,103,104,105])
+    d = TimeSeries([0,1,2], [1,2,3])
+    assert ts1+ts2 == TimeSeries(range(0,4),[11,22,33,44,55])
+    assert ts1+c == TimeSeries(range(0,4),[101,102,103,104,105])
     with raises(ValueError):
         ts1+d
     assert ts1+ts2 == ts2+ts1
@@ -94,31 +94,31 @@ def test_add():
         d+ts1
 
 def test_sub():
-    a = TS.TimeSeries([0,5,10], [1,2,3])
-    b = TS.TimeSeries([0,5,10], [10,20,30])
+    a = TimeSeries([0,5,10], [1,2,3])
+    b = TimeSeries([0,5,10], [10,20,30])
     c = 100
-    d = TS.TimeSeries([0,1,2], [1,2,3])
-    assert b-a == TS.TimeSeries([0,5,10],[9,18,27])
-    assert a-c == TS.TimeSeries([0,5,10],[-99,-98,-97])
+    d = TimeSeries([0,1,2], [1,2,3])
+    assert b-a == TimeSeries([0,5,10],[9,18,27])
+    assert a-c == TimeSeries([0,5,10],[-99,-98,-97])
     with raises(ValueError):
         a-d
 
 def test_neg():
-    a = TS.TimeSeries([0,5,10], [1,2,3])
-    b = TS.TimeSeries([0,5,10], [10,20,30])
-    assert -a == TS.TimeSeries([0,5,10],[-1,-2,-3])
+    a = TimeSeries([0,5,10], [1,2,3])
+    b = TimeSeries([0,5,10], [10,20,30])
+    assert -a == TimeSeries([0,5,10],[-1,-2,-3])
 
 def test_pos():
-    a = TS.TimeSeries([0,5,10], [-1,-2,3])
+    a = TimeSeries([0,5,10], [-1,-2,3])
     assert +a == a
 
 def test_mul():
-    a = TS.TimeSeries([0,5,10], [1,2,3])
-    b = TS.TimeSeries([0,5,10], [10,20,30])
+    a = TimeSeries([0,5,10], [1,2,3])
+    b = TimeSeries([0,5,10], [10,20,30])
     c = 100
-    d = TS.TimeSeries([0,1,2], [1,2,3])
-    assert a*b == TS.TimeSeries([0,5,10],[10,40,90])
-    assert a*c == TS.TimeSeries([0,5,10],[100,200,300])
+    d = TimeSeries([0,1,2], [1,2,3])
+    assert a*b == TimeSeries([0,5,10],[10,40,90])
+    assert a*c == TimeSeries([0,5,10],[100,200,300])
     with raises(ValueError):
         a*d
     assert a*b == b*a
@@ -127,20 +127,20 @@ def test_mul():
         d*a
 
 def test_abs():
-    a = TS.TimeSeries([0,5], [3,4])
+    a = TimeSeries([0,5], [3,4])
     assert abs(a)==5.
 
 def test_bool():
-    a = TS.TimeSeries([0],[0])
+    a = TimeSeries([0],[0])
     assert abs(a)==False
 
 def test_neg():
-    a = TS.TimeSeries([0,5,10], [1,2,3])
-    b = TS.TimeSeries([0,5,10], [10,20,30])
-    assert -a == TS.TimeSeries([0,5,10],[-1,-2,-3])
+    a = TimeSeries([0,5,10], [1,2,3])
+    b = TimeSeries([0,5,10], [10,20,30])
+    assert -a == TimeSeries([0,5,10],[-1,-2,-3])
 
 def test_pos():
-    a = TS.TimeSeries([0,5,10], [-1,-2,3])
+    a = TimeSeries([0,5,10], [-1,-2,3])
     assert +a == a
 
 # Lab 19
