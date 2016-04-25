@@ -115,7 +115,7 @@ def main():
 
     # Step 2: find all time series within 2*d(query, nearest_vp_to_query)
     #this is an augmented select to the same proc in correlation
-    _, results = client, augmented_select('corr', 'd', query, {'d_'+lowest_dist_vp:{'<=':2*vpdists[lowest_dist_vp]}})
+    _, results = client.augmented_select('corr', 'd', query, {'d_'+lowest_dist_vp:{'<=':2*vpdists[lowest_dist_vp]}})
 
     #2b: find the smallest distance amongst this ( or k smallest)
     #you can do this in local code

@@ -12,7 +12,6 @@ def trigger_callback_maker(pk, target, calltomake):
         result = future.result()
         if target is not None:
             calltomake(pk, dict(zip(target, result)))
-            #print (result)
         return result
     return callback_
 
@@ -46,6 +45,7 @@ class TSDBProtocol(asyncio.Protocol):
             d = OrderedDict((k,{}) for k in loids)
             return TSDBOp_Return(TSDBStatus.OK, op['op'], d)
 
+
     def _augmented_select(self, op):
         "run a select and then synchronously run some computation on it"
         loids, fields = self.server.db.select(op['md'], None, op['additional'])
@@ -71,7 +71,6 @@ class TSDBProtocol(asyncio.Protocol):
         # FIXME: this import should have error handling
         mod = import_module('procs.'+trigger_proc)
         storedproc = getattr(mod,'main')
-        #print storedproc
         self.server.triggers[trigger_onwhat].append((trigger_proc, storedproc, trigger_arg, trigger_target))
         return TSDBOp_Return(TSDBStatus.OK, op['op'])
 
@@ -86,8 +85,9 @@ class TSDBProtocol(asyncio.Protocol):
 
     def _run_trigger(self, opname, rowmatch):
         lot = self.server.triggers[opname]
-        #print("S> list of triggers to run", lot)
+        #print("S> list of triggers to run:", opname, [t[0] for t in lot])
         for tname, t, arg, target in lot:
+            #print("trigger:", tname, "target:",target)
             for pk in rowmatch:
                 row = self.server.db.rows[pk]
                 task = asyncio.ensure_future(t(pk, row, arg))
@@ -99,7 +99,7 @@ class TSDBProtocol(asyncio.Protocol):
         self.conn = conn
 
     def data_received(self, data):
-        print('S> data received ['+str(len(data))+']: '+str(data))
+        #print('S> data received ['+str(len(data))+']: '+str(data))
         self.deserializer.append(data)
         if self.deserializer.ready():
             msg = self.deserializer.deserialize()
@@ -116,6 +116,8 @@ class TSDBProtocol(asyncio.Protocol):
                     response = self._upsert_meta(op)
                 elif isinstance(op, TSDBOp_Select):
                     response = self._select(op)
+                elif isinstance(op, TSDBOp_AugmentedSelect):
+                    response = self._augmented_select(op)
                 elif isinstance(op, TSDBOp_AddTrigger):
                     response = self._add_trigger(op)
                 elif isinstance(op, TSDBOp_RemoveTrigger):
@@ -136,6 +138,7 @@ class TSDBServer(object):
         self.port = port
         self.db = db
         self.triggers = defaultdict(list)
+        self.trigger_arg_cache = defaultdict(dict)
         self.autokeys = {}
 
     def exception_handler(self, loop, context):

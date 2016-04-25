@@ -9,12 +9,12 @@ def tsmaker(m, s, j):
     meta['blarg'] = int(np.random.choice([1, 2]))
     t = np.arange(0.0, 1.0, 0.01)
     v = norm.pdf(t, m, s) + j*np.random.randn(100)
-    return meta, ts.TimeSeries.TimeSeries(t, v)
+    return meta, ts.TimeSeries(t, v)
 
 def random_ts(a):
     t = np.arange(0.0, 1.0, 0.01)
     v = a*np.random.random(100)
-    return ts.TimeSeries.TimeSeries(t, v)
+    return ts.TimeSeries(t, v)
 
 def stand(x, m, s):
     #print(type(x),type(m),type(s))
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     plt.show()
     standts1 = stand(t1, t1.mean(), t1.std())
     standts2 = stand(t2, t2.mean(), t2.std())
-    print(type(standts1),'this is the type=================*********')
+    #print(type(standts1),'this is the type=================*********')
     #assert 1 == 2
     idx, mcorr = max_corr_at_phase(standts1, standts2)
     print(idx, mcorr)

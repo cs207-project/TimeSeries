@@ -1,4 +1,4 @@
-import timeseries.TimeSeries as ts
+import timeseries as ts
 import numpy as np
 
 from ._corr import stand, kernel_corr
@@ -25,4 +25,4 @@ def proc_main(pk, row, arg):
 #the function is wrapped in a coroutine for triggers
 async def main(pk, row, arg):
     return proc_main(pk, row, arg)
-    
+
