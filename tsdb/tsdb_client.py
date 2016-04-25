@@ -19,10 +19,12 @@ class TSDBClient(object):
         ts_update = TSDBOp_UpsertMeta(primary_key, metadata_dict)
         self._send(ts_update.to_json())
 
-
     def select(self, metadata_dict={},fields=None):
         ts_select = TSDBOp_Select(metadata_dict,fields)
         return self._send(ts_select.to_json())
+
+    def augmented_select(self, proc, target, arg=None, metadata_dict={}, additional=None):
+        pass
     
     def add_trigger(self, proc, onwhat, target, arg):
         msg = TSDBOp_AddTrigger(proc, onwhat, target, arg)

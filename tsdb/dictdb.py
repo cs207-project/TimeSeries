@@ -14,6 +14,17 @@ OPMAP = {
     '>=': operator.ge
 }
 
+def metafiltered(d, schema, fieldswanted):
+    d2 = {}
+    if len(fieldswanted) == 0:
+        keys = [k for k in d.keys() if k != 'ts']
+    else:
+        keys = [k for k in d.keys() if k in fieldswanted]
+    for k in keys:
+        if k in schema:
+            d2[k] = schema[k]['convert'](d[k])
+    return d2
+
 class DictDB:
     "Database implementation in a dict"
     def __init__(self, schema,pk_field = 'pk'):
@@ -113,7 +124,7 @@ class DictDB:
                     fields_ret.append(field_dict_ret)
         return pks_ret, fields_ret
 
-    def select(self, meta, fields_to_ret):
+    def select(self, meta, fields_to_ret, additional):
         # bla = client.select({'order': 1, 'blarg': 2})
         #implement select, AND'ing over the filters in the md metadata dict
         #remember that each item in the dictionary looks like key==value

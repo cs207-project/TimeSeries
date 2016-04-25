@@ -37,12 +37,31 @@ class TSDBProtocol(asyncio.Protocol):
         return TSDBOp_Return(TSDBStatus.OK, op['op'])
 
     def _select(self, op):
-        loids, fields = self.server.db.select(op['md'], op['fields'])
+        loids, fields = self.server.db.select(op['md'], op['fields'], op['additional'])
         self._run_trigger('select', loids)
         if fields is not None:
-            return TSDBOp_Return(TSDBStatus.OK, op['op'], dict(zip(loids, fields)))
+            d = OrderedDict(zip(loids, fields))
+            return TSDBOp_Return(TSDBStatus.OK, op['op'], d)
         else:
-            return TSDBOp_Return(TSDBStatus.OK, op['op'], {k:{} for k in loids})
+            d = OrderedDict((k,{}) for k in loids)
+            return TSDBOp_Return(TSDBStatus.OK, op['op'], d)
+
+    def _augmented_select(self, op):
+        "run a select and then synchronously run some computation on it"
+        loids, fields = self.server.db.select(op['md'], None, op['additional'])
+        proc = op['proc']  # the module in procs
+        arg = op['arg']  # an additional argument, could be a constant
+        target = op['target'] #not used to upsert any more, but rather to
+        # return results in a dictionary with the targets mapped to the return
+        # values from proc_main
+        mod = import_module('procs.'+proc)
+        storedproc = getattr(mod,'proc_main')
+        results=[]
+        for pk in loids:
+            row = self.server.db.rows[pk]
+            result = storedproc(pk, row, arg)
+            results.append(dict(zip(target, result)))
+        return TSDBOp_Return(TSDBStatus.OK, op['op'], dict(zip(loids, results)))
 
     def _add_trigger(self, op):
         trigger_proc = op['proc']  # the module in procs
