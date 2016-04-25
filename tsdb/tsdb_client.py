@@ -41,8 +41,10 @@ class TSDBClient(object):
         # Open connection and write the serialized message
         reader, writer = await asyncio.open_connection('', self.port, loop=loop)
         writer.write(serialize(msg))
+        await writer.drain()
         # Wait for response
-        response = await reader.read(8192)
+        response = await reader.read()
+        writer.close()
         # Deserialize response
         self.deserializer.append(response)
         if self.deserializer.ready():
