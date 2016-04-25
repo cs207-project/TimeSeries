@@ -104,15 +104,22 @@ def main():
 
     # Step 1: in the vpdist key, get  distances from query to vantage points
     # this is an augmented select
+    vpdists = {}
+    for v in vpkeys:
+        _, results = client.augmented_select('corr', 'd', query, {'pk':v})
+        vpdists[v] = results[v]['d']
 
     #1b: choose the lowest distance vantage point
     # you can do this in local code
+    lowest_dist_vp = min(vpkeys, key=lambda v:vpdists[v])
 
     # Step 2: find all time series within 2*d(query, nearest_vp_to_query)
     #this is an augmented select to the same proc in correlation
+    _, results = client, augmented_select('corr', 'd', query, {'d_'+lowest_dist_vp:{'<=':2*vpdists[lowest_dist_vp]}})
 
     #2b: find the smallest distance amongst this ( or k smallest)
     #you can do this in local code
+    nearestwanted = min(results.keys(), key=lambda p: results[p]['d'])
     #your code here ends
     # plot the timeseries to see visually how we did.
     import matplotlib.pyplot as plt
