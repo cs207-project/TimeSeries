@@ -31,10 +31,9 @@ class SymbolTable(object):
         print(' ',name,'=>',symbol)
 
   def addsym(self, sym, scope='global'):
-    if scope in self.scopes():
-      self[scope][sym.name]=sym
-    else:
-      self.T[scope]={sym.name:sym}
+    if scope not in self.T:
+        self.T[scope] = {}
+    self.T[scope][sym.name] = sym
 
   def lookupsym(self, sym, scope=None):
     if scope is not None:

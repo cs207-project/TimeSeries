@@ -65,10 +65,9 @@ class ASTNode(object):
     visitor : ASTVisitor
       visitor for a single AST node
     """
-    if self is not None:
-        visitor.visit(self)
-        for child in self.children:
-            child.walk(visitor)
+    visitor.visit(self)
+    for child in self.children:
+      child.walk(visitor)
     return visitor.return_value()
 
 class ASTProgram(ASTNode):

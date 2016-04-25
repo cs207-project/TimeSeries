@@ -37,15 +37,12 @@ class SymbolTableVisitor(ASTVisitor):
       imp = LibraryImporter(node.module)
       imp.add_symbols(self.symbol_table)
 
-    if isinstance(node, ASTProgram):
-      for child in node.children:
-        self.visit(child)
-
     if isinstance(node, ASTInputExpr):
-      self.symbol_table.addsym(Symbol(node.children[0].name, SymbolType.input, None),scope=self.scope)
+      for input_expr in node.children:
+        self.symbol_table.addsym(Symbol(input_expr.name, SymbolType.input, None),scope=self.scope)
     
     if isinstance(node, ASTAssignmentExpr):
-      self.symbol_table.addsym(Symbol(node.binding, SymbolType.var,None),scope=self.scope)
+      self.symbol_table.addsym(Symbol(node.binding.name, SymbolType.var,None),scope=self.scope)
         
     if isinstance(node, ASTComponent):
       self.scope=node.name.name
