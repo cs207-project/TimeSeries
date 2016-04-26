@@ -47,8 +47,9 @@ def max_corr_at_phase(ts1, ts2):
 def kernel_corr(ts1, ts2, mult=1):
     "compute a kernelized correlation so that we can get a real distance"
     #your code here.
-    ccor_value = ccor(ts1, ts2)
-    return np.sum(np.exp(ccor_value*mult))/np.sqrt(np.sum(np.exp(ccor_value))*np.sum(np.exp(mult*ccor_value)))
+    cross_correlation = ccor(ts1, ts2) * mult
+    corr_ts1, corr_ts2 = ccor(ts1, ts1) * mult, ccor(ts2, ts2) * mult
+    return np.sum(np.exp(cross_correlation))/np.sqrt(np.sum(np.exp(corr_ts1))*np.sum(np.exp(corr_ts2)))
 
 
 

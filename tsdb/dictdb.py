@@ -159,15 +159,10 @@ class DictDB:
         if additional is None:
             return self._rows_to_return(pks, fields_to_ret)
         else:
-            #print(additional, '=========*******========addtional')
-            # Limiting and sorting stuff goes here
-            # client.select({'order': {'>=': 4}}, fields=['order', 'blarg', 'mean'], additional={'sort_by': '-order'})
-
             pks_list = list(pks)
             if 'sort_by' in additional:
 
                 sorting_key = additional['sort_by']
-                #print(pks_list, '****', sorting_key, '[[[[[[[[[[[[[[]]]]]]]]]]]]]')
                 if sorting_key[0] == '+':
                     # + <- True, - <- False
                     sorting_order_reversed = False
@@ -179,10 +174,8 @@ class DictDB:
                 assert sorting_scheme in self.schema
 
                 pks_list = sorted(pks_list,key = lambda x: self.rows[x][sorting_scheme], reverse = sorting_order_reversed)
-                print(pks_list,'[[[[[[[[[[[[[[]]]]]]]]]]]]]')
             if 'limit' in additional:
                 pks_list = pks_list[:additional['limit']]
-            #print(pks_list,'[[[[[[[[[[[[[[]]]]]]]]]]]]]')
             return self._rows_to_return(set(pks_list), fields_to_ret)
 
 
