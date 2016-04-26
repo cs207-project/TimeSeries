@@ -107,7 +107,6 @@ def main():
     vpdists = {}
     for v in vpkeys:
         _, results = client.augmented_select('corr', 'd', query, {'pk':v})
-        print (results[v]['d'])
         vpdists[v] = results[v]['d']
 
     #1b: choose the lowest distance vantage point
