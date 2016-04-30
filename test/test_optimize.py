@@ -1,5 +1,5 @@
 from pytest import raises
-from tests.test_fgir import *
+from test.test_fgir import *
 from pype.optimize import *
 import copy
 
