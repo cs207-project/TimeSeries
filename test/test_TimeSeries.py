@@ -153,3 +153,11 @@ def test_mean():
     assert ts1.mean() == 2.5
     with raises(ValueError):
         ts0.mean() 
+
+# Pype Component
+def test_div():
+    a = TimeSeries([0,5,10], [1,2,3])
+    b = TimeSeries([0,5,10], [10,20,30])
+    c = 10
+    assert b/a == TimeSeries([0,5,10], [10,10,10])
+    assert b/c == TimeSeries([0,5,10], [1,2,3])
