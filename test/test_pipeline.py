@@ -15,7 +15,7 @@ input1 = """(import timeseries)
 
 
 example_error_ppl='./samples/example_error.ppl'
-example0_ppl='samples/example0.ppl'
+example0_ppl='../test/samples/example0.ppl'
 example0_token='test/samples/example0.tokens'
 example1_ppl='test/samples/example1.ppl'
 example1_token='test/samples/example1.tokens'
@@ -73,5 +73,3 @@ def test_compile():
     p = Pipeline(example0_ppl)
     # p.compile(example0_ppl)
     pprint(p)
-
-test_compile()
