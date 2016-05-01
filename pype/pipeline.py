@@ -25,16 +25,16 @@ class Pipeline(object):
     ast.walk( CheckUndefinedVariables(syms) )
 
     # Translation
-    ir = ast.mod_walk( LoweringVisitor(syms) )
+    self.ir = ast.mod_walk( LoweringVisitor(syms) )
 
     # Optimization
-    ir.flowgraph_pass( AssignmentEllision() )
-    ir.flowgraph_pass( DeadCodeElimination() )
-    ir.topological_flowgraph_pass( InlineComponents() )
+    self.ir.flowgraph_pass( AssignmentEllision() )
+    self.ir.flowgraph_pass( DeadCodeElimination() )
+    self.ir.topological_flowgraph_pass( InlineComponents() )
 
     # PCode Generation
     pcodegen = PCodeGenerator()
-    ir.flowgraph_pass( pcodegen )
+    self.ir.flowgraph_pass( pcodegen )
     self.pcodes = pcodegen.pcodes
 
   def __getitem__(self, component_name):

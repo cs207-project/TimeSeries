@@ -2,6 +2,7 @@ from pytest import raises
 from pype.pipeline import *
 from pype.pipeline import Pipeline
 from timeseries.TimeSeries import TimeSeries
+import unittest
 
 input1 = """(import timeseries)
 { standardize
@@ -13,8 +14,8 @@ input1 = """(import timeseries)
 }"""
 
 
-example_error_ppl='test/samples/example_error.ppl'
-example0_ppl='test/samples/example0.ppl'
+example_error_ppl='./samples/example_error.ppl'
+example0_ppl='./samples/example0.ppl'
 example0_token='test/samples/example0.tokens'
 example1_ppl='test/samples/example1.ppl'
 example1_token='test/samples/example1.tokens'
@@ -62,3 +63,15 @@ def test_pype4():
 
     assert(round(standardized_TS.mean(), 7) == 0)
     assert(round(standardized_TS.std()-1, 7) == 0)
+
+def pprint(p):
+    for g in p.ir:
+        print(p.ir[g].dotfile())
+        print(p.ir[g].topological_sort())
+
+def test_compile():
+    p = Pipeline(example0_ppl)
+    # p.compile(example0_ppl)
+    pprint(p)
+
+test_compile()
