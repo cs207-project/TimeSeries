@@ -2,6 +2,7 @@ from pytest import raises
 from pype.pipeline import *
 from pype.pipeline import Pipeline
 from timeseries.TimeSeries import TimeSeries
+import unittest
 
 input1 = """(import timeseries)
 { standardize
@@ -62,3 +63,13 @@ def test_pype4():
 
     assert(round(standardized_TS.mean(), 7) == 0)
     assert(round(standardized_TS.std()-1, 7) == 0)
+
+def pprint(p):
+    for g in p.ir:
+        print(p.ir[g].dotfile())
+        print(p.ir[g].topological_sort())
+
+def test_compile():
+    p = Pipeline(example0_ppl)
+    print(p['standardize'])
+    pprint(p)

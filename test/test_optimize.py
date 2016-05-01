@@ -63,3 +63,9 @@ def test_DeadCodeElimination():
 
 # test_AssignmentEllision()
 # test_DeadCodeElimination()
+
+def test_InlineComponents():
+    test_fg = copy.deepcopy(FG)
+    testInlineComponents = InlineComponents()
+    testInlineComponents.visit(test_fg)
+    assert set(test_fg.nodes.keys()) == set(['@N3', '@N5', '@N1', '@N6', '@N4', '@N0', '@N2', '@N7'])
