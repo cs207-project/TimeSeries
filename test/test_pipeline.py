@@ -14,8 +14,8 @@ input1 = """(import timeseries)
 }"""
 
 
-example_error_ppl='./samples/example_error.ppl'
-example0_ppl='../test/samples/example0.ppl'
+example_error_ppl='test/samples/example_error.ppl'
+example0_ppl='test/samples/example0.ppl'
 example0_token='test/samples/example0.tokens'
 example1_ppl='test/samples/example1.ppl'
 example1_token='test/samples/example1.tokens'
