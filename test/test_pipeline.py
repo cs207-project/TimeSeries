@@ -71,5 +71,5 @@ def pprint(p):
 
 def test_compile():
     p = Pipeline(example0_ppl)
-    # p.compile(example0_ppl)
+    print(p['standardize'])
     pprint(p)
