@@ -509,7 +509,7 @@ DESCRIPTION
 
     def checkTime(self,rhs):
         '''
-        Tool function checking wether the given parameter 'rhs' and self have the same time points
+        Tool function checking whether the given parameter 'rhs' and self have the same time points
 
         Parameters
         ----------
@@ -705,6 +705,28 @@ DESCRIPTION
 
     @pype.component
     def __truediv__(self, rhs):
+        '''
+        Return a / b
+
+        Parameters
+        ----------
+        rhs : scalar real number or TimeSeries
+
+        Returns
+        -------
+        TimeSeries with values divided by rhs scalar value
+        or divided by rhs TimeSeries values in element-wise
+
+        Examples
+        --------
+        >>> a = TimeSeries([0,5,10], [1,2,3])
+        >>> b = TimeSeries([0,5,10], [10,20,30])
+        >>> c = 10
+        >>> b/a == TimeSeries([0,5,10], [10,10,10])
+        True
+        >>> b/c == TimeSeries([0,5,10], [1,2,3])
+        True
+        '''
         try:
             if isinstance(rhs, numbers.Real):
                 return TimeSeries(self._times, self._values / rhs)
