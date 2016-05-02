@@ -8,8 +8,8 @@ import copy
 # just refer to Pype 3 part 3 graph
 FG = Flowgraph('TEST_1')
 
-A = FG.new_node(FGNodeType.component, 'x')
-B = FG.new_node(FGNodeType.component, 'y')
+A = FG.new_node(FGNodeType.unknown, 'x')
+B = FG.new_node(FGNodeType.unknown, 'y')
 C = FG.new_node(FGNodeType.unknown, 'n2')
 D = FG.new_node(FGNodeType.assignment, 'z')
 E = FG.new_node(FGNodeType.unknown, 'n4')
