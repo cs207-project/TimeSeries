@@ -135,6 +135,19 @@ class TSDBProtocol(asyncio.Protocol):
 class TSDBServer(object):
 
     def __init__(self, db, port=9999):
+        """
+        This initialise the tsdb server by passing into the server port number and DictDB object
+
+        Parameters
+        ----------
+        db : DictDB
+            Database implementation in a dict for timeserise
+        port : integer
+            port number in which the server is deployed
+
+        Examples
+        --------
+        """
         self.port = port
         self.db = db
         self.triggers = defaultdict(list)
@@ -146,6 +159,30 @@ class TSDBServer(object):
         loop.stop()
 
     def run(self):
+        '''
+        Use asyncio module to launch tsdb server on local machine 127.0.0.1 in designated port. Stop server when there
+         are KeyboardInterrupt or Exceptions happened during tsdb operation
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        KeyboardInterrupt
+            If there's keyboard interruption to stop server
+        Exception
+            If there are some database exception occured while running the server
+
+        Examples
+        --------
+        ...
+
+        '''
+
         loop = asyncio.get_event_loop()
         # NOTE: enable this if you'd rather have the server stop on an error
         #       currently it dumps the protocol and keeps going; new connections

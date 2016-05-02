@@ -15,10 +15,11 @@ input1 = """(import timeseries)
 
 
 example_error_ppl='test/samples/example_error.ppl'
-example0_ppl='test/samples/example0.ppl'
+example0_ppl='samples/example0.ppl'
 example0_token='test/samples/example0.tokens'
-example1_ppl='test/samples/example1.ppl'
+example1_ppl='samples/example1.ppl'
 example1_token='test/samples/example1.tokens'
+example2_ppl='samples/example2.ppl'
 
 def test_lexer():
     lexer.input(open(example1_ppl).read())
@@ -70,6 +71,11 @@ def pprint(p):
         print(p.ir[g].topological_sort())
 
 def test_compile():
-    p = Pipeline(example0_ppl)
-    print(p['standardize'])
-    pprint(p)
+    p0 = Pipeline(example0_ppl)
+    print(p0['standardize'])
+    pprint(p0)
+
+    p1 = Pipeline(example1_ppl)
+    print(p1['standardize'])
+    pprint(p1)
+

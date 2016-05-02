@@ -8,8 +8,8 @@ import copy
 # just refer to Pype 3 part 3 graph
 FG = Flowgraph('TEST_1')
 
-A = FG.new_node(FGNodeType.unknown, 'x')
-B = FG.new_node(FGNodeType.unknown, 'y')
+A = FG.new_node(FGNodeType.component, 'x')
+B = FG.new_node(FGNodeType.component, 'y')
 C = FG.new_node(FGNodeType.unknown, 'n2')
 D = FG.new_node(FGNodeType.assignment, 'z')
 E = FG.new_node(FGNodeType.unknown, 'n4')
@@ -30,8 +30,6 @@ FG.outputs = ['@N4']
 
 x = FGIR()
 x.graphs['test'] = FG
-
-
 
 def test_AssignmentEllision():
     test_fg = copy.deepcopy(FG)

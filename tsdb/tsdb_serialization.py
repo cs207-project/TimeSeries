@@ -4,15 +4,20 @@ LENGTH_FIELD_LENGTH = 4
 
 
 def serialize(json_obj):
-    '''Turn a JSON object into bytes suitable for writing out to the network.
+    """
+    Turn a JSON object into bytes suitable for writing out to the network.
 
+    Note
+    ----
     Includes a fixed-width length field to simplify reconstruction on the other
-    end of the wire.'''
+    end of the wire.
 
+    Parameters
+    ----------
+    json_obj : json
+        json object waiting to be serialised for data transmission over sockets
 
-    # Maybe useful to solve - Tang
-    # S> data received [66]: b'B\x00\x00\x00{"ts": [[1, 2, 3], [1, 4, 9]], "pk": "one", "op": "insert_ts"}'
-    #your code here. Returns the bytes on the wire
+    """
     jsonfile = json.dumps(json_obj)
     output = jsonfile.encode()
     # # pseudo-code added by Tang
@@ -25,15 +30,21 @@ def serialize(json_obj):
     return bytes_on_wire + output
 
 class Deserializer(object):
-    '''A buffering and bytes-to-json engine.
+    """
+    A buffering and bytes-to-json engine.
 
+    Note
+    ----
     Data can be received in arbitrary chunks of bytes, and we need a way to
     reconstruct variable-length JSON objects from that interface. This class
     buffers up bytes until it can detect that it has a full JSON object (via
     a length field pulled off the wire). To use this, shove bytes in with the
     append() function and call ready() to check if we've reconstructed a JSON
     object. If True, then call deserialize to return it. That object will be
-    removed from this buffer after it is returned.'''
+    removed from this buffer after it is returned.
+
+    """
+
 
     def __init__(self):
         self.buf = b''

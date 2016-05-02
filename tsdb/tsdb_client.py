@@ -5,7 +5,12 @@ from .tsdb_error import *
 
 class TSDBClient(object):
     """
-    The client. This could be used in a python program, web server, or REPL!
+    The Time Series Database client. This could be used in a python program, web server, or REPL!
+
+    Note
+    ----
+    Includes basic time-series database client operation like insert_ts, select, sending messages etc.
+
     """
     def __init__(self, port=9999):
         self.port = port
@@ -35,10 +40,22 @@ class TSDBClient(object):
         msg = TSDBOp_RemoveTrigger(proc, onwhat)
         return self._send(msg.to_json())
 
-    # Feel free to change this to be completely synchronous
     # from here onwards. Return the status and the payload
     async def _send_coro(self, msg, loop):
-        # Open connection and write the serialized message
+        '''
+        Open connection and write the serialized message
+
+        Parameters
+        ----------
+        msg: json
+            unserialised message to be sent
+        loop:
+            a pluggable event loop with various system-specific implementations provided by asyncio;
+
+        Returns
+        -------
+        tsdb status and payload
+        '''
         reader, writer = await asyncio.open_connection('', self.port, loop=loop)
         writer.write(serialize(msg))
         await writer.drain()
@@ -60,9 +77,21 @@ class TSDBClient(object):
         return status, payload
 
 
-    #call `_send` with a well formed message to send.
+    #
     #once again replace this function if appropriate
     def _send(self, msg):
+        '''
+        Call `_send` with a well formed message to send.
+
+        Parameters
+        ----------
+        msg: bytes
+            serialised message to be sent
+
+        Returns
+        -------
+        result of coroutines execution
+        '''
         loop = asyncio.get_event_loop()
         coro = asyncio.ensure_future(self._send_coro(msg, loop))
         loop.run_until_complete(coro)
