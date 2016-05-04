@@ -149,7 +149,7 @@ class TSDBServer(object):
         --------
         """
         self.port = port
-        self.host = 'travis.dev'
+        self.host = '::1'
         self.db = db
         self.triggers = defaultdict(list)
         self.trigger_arg_cache = defaultdict(dict)
