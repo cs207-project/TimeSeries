@@ -96,3 +96,4 @@ class TSDBClient(object):
         coro = asyncio.ensure_future(self._send_coro(msg, loop))
         loop.run_until_complete(coro)
         return coro.result()
+
