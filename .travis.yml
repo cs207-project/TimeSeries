@@ -20,15 +20,17 @@ before_install:
     - pip install pytest pytest-cov
     - pip install coveralls
     - pip install sphinx
-    - pip install asynctest
 
 install:
   - source test/travis_install.sh
   - pip install -r requirements.txt
   - conda install --yes numpy ply
+  - pip install asynctest
+
 before_script:
   - git config --global user.email "you@example.com"
   - git config --global user.name "Your Name"
+
 script:
   - python setup.py test
 after_success:
