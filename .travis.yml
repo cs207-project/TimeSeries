@@ -22,12 +22,11 @@ before_install:
 install:
   - source test/travis_install.sh
   - pip install -r requirements.txt
-  - conda install --yes numpy ply
+  - conda install --yes numpy ply socket
   - pip install asynctest
   - pip install asyncio
   - pip install aiohttp
   - pip install scipy
-  - pip install socket
   - python setup.py install
 
 before_script:
