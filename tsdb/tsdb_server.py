@@ -148,7 +148,7 @@ class TSDBServer(object):
         --------
         """
         self.port = port
-        self.host = 'localhost'
+        self.host = '0.0.0.0'
         self.db = db
         self.triggers = defaultdict(list)
         self.trigger_arg_cache = defaultdict(dict)
