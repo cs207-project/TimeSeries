@@ -3,7 +3,6 @@ from timeseries.TimeSeries import TimeSeries
 import numpy as np
 import subprocess
 import asynctest
-import time
 from scipy.stats import norm
 
 def tsmaker(m, s, j):
@@ -21,7 +20,7 @@ class Test_TSDB_Client(asynctest.TestCase):
         self.server_log_file = open('.test_tsdb_client_log','w')
         self.server_proc = subprocess.Popen(['python', 'go_server.py']
             ,stdout=self.server_log_file,stderr=subprocess.STDOUT)
-        time.sleep(1)
+
 
         self.client = TSDBClient()
         self.client.add_trigger('junk', 'insert_ts', None, 'db:one:ts')
@@ -55,7 +54,6 @@ class Test_TSDB_Client(asynctest.TestCase):
         # Shuts down the server
         self.server_proc.terminate()
         self.server_log_file.close()
-        time.sleep(1)
 
     def test_upsert(self):
         print('Test upsert')

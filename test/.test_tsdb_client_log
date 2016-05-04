@@ -1,8 +1,1 @@
-pydev debugger: process 39993 is connecting
-
-Traceback (most recent call last):
-  File "/Applications/PyCharm CE.app/Contents/helpers/pydev/pydevd.py", line 2411, in <module>
-    globals = debugger.run(setup['file'], None, None, is_module)
-  File "/Applications/PyCharm CE.app/Contents/helpers/pydev/pydevd.py", line 1802, in run
-    launch(file, globals, locals)  # execute the script
-IOError: [Errno 2] No such file or directory: 'go_server.py'
+python: can't open file 'go_server.py': [Errno 2] No such file or directory
