@@ -27,6 +27,7 @@ install:
   - pip install asyncio
   - pip install aiohttp
   - pip install scipy
+  - pip install socket
   - python setup.py install
 
 before_script:

@@ -24,9 +24,8 @@ class Test_TSDB_Client(asynctest.TestCase):
 
         self.client = TSDBClient()
         self.client.add_trigger('junk', 'insert_ts', None, 'db:one:ts')
-
         self.client.add_trigger('stats', 'insert_ts', ['mean', 'std'], None)
-        #Set up 50 time series
+
         mus = np.random.uniform(low=0.0, high=1.0, size=10)
         sigs = np.random.uniform(low=0.05, high=0.4, size=10)
         jits = np.random.uniform(low=0.05, high=0.2, size=10)
