@@ -6,8 +6,6 @@ from .tsdb_serialization import Deserializer, serialize
 from .tsdb_error import *
 from .tsdb_ops import *
 import procs
-import socket
-
 def trigger_callback_maker(pk, target, calltomake):
     def callback_(future):
         result = future.result()
@@ -190,7 +188,7 @@ class TSDBServer(object):
         #       are unaffected. Rather nice, actually.
         #loop.set_exception_handler(self.exception_handler)
         # self.listener = loop.create_server(lambda: TSDBProtocol(self), '127.0.0.1', self.port)
-        self.listener = loop.create_server(lambda: TSDBProtocol(self), socket.gethostname(), self.port)
+        self.listener = loop.create_server(lambda: TSDBProtocol(self), 'localhost', self.port)
         print('S> Starting TSDB server on port',self.port)
         listener = loop.run_until_complete(self.listener)
         try:
