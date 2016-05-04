@@ -13,26 +13,91 @@ class TSDBClient(object):
 
     """
     def __init__(self, port=9999):
+        """
+        Instantiate a TSDBClient class object
+
+        Parameters
+        ----------
+        port : int
+            the port client uses to connect to the server. Default: 9999.
+        """
         self.port = port
         self.deserializer = Deserializer()
 
     def insert_ts(self, primary_key, ts):
+        """
+        Insert a timeseries into the database by sending a request to the server.
+
+        Parameters
+        ----------
+        primary_key: int
+            a unique identifier for the timeseries
+
+        ts: a TimeSeries object
+            the timeseries object intended to be inserted to database
+        """
+
         ts_insert = TSDBOp_InsertTS(primary_key, ts)
         self._send(ts_insert.to_json())
 
     def upsert_meta(self, primary_key, metadata_dict):
+        """
+        Upserting metadata into the timeseries in the database designated by the promary key by sending the server a request.
+
+        Parameters
+        ----------
+        primary_key: int
+            a unique identifier for the timeseries
+
+        metadata_dict: dict
+            the metadata to upserted into the timeseries
+        """
         ts_update = TSDBOp_UpsertMeta(primary_key, metadata_dict)
         self._send(ts_update.to_json())
 
     def select(self, metadata_dict={}, fields=None, additional=None):
+        """
+        Selecting timeseries elements in the database that match the criteria
+        set in metadata_dict and return corresponding fields with additional
+        features.
+
+        Parameters
+        ----------
+        metadata_dict: dict
+            the selection criteria (filters)
+
+        fields: dict
+            If not `None`, only these fields of the timeseries are returned.
+            Otherwise, the timeseries are returned.
+
+        additional: dict
+            additional computation to perform on the query matches before they're
+            returned. Currently provide "sort_by" and "limit" functionality
+
+        """
         ts_select = TSDBOp_Select(metadata_dict, fields, additional)
         return self._send(ts_select.to_json())
 
     def augmented_select(self, proc, target, arg=None, metadata_dict={}, additional=None):
+
         ts_augmented_select = TSDBOp_AugmentedSelect(proc, target, arg, metadata_dict, additional)
         return self._send(ts_augmented_select.to_json())
 
     def add_trigger(self, proc, onwhat, target, arg):
+        """
+        Send the server a request to add a trigger.
+
+        Parameters
+        ----------
+        `proc` : enum
+            which of the modules in procs. Options: 'corr', 'junk', 'stats'
+        `onwhat` :
+            the trigger
+        `target` : dict
+            metadata to be upserted
+        `arg` :
+            additional argument
+        """
         msg = TSDBOp_AddTrigger(proc, onwhat, target, arg)
         return self._send(msg.to_json())
 

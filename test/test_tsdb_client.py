@@ -2,10 +2,7 @@ from tsdb import TSDBClient
 from timeseries.TimeSeries import TimeSeries
 import numpy as np
 import subprocess
-import unittest
-import asyncio
 import asynctest
-import time
 from scipy.stats import norm
 
 def tsmaker(m, s, j):
@@ -23,13 +20,12 @@ class Test_TSDB_Client(asynctest.TestCase):
         self.server_log_file = open('.test_tsdb_client_log','w')
         self.server_proc = subprocess.Popen(['python', 'go_server.py']
             ,stdout=self.server_log_file,stderr=subprocess.STDOUT)
-        time.sleep(1)
+
 
         self.client = TSDBClient()
         self.client.add_trigger('junk', 'insert_ts', None, 'db:one:ts')
-
         self.client.add_trigger('stats', 'insert_ts', ['mean', 'std'], None)
-        #Set up 50 time series
+
         mus = np.random.uniform(low=0.0, high=1.0, size=10)
         sigs = np.random.uniform(low=0.05, high=0.4, size=10)
         jits = np.random.uniform(low=0.05, high=0.2, size=10)
@@ -57,7 +53,6 @@ class Test_TSDB_Client(asynctest.TestCase):
         # Shuts down the server
         self.server_proc.terminate()
         self.server_log_file.close()
-        time.sleep(1)
 
     def test_upsert(self):
         print('Test upsert')

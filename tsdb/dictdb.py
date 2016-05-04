@@ -26,9 +26,35 @@ def metafiltered(d, schema, fieldswanted):
     return d2
 
 class DictDB:
-    "Time series Database implementation in dictionary"
+    """
+    Time series Database implementation in dictionary
+
+    Attributes
+    ----------
+    indexes : dict
+        The keys are the indexed fields. The values are the index for each field.
+    rows : dict
+        contains all the rows. This is a dictionary with keys the primary keys
+    schema : dict
+        the schema that the dictionary follows
+    pkfield : str
+        selects the field to be considered as the primary key. Defaults to `pk`.
+
+    """
+
     def __init__(self, schema,pk_field = 'pk'):
-        "initializes database with indexed and schema"
+
+        """
+        initializes database with indexed and schema
+        Parameters
+        ----------
+        schema : dict
+            the schema that the database follows
+
+        pkfield : str
+            primary key field. Defaults to `pk`.
+
+        """
         self.indexes = {}
         self.rows = {}
         self.schema = schema
@@ -53,19 +79,17 @@ class DictDB:
 
 
     def upsert_meta(self, pk, meta):
-        # schema = {
-        #'pk': {'convert': identity, 'index': None},
-        #'ts': {'convert': identity, 'index': None},
-        #'order': {'convert': int, 'index': 1},
-        #'blarg': {'convert': int, 'index': 1},
-        #'useless': {'convert': identity, 'index': None},
-        # }
-        "implement upserting field values, as long as the fields are in the schema."
-        # meta is a dictionary
+        """
+        Upserting metadata into the timeseries in the database designated by the promary key
 
-        # used as this client.upsert_meta('one', {'order': 1, 'blarg': 1})
+        Parameters
+        ----------
+        primary_key: int
+            a unique identifier for the timeseries
 
-        # updating if not inserting and inserting otherwise their metadata
+        metadata_dict: dict
+            the metadata to upserted into the timeseries
+        """
 
         if pk not in self.rows:
             self.rows[pk] = {'pk': pk}
@@ -91,6 +115,14 @@ class DictDB:
             self.update_indices(pkid)
 
     def update_indices(self, pk):
+        """
+        Update indices based on change of a row given its primary key
+
+        Parameters
+        ----------
+        primary_key: int
+            a unique identifier (primary key) for the row to be updated
+        """
         if pk not in self.rows:
             raise KeyError('pk does not exist in database')
 
@@ -133,9 +165,25 @@ class DictDB:
         return pks_ret, fields_ret
 
     def select(self, meta, fields_to_ret = None, additional = None):
-        # bla = client.select({'order': 1, 'blarg': 2})
-        #implement select, AND'ing over the filters in the md metadata dict
-        #remember that each item in the dictionary looks like key==value
+        """
+        Selecting timeseries elements in the database that match the criteria
+        set in metadata_dict and return corresponding fields with additional
+        features.
+
+        Parameters
+        ----------
+        metadata_dict: dict
+            the selection criteria (filters)
+
+        fields: dict
+            If not `None`, only these fields of the timeseries are returned.
+            Otherwise, the timeseries are returned.
+
+        additional: dict
+            additional computation to perform on the query matches before they're
+            returned. Currently provide "sort_by" and "limit" functionality
+
+        """
         pks = set(self.rows.keys())
         #print('selffffffffffff indexes',self.indexes)
             #self.indexes
