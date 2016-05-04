@@ -17,16 +17,20 @@ addons:
       - git
       - python-pip
 before_install:
+- sudo apt-get update
+    - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    - bash miniconda.sh -b -p $HOME/miniconda
+    - export PATH="$HOME/miniconda/bin:$PATH"
     - pip install pytest pytest-cov
     - pip install coveralls
     - pip install sphinx
 
 install:
+  - conda create -q -n env python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib
+  - source activate env
   - source test/travis_install.sh
   - pip install -r requirements.txt
-  - conda install --yes numpy ply
   - pip install asynctest
-  - pip install scipy
   - pip install asyncio
   - pip install aiohttp
 
