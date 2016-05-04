@@ -148,7 +148,6 @@ class TSDBServer(object):
         --------
         """
         self.port = port
-        self.host = '::1'
         self.db = db
         self.triggers = defaultdict(list)
         self.trigger_arg_cache = defaultdict(dict)
@@ -188,8 +187,7 @@ class TSDBServer(object):
         #       currently it dumps the protocol and keeps going; new connections
         #       are unaffected. Rather nice, actually.
         #loop.set_exception_handler(self.exception_handler)
-        # self.listener = loop.create_server(lambda: TSDBProtocol(self), '127.0.0.1', self.port)
-        self.listener = loop.create_server(lambda: TSDBProtocol(self), self.host, self.port)
+        self.listener = loop.create_server(lambda: TSDBProtocol(self), '127.0.0.1', self.port)
         print('S> Starting TSDB server on port',self.port)
         listener = loop.run_until_complete(self.listener)
         try:
