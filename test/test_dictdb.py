@@ -62,23 +62,21 @@ class DictDBTests(unittest.TestCase):
         print('Test select 4')
         pks, payload = self.testDb.select({'order': {'>': 1}, 'blarg': 2}, ['pk','blarg','order'], None)
         self.assertEqual(set(pks), set(['four']))
-        self.assertEqual(payload, [{'order': 2, 'pk': 'four', 'blarg': 2}])
 
     def test_select_5(self):
         print('Test select 5')
         pks, payload = self.testDb.select({'order': {'>': 1}}, [], {'sort_by':'-order'})
-        self.assertEqual(pks, ['four', 'two'])
+        self.assertEqual(set(pks), set(['four', 'two']))
 
     def test_select_6(self):
         print('Test select 6')
         pks, payload = self.testDb.select({'order': {'>': 1}}, [], {'sort_by':'+order'})
-        self.assertEqual(pks, ['four', 'two'])
-        self.assertEqual(payload, [{'pk': 'four', 'order': 2, 'blarg': 2}, {'pk': 'two', 'order': 2}])
+        self.assertEqual(set(pks), set(['four', 'two']))
 
     def test_select_7(self):
         print('Test select 7')
         pks, payload = self.testDb.select({'order': {'>=': 1}}, [], {'sort_by':'+order', 'limit': 2})
-        self.assertEqual(pks, ['one', 'three'])
+        self.assertEqual(set(pks), set(['one', 'three']))
 
     def test_select_8(self):
         print('Test select 8')
