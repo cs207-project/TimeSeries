@@ -13,10 +13,30 @@ class TSDBClient(object):
 
     """
     def __init__(self, port=9999):
+        """
+        Instantiate a TSDBClient class object
+
+        Parameters
+        ----------
+        port : int
+            the port client uses to connect to the server. Default: 9999.
+        """
         self.port = port
         self.deserializer = Deserializer()
 
     def insert_ts(self, primary_key, ts):
+        """
+        Insert a timeseries into the database by sending a request to the server.
+
+        Parameters
+        ----------
+        primary_key: int
+            a unique identifier for the timeseries
+
+        ts: a TimeSeries object
+            the timeseries object intended to be inserted to database
+        """
+
         ts_insert = TSDBOp_InsertTS(primary_key, ts)
         self._send(ts_insert.to_json())
 

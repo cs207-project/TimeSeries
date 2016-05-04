@@ -26,6 +26,7 @@ install:
   - pip install asynctest
   - pip install asyncio
   - pip install aiohttp
+  - pip install scipy
   - python setup.py install
 
 before_script:
