@@ -6,6 +6,7 @@ from .tsdb_serialization import Deserializer, serialize
 from .tsdb_error import *
 from .tsdb_ops import *
 import procs
+
 def trigger_callback_maker(pk, target, calltomake):
     def callback_(future):
         result = future.result()
@@ -148,7 +149,7 @@ class TSDBServer(object):
         --------
         """
         self.port = port
-        self.host = '0.0.0.0'
+        self.host = 'travis.dev'
         self.db = db
         self.triggers = defaultdict(list)
         self.trigger_arg_cache = defaultdict(dict)
