@@ -67,8 +67,7 @@ class DictDBTests(unittest.TestCase):
     def test_select_5(self):
         print('Test select 5')
         pks, payload = self.testDb.select({'order': {'>': 1}}, [], {'sort_by':'-order'})
-        self.assertEqual(pks, ['two', 'four'])
-        self.assertEqual(payload, [{'pk': 'two', 'order': 2}, {'pk': 'four', 'blarg': 2, 'order': 2}])
+        self.assertEqual(pks, ['four', 'two'])
 
     def test_select_6(self):
         print('Test select 6')
@@ -79,8 +78,7 @@ class DictDBTests(unittest.TestCase):
     def test_select_7(self):
         print('Test select 7')
         pks, payload = self.testDb.select({'order': {'>=': 1}}, [], {'sort_by':'+order', 'limit': 2})
-        self.assertEqual(pks, ['one', 'three', ])
-        self.assertEqual(payload, [{'blarg': 1, 'pk': 'one', 'order': 1}, {'blarg': 2, 'pk': 'three', 'order': 1}])
+        self.assertEqual(pks, ['one', 'three'])
 
     def test_select_8(self):
         print('Test select 8')

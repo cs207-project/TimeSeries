@@ -25,5 +25,5 @@ testDb.upsert_meta('two', {'order': 2})
 testDb.upsert_meta('three', {'order': 1, 'blarg': 2})
 testDb.upsert_meta('four', {'order': 2, 'blarg': 2})
 
-pks, payload = testDb.select({'order': {'>=': 1}}, [], {'undefined':'+order', 'limit': 2})
+pks, payload = testDb.select({'order': {'>=': 1}}, [], {'limit': 2})
 print(pks, payload)
