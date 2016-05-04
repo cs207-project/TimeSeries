@@ -150,5 +150,5 @@ def p_error(p):
     return 0
 
 start = 'program'
-parser = ply.yacc.yacc(debug=True) # To get more information, add debug=True
-
+# parser = ply.yacc.yacc(debug=True) # To get more information, add debug=True
+parser = ply.yacc.yacc()
