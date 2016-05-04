@@ -28,7 +28,6 @@ install:
   - pip install asynctest
   - pip install scipy
   - pip install asyncio
-  - pip install subprocess
   - pip install time
   - pip install aiohttp
 
@@ -42,10 +41,4 @@ after_success:
   - if [[ "$COVERAGE" == "true" ]]; then coveralls || echo "failed"; fi
 cache:
   - apt
-notifications:
-  email: 
-    - qingzhao@g.harvard.edu
-    - jeewonhwang@g.harvard.edu
-    - chenchenzhang@g.harvard.edu
-    - tang01@g.harvard.edu  
-    - 85831374@qq.com
+

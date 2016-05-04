@@ -2,8 +2,6 @@ from tsdb import TSDBClient
 from timeseries.TimeSeries import TimeSeries
 import numpy as np
 import subprocess
-import unittest
-import asyncio
 import asynctest
 import time
 from scipy.stats import norm

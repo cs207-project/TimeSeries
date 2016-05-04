@@ -2,7 +2,6 @@ from pytest import raises
 from pype.pipeline import *
 from pype.pipeline import Pipeline
 from timeseries.TimeSeries import TimeSeries
-import unittest
 
 input1 = """(import timeseries)
 { standardize
