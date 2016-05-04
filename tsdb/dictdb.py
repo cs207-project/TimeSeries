@@ -7,7 +7,7 @@ import numbers
 # this dictionary will help you in writing a generic select operation
 OPMAP = {
     '<': operator.lt,
-    '>': operator.le,
+    '>': operator.gt,
     '==': operator.eq,
     '!=': operator.ne,
     '<=': operator.le,
@@ -26,7 +26,7 @@ def metafiltered(d, schema, fieldswanted):
     return d2
 
 class DictDB:
-    "Database implementation in a dict"
+    "Time series Database implementation in dictionary"
     def __init__(self, schema,pk_field = 'pk'):
         "initializes database with indexed and schema"
         self.indexes = {}
@@ -47,8 +47,10 @@ class DictDB:
             self.rows[pk] = {'pk': pk}
         else:
             raise ValueError('Duplicate primary key found during insert')
+
         self.rows[pk]['ts'] = ts
         self.update_indices(pk)
+
 
     def upsert_meta(self, pk, meta):
         # schema = {
@@ -89,6 +91,9 @@ class DictDB:
             self.update_indices(pkid)
 
     def update_indices(self, pk):
+        if pk not in self.rows:
+            raise KeyError('pk does not exist in database')
+
         row = self.rows[pk]
         for field in row:
             v = row[field]
@@ -127,7 +132,7 @@ class DictDB:
                     fields_ret.append(field_dict_ret)
         return pks_ret, fields_ret
 
-    def select(self, meta, fields_to_ret, additional):
+    def select(self, meta, fields_to_ret = None, additional = None):
         # bla = client.select({'order': 1, 'blarg': 2})
         #implement select, AND'ing over the filters in the md metadata dict
         #remember that each item in the dictionary looks like key==value
@@ -140,7 +145,6 @@ class DictDB:
             if field in self.schema:
                 convert_function = self.schema[field]['convert']
                 # Store filtered rows
-
                 # Check if query is exact or range
                 if (isinstance(condition, numbers.Real)):
                     for p in pks:
@@ -153,9 +157,9 @@ class DictDB:
                         if field in self.rows[p] and OPMAP[op](self.rows[p][field], convert_function(val)):
                             filter_pks.add(p)
                     pks = pks & filter_pks
-            # else:
-            #
-            #     raise KeyError("Meta's field not supported by schema")
+            else:
+                raise KeyError("Meta's field not supported by schema")
+
         if additional is None:
             return self._rows_to_return(pks, fields_to_ret)
         else:
@@ -168,6 +172,8 @@ class DictDB:
                     sorting_order_reversed = False
                 elif sorting_key[0] == '-':
                     sorting_order_reversed = True
+                else:
+                    raise KeyError("Sort order must be '+' or '-'")
 
                 sorting_scheme = sorting_key[1:]
 
@@ -175,7 +181,13 @@ class DictDB:
 
                 pks_list = sorted(pks_list,key = lambda x: self.rows[x][sorting_scheme], reverse = sorting_order_reversed)
             if 'limit' in additional:
+                if additional['limit'] < 0:
+                    raise ValueError('Limit must be greater than 0')
                 pks_list = pks_list[:additional['limit']]
+
+            if len(set(additional.keys()) - set(['sort_by', 'limit'])) > 0:
+                raise KeyError("Undefined additional operation")
+
             return self._rows_to_return(set(pks_list), fields_to_ret)
 
 
