@@ -105,7 +105,7 @@ class FGIR(object):
 
   def flowgraph_pass(self, flowgraph_optimizer):
     for component in self.graphs:
-     # print(self.graphs[component])
+      # print(self.graphs[component])
       fg = flowgraph_optimizer.visit(self.graphs[component])
       if fg is not None:
         self.graphs[component] = fg
