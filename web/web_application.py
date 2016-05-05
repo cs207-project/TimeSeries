@@ -80,9 +80,7 @@ FIND_SIMILAR_VIEW = """\
                 proc, target -> required
                 metadata_dict(md), fields, arg -> optional.
                 """
-# =======================
-# Set Router in Web Application
-# =======================
+
 class WebApplication(object):
     """
     for REST API part (final project requirement)
@@ -112,6 +110,7 @@ class WebApplication(object):
     def run(self):
         # run web Application()
         web.run_app(self.app)
+
 
 # ===========================
 # Handlers to work with TSDB
