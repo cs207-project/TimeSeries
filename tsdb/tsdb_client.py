@@ -127,7 +127,7 @@ class TSDBClient(object):
         -------
         tsdb status and payload
         '''
-        reader, writer = await asyncio.open_connection('', self.port, loop=loop)
+        reader, writer = await asyncio.open_connection('127.0.0.1', self.port, loop=loop)
         writer.write(serialize(msg))
         await writer.drain()
         # Wait for response
