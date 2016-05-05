@@ -49,13 +49,13 @@ class Test_TSDB_Client(asynctest.TestCase):
             self.client.add_trigger('corr', 'insert_ts', ["d_vp-{}".format(i)], self.tsdict[self.vpkeys[i]])
             # change the metadata for the vantage points to have meta['vp']=True
             self.metadict[self.vpkeys[i]]['vp']=True
-        time.sleep(2)
+        time.sleep(5)
 
     def tearDown(self):
         # Shuts down the server
         self.server_proc.terminate()
         self.server_log_file.close()
-        time.sleep(1)
+        time.sleep(3)
 
     def test_upsert(self):
         print('Test upsert')
