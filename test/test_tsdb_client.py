@@ -22,6 +22,7 @@ class Test_TSDB_Client(asynctest.TestCase):
         self.server_proc = subprocess.Popen(['python', 'go_server.py']
             ,stdout=self.server_log_file,stderr=subprocess.STDOUT)
 
+        time.sleep(10)
 
         self.client = TSDBClient()
         self.client.add_trigger('junk', 'insert_ts', None, 'db:one:ts')
@@ -45,12 +46,10 @@ class Test_TSDB_Client(asynctest.TestCase):
         # choose 5 distinct vantage point time series
         self.vpkeys = ["ts-{}".format(i) for i in np.random.choice(range(10), size=5, replace=False)]
         for i in range(5):
-            time.sleep(1)
             # add 5 triggers to upsert distances to these vantage points
             self.client.add_trigger('corr', 'insert_ts', ["d_vp-{}".format(i)], self.tsdict[self.vpkeys[i]])
             # change the metadata for the vantage points to have meta['vp']=True
             self.metadict[self.vpkeys[i]]['vp']=True
-        time.sleep(5)
 
     def tearDown(self):
         # Shuts down the server
