@@ -82,16 +82,6 @@ FIND_SIMILAR_VIEW = """\
                 """
 
 class WebApplication(object):
-    """
-    for REST API part (final project requirement)
-
-    Attributes
-    ----------
-    app : aiohttp web.Application() object
-        web application that deal with REST API
-    handler : Handler object
-        access server and do required work based on RESTful manner
-    """
     def __init__(self):
         # ================
         # set Router here
@@ -103,6 +93,8 @@ class WebApplication(object):
         self.app.router.add_route('GET', '/tsdb/select', self.handler.tsdb_select)
         self.app.router.add_route('GET', '/tsdb/augmented_select', self.handler.tsdb_augmented_select)
         self.app.router.add_route('POST', '/tsdb/add_ts', self.handler.tsdb_add_ts)
+        self.app.router.add_route('POST', '/tsdb/delete_ts', self.handler.tsdb_delete_ts)
+        self.app.router.add_route('POST', '/tsdb/find_similar', self.handler.tsdb_find_similar)
         self.app.router.add_route('POST', '/tsdb/add_trigger', self.handler.tsdb_add_trigger)
         self.app.router.add_route('POST', '/tsdb/remove_trigger', self.handler.tsdb_remove_trigger)
         self.app.router.add_route('POST', '/tsdb/add_metadata', self.handler.tsdb_add_metadata)
@@ -111,24 +103,11 @@ class WebApplication(object):
         # run web Application()
         web.run_app(self.app)
 
-
 # ===========================
 # Handlers to work with TSDB
 # ===========================
 class Handler(object):
-    """
-    Event handlers to deal with TSDB based on RESTful manner
 
-    Attributes
-    ----------
-    client : TSDBClient object
-
-    Methods
-    -------
-    tsdb_root
-    tsdb_select
-    tsdb_augment_select
-    """
     def __init__(self):
         self.client = TSDBClient()
 
@@ -214,23 +193,6 @@ class Handler(object):
                 return web.Response(body=json.dumps(result).encode('utf-8'))
 
     async def tsdb_find_similar(self,request):
-        """Handler for Find Similar
-
-        Parameters
-        ----------
-        request : aiotttp.request
-            request object with details of the request that was sent to the server
-
-            request.GET['query'] should exist or an error is returned **REQUIRED**
-
-            request.GET['query']['arg'] -> json encoded timeseries that is the reference to
-            which we're trying to find the closest match **REQUIRED**
-
-        Returns
-        -------
-        web.Response
-            JSON encoded results of the augmented select
-        """
         try:
             if 'query' not in request.GET:
                 view = FIND_SIMILAR_VIEW
@@ -253,25 +215,6 @@ class Handler(object):
             return web.Response(body=json.dumps(result).encode('utf-8'))
 
     async def tsdb_add_ts(self,request):
-        """Handler for add time series
-
-        Parameters
-        ----------
-        request : aiotttp.request
-            request object with details of the request that was sent to the server
-
-            request must be JSON encoded
-
-            request.json()['primary_key'] --> primary key for this timeseries in the database. **REQUIRED**
-
-            request.json()['ts'] --> timeseries to be added. **REQUIRED**
-
-
-        Returns
-        -------
-        web.Response
-            JSON encoded text indicating success or failure of write
-        """
         try:
             request_dict = await request.json()
 
@@ -293,23 +236,6 @@ class Handler(object):
             return web.Response(body=json.dumps(result).encode('utf-8'))
 
     async def tsdb_delete_ts(self,request):
-        """Handler for delete time series
-
-        Parameters
-        ----------
-        request : aiotttp.request
-            request object with details of the request that was sent to the server
-
-            request must be JSON encoded
-
-            request.json()['primary_key'] --> primary key for this timeseries in the database. **REQUIRED**
-
-
-        Returns
-        -------
-        web.Response
-            JSON encoded text indicating success or failure of write
-        """
         try:
             request_dict = await request.json()
 
@@ -330,28 +256,6 @@ class Handler(object):
             return web.Response(body=json.dumps(result).encode('utf-8'))
 
     async def tsdb_add_trigger(self,request):
-        """Handler for add trigger
-
-        Parameters
-        ----------
-        request : aiotttp.request
-            request object with details of the request that was sent to the server
-
-            request must be JSON encoded
-
-            request.json()['proc'] --> name of the predefined stored proc to be run **REQUIRED**
-
-            request.json()['onwhat'] --> name of the event after which trigger is run **REQUIRED**
-
-            request.json()['target'] --> list of names of the output varibles in which we store the result of the stored procedure **REQUIRED**
-
-            request.json()['arg'] --> optinal argument sent to the stored procedure
-
-        Returns
-        -------
-        web.Response
-            JSON encoded text indicating success or failure of write
-        """
         try:
             request_dict = await request.json()
             status, result = await self.client.add_trigger(
@@ -371,24 +275,6 @@ class Handler(object):
             return web.Response(body=json.dumps(result).encode('utf-8'))
 
     async def tsdb_remove_trigger(self,request):
-        """Handler for remove trigger
-
-        Parameters
-        ----------
-        request : aiotttp.request
-            request object with details of the request that was sent to the server
-
-            request must be JSON encoded
-
-            request.json()['proc'] --> name of the predefined stored proc to be run **REQUIRED**
-
-            request.json()['onwhat'] --> name of the event after which trigger is run **REQUIRED**
-
-        Returns
-        -------
-        web.Response
-            JSON encoded text indicating success or failure of write
-        """
         try:
             request_dict = await request.json()
             print(request_dict)
@@ -409,24 +295,6 @@ class Handler(object):
             return web.Response(body=json.dumps(result).encode('utf-8'))
 
     async def tsdb_add_metadata(self,request):
-        """Handler for remove trigger
-
-        Parameters
-        ----------
-        request : aiotttp.request
-            request object with details of the request that was sent to the server
-
-            request must be JSON encoded
-
-            request.json()['primary_key'] --> primary key for this timeseries in the database. **REQUIRED**
-
-            request.json()['metadata_dict'] --> dictionary containing the metadata that we want to add to this timeseries **REQUIRED**
-
-        Returns
-        -------
-        web.Response
-            JSON encoded text indicating success or failure of write
-        """
         try:
             request_dict = await request.json()
             status, payload = await self.client.upsert_meta(
