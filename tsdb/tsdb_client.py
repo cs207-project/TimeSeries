@@ -105,6 +105,12 @@ class TSDBClient(object):
         msg = TSDBOp_RemoveTrigger(proc, onwhat)
         return self._send(msg.to_json())
 
+    def find_similar(self, arg):
+        """Send the server a request to find the closest ts to this one
+        """
+        msg = TSDBOp_FindSimilar(arg)
+        status, payload = self._send(msg.to_json())
+        return TSDBStatus(status), payload
     # from here onwards. Return the status and the payload
     async def _send_coro(self, msg, loop):
         '''
