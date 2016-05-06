@@ -1,7 +1,8 @@
 import asyncio
 from aiohttp import web
+from tsdb.tsdb_ops import TSDBStatus
 from tsdb import TSDBClient
-# from tsdb import TSDBStatus
+
 import timeseries as ts
 import json
 
@@ -29,7 +30,7 @@ class WebApplication(object):
         self.app.router.add_route('GET', '/tsdb', self.handler.tsdb_root)
         self.app.router.add_route('GET', '/tsdb/select', self.handler.tsdb_select)
         self.app.router.add_route('GET', '/tsdb/augmented_select', self.handler.tsdb_augmented_select)
-        # self.app.router.add_route('POST', '/tsdb/add/ts', self.handler.add_ts_handler)
+        self.app.router.add_route('POST', '/tsdb/insert_ts', self.handler.tsdb_insert_ts)
         # self.app.router.add_route('POST', '/tsdb/add/trigger', self.handler.add_trigger_handler)
         # self.app.router.add_route('POST', '/tsdb/remove/trigger', self.handler.remove_trigger_handler)
         # self.app.router.add_route('POST', '/tsdb/add/metadata', self.handler.add_metadata_handler)
@@ -54,6 +55,7 @@ class Handler(object):
     tsdb_root
     tsdb_select
     tsdb_augment_select
+    tsdb_insert_ts
     """
     def __init__(self):
         self.client = TSDBClient()

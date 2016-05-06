@@ -134,7 +134,7 @@ class TSDBProtocol(asyncio.Protocol):
 
 class TSDBServer(object):
 
-    def __init__(self, db, port=9999):
+    def __init__(self, db, port=8080):
         """
         This initialise the tsdb server by passing into the server port number and DictDB object
 
