@@ -2,7 +2,7 @@
 from tsdb import TSDBClient
 import timeseries.TimeSeries as TimeSeries
 import numpy as np
-
+import asyncio
 from scipy.stats import norm
 
 # m is the mean, s is the standard deviation, and j is the jitter
@@ -16,15 +16,15 @@ def tsmaker(m, s, j):
     v = norm.pdf(t, m, s) + j*np.random.randn(100)
     return meta, TimeSeries(t, v)
 
-def main():
+async def client_op():
     print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
     client = TSDBClient()
 
     # add a trigger. notice the argument. It does not do anything here but
     # could be used to save a shlep of data from client to server.
-    client.add_trigger('junk', 'insert_ts', None, 'db:one:ts')
+    await client.add_trigger('junk', 'insert_ts', None, 'db:one:ts')
     # our stats trigger
-    client.add_trigger('stats', 'insert_ts', ['mean', 'std'], None)
+    await client.add_trigger('stats', 'insert_ts', ['mean', 'std'], None)
     #Set up 50 time series
     mus = np.random.uniform(low=0.0, high=1.0, size=50)
     sigs = np.random.uniform(low=0.05, high=0.4, size=50)
@@ -45,51 +45,51 @@ def main():
     vpkeys = ["ts-{}".format(i) for i in np.random.choice(range(50), size=5, replace=False)]
     for i in range(5):
         # add 5 triggers to upsert distances to these vantage points
-        client.add_trigger('corr', 'insert_ts', ["d_vp-{}".format(i)], tsdict[vpkeys[i]])
+        await client.add_trigger('corr', 'insert_ts', ["d_vp-{}".format(i)], tsdict[vpkeys[i]])
         # change the metadata for the vantage points to have meta['vp']=True
         metadict[vpkeys[i]]['vp']=True
     # Having set up the triggers, now inser the time series, and upsert the metadata
     for k in tsdict:
-        client.insert_ts(k, tsdict[k])
-        client.upsert_meta(k, metadict[k])
+        await client.insert_ts(k, tsdict[k])
+        await client.upsert_meta(k, metadict[k])
 
     print("UPSERTS FINISHED")
     print('---------------------')
     print("STARTING SELECTS")
 
     print('---------DEFAULT------------')
-    client.select()
+    await client.select()
 
     #in this version, select has sprouted an additional keyword argument
     # to allow for sorting. Limits could also be enforced through this.
     print('---------ADDITIONAL------------')
-    client.select(additional={'sort_by': '-order'})
+    await client.select(additional={'sort_by': '-order'})
 
     print('----------ORDER FIELD-----------')
-    _, results = client.select(fields=['order'])
+    _, results = await client.select(fields=['order'])
     for k in results:
         print(k, results[k])
 
     print('---------ALL FILEDS------------')
-    client.select(fields=[])
+    await client.select(fields=[])
 
     print('------------TS with order 1---------')
-    client.select({'order': 1}, fields=['ts'])
+    await client.select({'order': 1}, fields=['ts'])
 
     print('------------All fields, blarg 1 ---------')
-    client.select({'blarg': 1}, fields=[])
+    await client.select({'blarg': 1}, fields=[])
 
     print('------------order 1 blarg 2 no fields---------')
-    _, bla = client.select({'order': 1, 'blarg': 2})
+    _, bla = await client.select({'order': 1, 'blarg': 2})
     print(bla)
 
     print('------------order >= 4  order, blarg and mean sent back, also sorted---------')
-    _, results = client.select({'order': {'>=': 4}}, fields=['order', 'blarg', 'mean'], additional={'sort_by': '-order'})
+    _, results = await client.select({'order': {'>=': 4}}, fields=['order', 'blarg', 'mean'], additional={'sort_by': '-order'})
     for k in results:
         print(k, results[k])
 
     print('------------order 1 blarg >= 1 fields blarg and std---------')
-    _, results = client.select({'blarg': {'>=': 1}, 'order': 1}, fields=['blarg', 'std'])
+    _, results = await client.select({'blarg': {'>=': 1}, 'order': 1}, fields=['blarg', 'std'])
     for k in results:
         print(k, results[k])
 
@@ -105,7 +105,7 @@ def main():
     # this is an augmented select
     vpdists = {}
     for v in vpkeys:
-        _, results = client.augmented_select('corr', 'd', query, {'pk': v})
+        _, results = await client.augmented_select('corr', 'd', query, {'pk': v})
         vpdists[v] = results[v]['d']
 
     #1b: choose the lowest distance vantage point
@@ -114,7 +114,7 @@ def main():
 
     # Step 2: find all time series within 2*d(query, nearest_vp_to_query)
     #this is an augmented select to the same proc in correlation
-    _, results = client.augmented_select('corr', 'd', query, {'d_'+lowest_dist_vp:{'<=':2*vpdists[lowest_dist_vp]}})
+    _, results = await client.augmented_select('corr', 'd', query, {'d_'+lowest_dist_vp:{'<=':2*vpdists[lowest_dist_vp]}})
 
     #2b: find the smallest distance amongst this ( or k smallest)
     #you can do this in local code
@@ -127,4 +127,7 @@ def main():
     plt.show()
 
 if __name__=='__main__':
-    main()
+    # main()
+    loop = asyncio.get_event_loop()
+    coro = asyncio.ensure_future(client_op())
+    loop.run_until_complete(coro)#DNY: blocking call until coro completes

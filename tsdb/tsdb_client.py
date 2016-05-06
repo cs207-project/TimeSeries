@@ -24,7 +24,7 @@ class TSDBClient(object):
         self.port = port
         self.deserializer = Deserializer()
 
-    def insert_ts(self, primary_key, ts):
+    async def insert_ts(self, primary_key, ts):
         """
         Insert a timeseries into the database by sending a request to the server.
 
@@ -38,9 +38,10 @@ class TSDBClient(object):
         """
 
         ts_insert = TSDBOp_InsertTS(primary_key, ts)
-        self._send(ts_insert.to_json())
+        status, payload =  await self._send(ts_insert.to_json())
+        return status, payload
 
-    def upsert_meta(self, primary_key, metadata_dict):
+    async def upsert_meta(self, primary_key, metadata_dict):
         """
         Upserting metadata into the timeseries in the database designated by the promary key by sending the server a request.
 
@@ -53,9 +54,10 @@ class TSDBClient(object):
             the metadata to upserted into the timeseries
         """
         ts_update = TSDBOp_UpsertMeta(primary_key, metadata_dict)
-        self._send(ts_update.to_json())
+        status, payload = await self._send(ts_update.to_json())
+        return status, payload
 
-    def select(self, metadata_dict={}, fields=None, additional=None):
+    async def select(self, metadata_dict={}, fields=None, additional=None):
         """
         Selecting timeseries elements in the database that match the criteria
         set in metadata_dict and return corresponding fields with additional
@@ -76,14 +78,16 @@ class TSDBClient(object):
 
         """
         ts_select = TSDBOp_Select(metadata_dict, fields, additional)
-        return self._send(ts_select.to_json())
+        status, payload =  await self._send(ts_select.to_json())
+        return status, payload
 
-    def augmented_select(self, proc, target, arg=None, metadata_dict={}, additional=None):
+    async def augmented_select(self, proc, target, arg=None, metadata_dict={}, additional=None):
 
         ts_augmented_select = TSDBOp_AugmentedSelect(proc, target, arg, metadata_dict, additional)
-        return self._send(ts_augmented_select.to_json())
+        status, payload = await self._send(ts_augmented_select.to_json())
+        return status, payload
 
-    def add_trigger(self, proc, onwhat, target, arg):
+    async def add_trigger(self, proc, onwhat, target, arg):
         """
         Send the server a request to add a trigger.
 
@@ -99,19 +103,22 @@ class TSDBClient(object):
             additional argument
         """
         msg = TSDBOp_AddTrigger(proc, onwhat, target, arg)
-        return self._send(msg.to_json())
+        status, payload = await self._send(msg.to_json())
+        return status, payload
 
-    def remove_trigger(self, proc, onwhat):
+    async def remove_trigger(self, proc, onwhat):
         msg = TSDBOp_RemoveTrigger(proc, onwhat)
-        return self._send(msg.to_json())
+        status, payload = await self._send(msg.to_json())
+        return status, payload
 
-    def find_similar(self, arg):
+    async def find_similar(self, arg):
         """Send the server a request to find the closest ts to this one
         """
         msg = TSDBOp_FindSimilar(arg)
-        status, payload = self._send(msg.to_json())
+        status, payload = await self._send(msg.to_json())
         return TSDBStatus(status), payload
     # from here onwards. Return the status and the payload
+
     async def _send_coro(self, msg, loop):
         '''
         Open connection and write the serialized message
@@ -150,7 +157,7 @@ class TSDBClient(object):
 
     #
     #once again replace this function if appropriate
-    def _send(self, msg):
+    async def _send(self, msg):
         '''
         Call `_send` with a well formed message to send.
 
@@ -165,7 +172,7 @@ class TSDBClient(object):
         '''
 
         loop = asyncio.get_event_loop()
-        coro = asyncio.ensure_future(self._send_coro(msg, loop))
-        loop.run_until_complete(coro)
-        return coro.result()
-
+        # coro = asyncio.ensure_future(self._send_coro(msg, loop))
+        # loop.run_until_complete(coro)
+        # return coro.result()
+        return await self._send_coro(msg, loop)

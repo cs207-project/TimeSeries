@@ -50,8 +50,8 @@ AUGMENTED_SELECT_VIEW = """\
 
                 # SELECT router rule example
 
-                localhost:8080/tsdb/augment_select?query={"proc":"corr", "target":"d"}
-                localhost:8080/tsdb/augment_select?query={"proc":"corr", "target":"d", "md":{"order": 1}, "fields":["ts"]}
+                localhost:8080/tsdb/augmented_select?query={"proc":"corr", "target":"d"}
+                localhost:8080/tsdb/augmented_select?query={"proc":"corr", "target":"d", "md":{"order": 1}, "fields":["ts"]}
 
                 !!! NOTE !!!
                 Every string should be wrapped with ", not '
@@ -92,9 +92,9 @@ class WebApplication(object):
         self.app.router.add_route('GET', '/tsdb', self.handler.tsdb_root)
         self.app.router.add_route('GET', '/tsdb/select', self.handler.tsdb_select)
         self.app.router.add_route('GET', '/tsdb/augmented_select', self.handler.tsdb_augmented_select)
+        self.app.router.add_route('GET', '/tsdb/find_similar', self.handler.tsdb_find_similar)
         self.app.router.add_route('POST', '/tsdb/add_ts', self.handler.tsdb_add_ts)
         self.app.router.add_route('POST', '/tsdb/delete_ts', self.handler.tsdb_delete_ts)
-        self.app.router.add_route('POST', '/tsdb/find_similar', self.handler.tsdb_find_similar)
         self.app.router.add_route('POST', '/tsdb/add_trigger', self.handler.tsdb_add_trigger)
         self.app.router.add_route('POST', '/tsdb/remove_trigger', self.handler.tsdb_remove_trigger)
         self.app.router.add_route('POST', '/tsdb/add_metadata', self.handler.tsdb_add_metadata)
@@ -164,9 +164,6 @@ class Handler(object):
 
                 if status != TSDBStatus.OK:
                     result = "Augmented Selection failed"
-                else:
-                    raise Exception("Write Failed")
-
                 # return web.Response(body=json.dumps(payload).encode('utf-8'))
 
             except Exception as error:
@@ -247,7 +244,7 @@ class Handler(object):
             if status ==TSDBStatus.OK:
                 result = "Successfully inserted timeseries {}".format(pk)
             else:
-                result = "DB Insertion failed with pk {},ts {} , please check again. ".format(pk, *req_dict['ts'])
+                result = "DB Insertion failed with pk {},ts {} , please check again. ".format(pk, *request_dict['ts'])
 
         except Exception as error:
             result = {"msg": "Could not parse request. Please see documentation."}
