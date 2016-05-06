@@ -12,7 +12,7 @@ class TSDBClient(object):
     Includes basic time-series database client operation like insert_ts, select, sending messages etc.
 
     """
-    def __init__(self, port=9999):
+    def __init__(self, port=8080):
         """
         Instantiate a TSDBClient class object
 

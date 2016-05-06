@@ -129,6 +129,15 @@ class Handler(object):
         return web.Response(body=root_view.encode('utf-8'))
 
     async def tsdb_select(self, request):
+        # r = requests.get(self.server_url+'/augselect',params={'query':json.dumps(payload)})
+        #     results = json.loads(r.content.decode('utf-8'))
+    #     payload = {'where':{'order': {'>=' : 1}},
+    #     'fields':['order','vp'],
+    #     'additional':{'sort_by':'-order',
+    #     'limit':10}}
+    #
+    # requests.get(server_url+'/select',
+    #     params={'query':json.dumps(payload)}).content
         if 'query' not in request.GET:
             # request.GET is multidict() in aiohttp
             # When parameters are not passed through URL
