@@ -333,6 +333,6 @@ class Handler(object):
             return web.Response(body=json.dumps(result).encode('utf-8'))
 
 
-if __name__=='__main__':
-    webapp = WebApplication()
-    webapp.run()
+# if __name__=='__main__':
+#     webapp = WebApplication()
+#     webapp.run()
