@@ -109,6 +109,17 @@ class TSDBOp_AugmentedSelect(TSDBOp):
     def from_json(cls, json_dict):
         return cls(json_dict['proc'], json_dict['target'], json_dict['arg'], json_dict['md'], json_dict['additional'])
 
+class TSDBOp_FindSimilar(TSDBOp):
+    """Find the timeseries in the DB closest to this one based on the predefined
+    distance metric
+    """
+    def __init__(self, arg):
+        super().__init__('find_similar')
+        self['arg'] = arg
+
+    @classmethod
+    def from_json(cls, json_dict):
+        return cls(json_dict['arg'])
 
 class TSDBOp_AddTrigger(TSDBOp):
 
@@ -144,4 +155,5 @@ typemap = {
   'augmented_select': TSDBOp_AugmentedSelect,
   'add_trigger': TSDBOp_AddTrigger,
   'remove_trigger': TSDBOp_RemoveTrigger,
+  'find_similar': TSDBOp_FindSimilar,
 }

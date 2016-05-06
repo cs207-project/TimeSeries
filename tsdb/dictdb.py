@@ -7,7 +7,7 @@ import numbers
 # this dictionary will help you in writing a generic select operation
 OPMAP = {
     '<': operator.lt,
-    '>': operator.le,
+    '>': operator.gt,
     '==': operator.eq,
     '!=': operator.ne,
     '<=': operator.le,
@@ -26,9 +26,35 @@ def metafiltered(d, schema, fieldswanted):
     return d2
 
 class DictDB:
-    "Database implementation in a dict"
+    """
+    Time series Database implementation in dictionary
+
+    Attributes
+    ----------
+    indexes : dict
+        The keys are the indexed fields. The values are the index for each field.
+    rows : dict
+        contains all the rows. This is a dictionary with keys the primary keys
+    schema : dict
+        the schema that the dictionary follows
+    pkfield : str
+        selects the field to be considered as the primary key. Defaults to `pk`.
+
+    """
+
     def __init__(self, schema,pk_field = 'pk'):
-        "initializes database with indexed and schema"
+
+        """
+        initializes database with indexed and schema
+        Parameters
+        ----------
+        schema : dict
+            the schema that the database follows
+
+        pkfield : str
+            primary key field. Defaults to `pk`.
+
+        """
         self.indexes = {}
         self.rows = {}
         self.schema = schema
@@ -47,23 +73,23 @@ class DictDB:
             self.rows[pk] = {'pk': pk}
         else:
             raise ValueError('Duplicate primary key found during insert')
+
         self.rows[pk]['ts'] = ts
         self.update_indices(pk)
 
+
     def upsert_meta(self, pk, meta):
-        # schema = {
-        #'pk': {'convert': identity, 'index': None},
-        #'ts': {'convert': identity, 'index': None},
-        #'order': {'convert': int, 'index': 1},
-        #'blarg': {'convert': int, 'index': 1},
-        #'useless': {'convert': identity, 'index': None},
-        # }
-        "implement upserting field values, as long as the fields are in the schema."
-        # meta is a dictionary
+        """
+        Upserting metadata into the timeseries in the database designated by the promary key
 
-        # used as this client.upsert_meta('one', {'order': 1, 'blarg': 1})
+        Parameters
+        ----------
+        primary_key: int
+            a unique identifier for the timeseries
 
-        # updating if not inserting and inserting otherwise their metadata
+        metadata_dict: dict
+            the metadata to upserted into the timeseries
+        """
 
         if pk not in self.rows:
             self.rows[pk] = {'pk': pk}
@@ -89,6 +115,17 @@ class DictDB:
             self.update_indices(pkid)
 
     def update_indices(self, pk):
+        """
+        Update indices based on change of a row given its primary key
+
+        Parameters
+        ----------
+        primary_key: int
+            a unique identifier (primary key) for the row to be updated
+        """
+        if pk not in self.rows:
+            raise KeyError('pk does not exist in database')
+
         row = self.rows[pk]
         for field in row:
             v = row[field]
@@ -127,10 +164,26 @@ class DictDB:
                     fields_ret.append(field_dict_ret)
         return pks_ret, fields_ret
 
-    def select(self, meta, fields_to_ret, additional):
-        # bla = client.select({'order': 1, 'blarg': 2})
-        #implement select, AND'ing over the filters in the md metadata dict
-        #remember that each item in the dictionary looks like key==value
+    def select(self, meta, fields_to_ret = None, additional = None):
+        """
+        Selecting timeseries elements in the database that match the criteria
+        set in metadata_dict and return corresponding fields with additional
+        features.
+
+        Parameters
+        ----------
+        metadata_dict: dict
+            the selection criteria (filters)
+
+        fields: dict
+            If not `None`, only these fields of the timeseries are returned.
+            Otherwise, the timeseries are returned.
+
+        additional: dict
+            additional computation to perform on the query matches before they're
+            returned. Currently provide "sort_by" and "limit" functionality
+
+        """
         pks = set(self.rows.keys())
         #print('selffffffffffff indexes',self.indexes)
             #self.indexes
@@ -140,7 +193,6 @@ class DictDB:
             if field in self.schema:
                 convert_function = self.schema[field]['convert']
                 # Store filtered rows
-
                 # Check if query is exact or range
                 if (isinstance(condition, numbers.Real)):
                     for p in pks:
@@ -153,9 +205,9 @@ class DictDB:
                         if field in self.rows[p] and OPMAP[op](self.rows[p][field], convert_function(val)):
                             filter_pks.add(p)
                     pks = pks & filter_pks
-            # else:
-            #
-            #     raise KeyError("Meta's field not supported by schema")
+            else:
+                raise KeyError("Meta's field not supported by schema")
+
         if additional is None:
             return self._rows_to_return(pks, fields_to_ret)
         else:
@@ -168,6 +220,8 @@ class DictDB:
                     sorting_order_reversed = False
                 elif sorting_key[0] == '-':
                     sorting_order_reversed = True
+                else:
+                    raise KeyError("Sort order must be '+' or '-'")
 
                 sorting_scheme = sorting_key[1:]
 
@@ -175,7 +229,13 @@ class DictDB:
 
                 pks_list = sorted(pks_list,key = lambda x: self.rows[x][sorting_scheme], reverse = sorting_order_reversed)
             if 'limit' in additional:
+                if additional['limit'] < 0:
+                    raise ValueError('Limit must be greater than 0')
                 pks_list = pks_list[:additional['limit']]
+
+            if len(set(additional.keys()) - set(['sort_by', 'limit'])) > 0:
+                raise KeyError("Undefined additional operation")
+
             return self._rows_to_return(set(pks_list), fields_to_ret)
 
 

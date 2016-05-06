@@ -2,7 +2,6 @@
 # Read more under http://docs.travis-ci.com/user/build-configuration/
 # THIS SCRIPT IS SUPPOSED TO BE AN EXAMPLE. MODIFY IT ACCORDING TO YOUR NEEDS!
 
-
 sudo: false
 language: python
 virtualenv:
@@ -24,6 +23,12 @@ install:
   - source test/travis_install.sh
   - pip install -r requirements.txt
   - conda install --yes numpy ply
+  - pip install asynctest
+  - pip install asyncio
+  - pip install aiohttp
+  - pip install scipy
+  - python setup.py install
+
 before_script:
   - git config --global user.email "you@example.com"
   - git config --global user.name "Your Name"
@@ -33,10 +38,3 @@ after_success:
   - if [[ "$COVERAGE" == "true" ]]; then coveralls || echo "failed"; fi
 cache:
   - apt
-notifications:
-  email: 
-    - qingzhao@g.harvard.edu
-    - jeewonhwang@g.harvard.edu
-    - chenchenzhang@g.harvard.edu
-    - tang01@g.harvard.edu  
-    - 85831374@qq.com

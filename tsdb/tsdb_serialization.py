@@ -45,7 +45,6 @@ class Deserializer(object):
 
     """
 
-
     def __init__(self):
         self.buf = b''
         self.buflen = -1
