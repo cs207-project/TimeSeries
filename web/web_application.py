@@ -107,7 +107,20 @@ class WebApplication(object):
 # Handlers to work with TSDB
 # ===========================
 class Handler(object):
+    """
+    Event handlers to deal with TSDB based on RESTful manner
 
+    Attributes
+    ----------
+    client : TSDBClient object
+
+    Methods
+    -------
+    tsdb_root
+    tsdb_select
+    tsdb_augment_select
+    tsdb_insert_ts
+    """
     def __init__(self):
         self.client = TSDBClient()
 
