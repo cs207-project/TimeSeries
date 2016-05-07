@@ -113,7 +113,7 @@ async def client_op():
     lowest_dist_vp = min(vpkeys, key=lambda v:vpdists[v])
 
     # Step 2: find all time series within 2*d(query, nearest_vp_to_query)
-    #this is an augmented select to the same proc in correlation
+    # this is an augmented select to the same proc in correlation
     _, results = await client.augmented_select('corr', 'd', query, {'d_'+lowest_dist_vp:{'<=':2*vpdists[lowest_dist_vp]}})
 
     #2b: find the smallest distance amongst this ( or k smallest)
@@ -127,7 +127,6 @@ async def client_op():
     plt.show()
 
 if __name__=='__main__':
-    # main()
     loop = asyncio.get_event_loop()
     coro = asyncio.ensure_future(client_op())
     loop.run_until_complete(coro)#DNY: blocking call until coro completes

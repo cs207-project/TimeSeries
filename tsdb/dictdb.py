@@ -67,6 +67,13 @@ class DictDB:
             if indexinfo is not None:
                 self.indexes[s] = defaultdict(set)
 
+    def __getitem__(self,key):
+        """Return the the values at a given row identified by pk"""
+        if key in self.rows:
+            return self.rows[key]
+        else:
+            raise ValueError("primary_key not in the database: "+ str(key))
+
     def insert_ts(self, pk, ts):
         "given a pk and a timeseries, insert them"
         if pk not in self.rows:

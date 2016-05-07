@@ -122,9 +122,11 @@ class TSHeapFile(HeapFile):
 
 
     def encode_and_write_ts(self, ts):
-        ts_items = ts.items
-        times = [float(i[0]) for i in ts_items]
-        values = [float(i[1]) for i in ts_items]
+        ts_items = ts._TimeSeries
+        # times = [float(i[0]) for i in ts_items]
+        # values = [float(i[1]) for i in ts_items]
+        times = ts_items[0]
+        values = ts_items[1]
         byteArray = struct.pack('%sd' % (2*self.ts_length), *times, *values)
         assert(len(byteArray) == self.byteArrayLength)
 
