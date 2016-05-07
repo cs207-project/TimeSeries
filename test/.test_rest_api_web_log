@@ -1,4 +1,1 @@
-Traceback (most recent call last):
-  File "../go_web.py", line 1, in <module>
-    from web.web_application import WebApplication
-ImportError: No module named web.web_application
+python: can't open file 'go_web.py': [Errno 2] No such file or directory

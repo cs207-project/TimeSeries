@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from tsdb import TSDBClient
-import timeseries.TimeSeries as TimeSeries
+from timeseries.TimeSeries import TimeSeries
 import numpy as np
 import asyncio
 from scipy.stats import norm

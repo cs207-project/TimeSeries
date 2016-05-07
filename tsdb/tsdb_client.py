@@ -106,6 +106,7 @@ class TSDBClient(object):
             If the target is None rather than a list of fields, we'll assume no upserting
         `arg` :
             additional argument
+            (ex : Timeseries object)
         """
         msg = TSDBOp_AddTrigger(proc, onwhat, target, arg)
         status, payload = await self._send(msg.to_json())

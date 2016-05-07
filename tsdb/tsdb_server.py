@@ -162,24 +162,12 @@ class TSDBServer(object):
         Use asyncio module to launch tsdb server on local machine 127.0.0.1 in designated port. Stop server when there
          are KeyboardInterrupt or Exceptions happened during tsdb operation
 
-        Parameters
-        ----------
-
-        Returns
-        -------
-        None
-
         Raises
         ------
         KeyboardInterrupt
             If there's keyboard interruption to stop server
         Exception
             If there are some database exception occured while running the server
-
-        Examples
-        --------
-        ...
-
         '''
 
         loop = asyncio.get_event_loop()
