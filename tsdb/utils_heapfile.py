@@ -98,22 +98,14 @@ class TSHeapFile(HeapFile):
         else:
             with open(heap_file_name+'_metadata.met','rb',buffering=0) as fd:
                 self.ts_length, self.byteArrayLength = pickle.load(fd)
-            # print("old tsheap meta values loaded from disk")
 
 
     def encode_and_write_ts(self, ts):
         ts_items = ts._TimeSeries
-        # times = [float(i[0]) for i in ts_items]
-        # values = [float(i[1]) for i in ts_items]
         times = ts_items[0]
         values = ts_items[1]
         byteArray = struct.pack('%sd' % (2*self.ts_length), *times, *values)
         assert(len(byteArray) == self.byteArrayLength)
-
-        # dataBytes = json.dumps(ts.to_json()).encode()
-        # lengthFieldBytes = (len(dataBytes)+TS_FIELD_LENGTH).to_bytes(TS_FIELD_LENGTH, byteorder='little')
-        # byteArray = lengthFieldBytes + dataBytes
-
         self.fd.seek(self.writeptr)
         ts_offset = self.fd.tell()
         self.fd.write(byteArray)
@@ -128,4 +120,3 @@ class TSHeapFile(HeapFile):
         buff = self.fd.read(self.byteArrayLength)
         items = struct.unpack('%sd' % (2*self.ts_length),buff)
         return timeseries.TimeSeries(items[:self.ts_length], items[self.ts_length:])
-        # return timeseries.TimeSeries.from_json(json.loads(buff.decode()))
