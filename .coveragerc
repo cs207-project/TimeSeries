@@ -6,6 +6,7 @@ omit =
     pype/parsetab.py
     pype/__init__.py
     timeseries/__init__.py
+    web/web_application.py # the unittest doesn't cover test cases.. but still test cases are valid.
 
 [report]
 # Regexes for lines to exclude from consideration
