@@ -8,77 +8,78 @@ import json
 # views to be rendered on web application pages
 
 ROOT_VIEW = """\
-            # =================================
-            # CS 207 Final Project
-            # TSDB RESTful API Implementation
-            # =================================
+# =================================
+# CS 207 Final Project
+# TSDB RESTful API Implementation
+# =================================
 
-            # Followings are the rule for router
+# Followings are the rule for router
 
-            localhost:8080/tsdb                     root page
-            localhost:8080/tsdb/select              select
-            localhost:8080/tsdb/augmented_select    augmented select
-            /tsdb/add/ts --> insert timeseries
-            /tsdb/add/trigger --> add trigger
-            /tsdb/remove/trigger --> remove trigger
-            /tsdb/add/metadata --> insert metadata
+localhost:8080/tsdb                     root page
+localhost:8080/tsdb/select              select
+localhost:8080/tsdb/augmented_select    augmented select
+localhost:8080/tsdb/find_similar        timeSeries similarity search
+localhost:8080/tsdb/insert_ts           insert
+localhost:8080/tsdb/add_trigger         add trigger
+/tsdb/remove/trigger --> remove trigger
+/tsdb/add/metadata --> insert metadata
             """
 
 SELECT_VIEW = """\
-                # =================================
-                # CS 207 Final Project
-                # TSDB RESTful API Implementation
-                # =================================
+# =================================
+# CS 207 Final Project
+# TSDB RESTful API Implementation
+# =================================
 
-                # SELECT router rule example
+# SELECT router rule example
 
-                localhost:8080/tsdb/select?query={}
-                localhost:8080/tsdb/select?query={"md":{"order": 1}, "fields":["ts"], "additional":{"sort_by":"-order"}}
+localhost:8080/tsdb/select?query={}
+localhost:8080/tsdb/select?query={"md":{"order": 1}, "fields":["ts"], "additional":{"sort_by":"-order"}}
 
-                !!! NOTE !!!
-                Every string should be wrapped with ", not '
-                because ' is automatically encoded to %27 in utf-8,
-                then json.loads decode it not into dictionary, but string.
+!!! NOTE !!!
+Every string should be wrapped with ", not '
+because ' is automatically encoded to %27 in utf-8,
+then json.loads decode it not into dictionary, but string.
 
-                metadata_dict(md), fields, additional are all optional.
+metadata_dict(md), fields, additional are all optional.
                 """
 AUGMENTED_SELECT_VIEW = """\
-                # =================================
-                # CS 207 Final Project
-                # TSDB RESTful API Implementation
-                # =================================
+# =================================
+# CS 207 Final Project
+# TSDB RESTful API Implementation
+# =================================
 
-                # SELECT router rule example
+# SELECT router rule example
 
-                localhost:8080/tsdb/augmented_select?query={"proc":"corr", "target":"d"}
-                localhost:8080/tsdb/augmented_select?query={"proc":"corr", "target":"d", "md":{"order": 1}, "fields":["ts"]}
+localhost:8080/tsdb/augmented_select?query={"proc":"corr", "target":"d"}
+localhost:8080/tsdb/augmented_select?query={"proc":"corr", "target":"d", "md":{"order": 1}, "fields":["ts"]}
 
-                !!! NOTE !!!
-                Every string should be wrapped with ", not '
-                because ' is automatically encoded to %27 in utf-8,
-                then json.loads decode it not into dictionary, but string.
+!!! NOTE !!!
+Every string should be wrapped with ", not '
+because ' is automatically encoded to %27 in utf-8,
+then json.loads decode it not into dictionary, but string.
 
-                proc, target -> required
-                metadata_dict(md), fields, arg -> optional.
+proc, target -> required
+metadata_dict(md), fields, arg -> optional.
                 """
 FIND_SIMILAR_VIEW = """\
-                # =================================
-                # CS 207 Final Project
-                # TSDB RESTful API Implementation
-                # =================================
+# =================================
+# CS 207 Final Project
+# TSDB RESTful API Implementation
+# =================================
 
-                # SELECT tsdb_find_similar example
+# SELECT tsdb_find_similar example
 
-                localhost:8080/tsdb/augment_select?query={"proc":"corr", "target":"d"}
-                localhost:8080/tsdb/augment_select?query={"proc":"corr", "target":"d", "md":{"order": 1}, "fields":["ts"]}
+localhost:8080/tsdb/augment_select?query={"proc":"corr", "target":"d"}
+localhost:8080/tsdb/augment_select?query={"proc":"corr", "target":"d", "md":{"order": 1}, "fields":["ts"]}
 
-                !!! NOTE !!!
-                Every string should be wrapped with ", not '
-                because ' is automatically encoded to %27 in utf-8,
-                then json.loads decode it not into dictionary, but string.
+!!! NOTE !!!
+Every string should be wrapped with ", not '
+because ' is automatically encoded to %27 in utf-8,
+then json.loads decode it not into dictionary, but string.
 
-                proc, target -> required
-                metadata_dict(md), fields, arg -> optional.
+proc, target -> required
+metadata_dict(md), fields, arg -> optional.
                 """
 
 class WebApplication(object):
@@ -93,7 +94,7 @@ class WebApplication(object):
         self.app.router.add_route('GET', '/tsdb/select', self.handler.tsdb_select)
         self.app.router.add_route('GET', '/tsdb/augmented_select', self.handler.tsdb_augmented_select)
         self.app.router.add_route('GET', '/tsdb/find_similar', self.handler.tsdb_find_similar)
-        self.app.router.add_route('POST', '/tsdb/add_ts', self.handler.tsdb_add_ts)
+        self.app.router.add_route('POST', '/tsdb/insert_ts', self.handler.tsdb_add_ts)
         self.app.router.add_route('POST', '/tsdb/delete_ts', self.handler.tsdb_delete_ts)
         self.app.router.add_route('POST', '/tsdb/add_trigger', self.handler.tsdb_add_trigger)
         self.app.router.add_route('POST', '/tsdb/remove_trigger', self.handler.tsdb_remove_trigger)
@@ -331,8 +332,3 @@ class Handler(object):
 
         finally:
             return web.Response(body=json.dumps(result).encode('utf-8'))
-
-
-# if __name__=='__main__':
-#     webapp = WebApplication()
-#     webapp.run()
