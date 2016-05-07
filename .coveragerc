@@ -1,7 +1,7 @@
 # .coveragerc to control coverage.py
 [run]
 branch = True
-source = timeseries, pype, tsdb, web
+source = timeseries, pype, tsdb
 omit = 
     pype/parsetab.py
     pype/__init__.py
