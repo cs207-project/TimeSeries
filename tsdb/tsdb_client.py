@@ -67,6 +67,7 @@ class TSDBClient(object):
         ----------
         metadata_dict: dict
             the selection criteria (filters)
+            (Options : 'blarg', 'order')
 
         fields: dict
             If not `None`, only these fields of the timeseries are returned.
@@ -94,11 +95,15 @@ class TSDBClient(object):
         Parameters
         ----------
         `proc` : enum
-            which of the modules in procs. Options: 'corr', 'junk', 'stats'
+            which of the modules in procs,
+            or name of module in procs with coroutine main.
+            (Options: 'corr', 'junk', 'stats')
         `onwhat` :
-            the trigger
-        `target` : dict
-            metadata to be upserted
+            which op is this trigger running on
+            (ex : "insert_ts")
+        `target` : array of fieldnames
+            will be mapped to the array of results from the coroutine.
+            If the target is None rather than a list of fields, we'll assume no upserting
         `arg` :
             additional argument
         """

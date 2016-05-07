@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "../go_server.py", line 2, in <module>
+    from tsdb import TSDBServer, DictDB
+  File "/Users/Grace/harvard/spring2016/cs207/TimeSeries/tsdb/__init__.py", line 2, in <module>
+    from .tsdb_client import TSDBClient
+  File "/Users/Grace/harvard/spring2016/cs207/TimeSeries/tsdb/tsdb_client.py", line 27
+    async def insert_ts(self, primary_key, ts):
+            ^
+SyntaxError: invalid syntax
