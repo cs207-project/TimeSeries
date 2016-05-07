@@ -90,27 +90,35 @@ class RestApiTest(unittest.TestCase):
         for i in range(5):
             # add 5 triggers to upsert distances to these vantage points
             data = add_trigger_to_json('corr', 'insert_ts', ["d_vp-{}".format(i)], tsdict[vpkeys[i]])
-            requests.post(self.web_url+'/add_trigger', data)
+            r = requests.post(self.web_url+'/add_trigger', data)
+            self.assertEqual(r.status_code, 200)
             # change the metadata for the vantage points to have meta['vp']=True
             metadict[vpkeys[i]]['vp'] = True
         # Having set up the triggers, now insert the time series, and upsert the metadata
         for k in tsdict:
             data = insert_ts_to_json(k, tsdict[k])
-            requests.post(self.web_url+'/insert_ts', data)
+            # TODO: 404 page not found status. Should check later on..
+            r = requests.post(self.web_url+'/insert_ts', data)
             data = upsert_meta_to_json(k, metadict[k])
-            requests.post(self.web_url+'/add_metadata', data)
+            r = requests.post(self.web_url+'/add_metadata', data)
+            self.assertEqual(r.status_code, 200)
 
         # ===============================
-        # In go_clinet.py
+        # In go_client.py
         # SELECT test cases
         # ===============================
-        # client.select()
-        # test = {'query':{}} <- this one works
+        # additional test
+        # returned ts instances correctly
         params = '{"additional":{"sort_by":"-order"}}'
-        print(params)
         r = requests.get(self.web_url+'/select?query='+params)
-        print(r.url)
-        print(r.content)
+        self.assertEqual(r.status_code, 200)
+
+        # order field test
+        # returned ts instances correctly
+        # to see : r.content
+        params = '{"fields":["order"]}'
+        r = requests.get(self.web_url+'/select?query='+params)
+        self.assertEqual(r.status_code, 200)
         # #we first create a query time series.
         # _, query = tsmaker(0.5, 0.2, 0.1)
         #
