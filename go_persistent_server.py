@@ -1,14 +1,8 @@
-from tsdb.tsdb_persistent import PersistentDB
+from tsdb.persistentdb import PersistentDB
 from tsdb.tsdb_server import TSDBServer
 import os
 import timeseries as ts
-
-dirPath = "files/testing"
-if not os.path.isdir(dirPath):
-    os.makedirs(dirPath)
-    _createdDirs = True
-else:
-    _createdDirs = False
+from tsdb.tsdb_constants import FILES_DIR, TS_LENGTH
 
 schema = {
   'pk':    {'type': 'string', 'index': None},
@@ -25,10 +19,15 @@ schema = {
   'd-vp5': {'type': 'float',  'index': 1}
 }
 
-TS_LENGTH = 100
-
 def main():
-    db = PersistentDB(schema, pk_field='pk', db_name='testing', ts_length=TS_LENGTH, testing=True)
+    db_name = 'testing'
+    dirPath = FILES_DIR + '/' + db_name
+    if not os.path.isdir(dirPath):
+        os.makedirs(dirPath)
+        _createdDirs = True
+    else:
+        _createdDirs = False
+    db = PersistentDB(schema, pk_field='pk', db_name=db_name, ts_length=TS_LENGTH, testing=True)
     server = TSDBServer(db)
     server.run()
     db.delete_database()

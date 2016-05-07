@@ -7,33 +7,17 @@ import struct
 import timeseries
 import json
 import pickle
-
-# see https://docs.python.org/3.4/library/struct.html#struct-format-strings
-TYPES = {
-    'float': 'd',
-    'bool': '?',
-    'int': 'i'
-}# if changed, need to modify in persistentdb.py as well
-
-TYPE_DEFAULT = {
-    'float': 0.0,
-    'bool': False,
-    'int': 0
-}# if changed, need to modify in persistentdb.py as well
-
-TS_FIELD_LENGTH = 4
-BYTES_PER_NUM = 8
+from tsdb.tsdb_constants import *
 
 class HeapFile:
     def __init__(self, heap_file_name):
         self.filename = heap_file_name
         if not os.path.exists(self.filename):
-            #DNY: buffering=0 only allowed in binary mode, see python docs
             self.fd = open(self.filename, "xb+", buffering=0)
         else:
             self.fd = open(self.filename, "r+b", buffering=0)
         self.readptr = self.fd.tell()
-        self.fd.seek(0,2)#DNY: seek the end of the file
+        self.fd.seek(0,2)
         self.writeptr = self.fd.tell()
 
     def close(self):
@@ -63,9 +47,7 @@ class MetaHeapFile(HeapFile):
         fieldList.remove('ts')
         fieldList.remove('pk')
         self.compression_string = ''
-        # DNY: ordered list of storage of fields
         self.fields = []
-        # DNY: to store default values of each field, as placeholders
         self.fieldsDefaultValues = []
         for field in fieldList:
             self.compression_string += TYPES[schema[field]['type']]
@@ -91,7 +73,6 @@ class MetaHeapFile(HeapFile):
             pk_offset = self.writeptr
         self.fd.seek(pk_offset)
         self.fd.write(byteArray)
-        # DNY: seek the end of the file in case new element written
         self.fd.seek(0,2)
         self.writeptr = self.fd.tell()
         return pk_offset
@@ -109,7 +90,6 @@ class TSHeapFile(HeapFile):
         super().__init__(heap_file_name)
         if not os.path.exists(heap_file_name+'_metadata.met'):
             self.ts_length = ts_length
-            # DNY: Store as floats, *2 for both times and values
             self.byteArrayLength = self.ts_length * 2 * BYTES_PER_NUM
             with open(heap_file_name+'_metadata.met','xb',buffering=0) as fd:
                 pickle.dump((self.ts_length,self.byteArrayLength), fd)
@@ -118,26 +98,18 @@ class TSHeapFile(HeapFile):
         else:
             with open(heap_file_name+'_metadata.met','rb',buffering=0) as fd:
                 self.ts_length, self.byteArrayLength = pickle.load(fd)
-            # print("old tsheap meta values loaded from disk")
 
 
     def encode_and_write_ts(self, ts):
         ts_items = ts._TimeSeries
-        # times = [float(i[0]) for i in ts_items]
-        # values = [float(i[1]) for i in ts_items]
         times = ts_items[0]
         values = ts_items[1]
         byteArray = struct.pack('%sd' % (2*self.ts_length), *times, *values)
         assert(len(byteArray) == self.byteArrayLength)
-
-        # dataBytes = json.dumps(ts.to_json()).encode()
-        # lengthFieldBytes = (len(dataBytes)+TS_FIELD_LENGTH).to_bytes(TS_FIELD_LENGTH, byteorder='little')
-        # byteArray = lengthFieldBytes + dataBytes
-
         self.fd.seek(self.writeptr)
         ts_offset = self.fd.tell()
         self.fd.write(byteArray)
-        self.fd.seek(0,2)#DNY: seek the end of the file
+        self.fd.seek(0,2)
         self.writeptr = self.fd.tell()
         return ts_offset
 
@@ -148,4 +120,3 @@ class TSHeapFile(HeapFile):
         buff = self.fd.read(self.byteArrayLength)
         items = struct.unpack('%sd' % (2*self.ts_length),buff)
         return timeseries.TimeSeries(items[:self.ts_length], items[self.ts_length:])
-        # return timeseries.TimeSeries.from_json(json.loads(buff.decode()))

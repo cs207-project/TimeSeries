@@ -1,50 +1,13 @@
 """Persistent time series database.
 """
 
-from collections import defaultdict
-from operator import and_
-from functools import reduce
-import operator
 import os
-import numbers
-import json
 import timeseries
 from .utils_indices import PKIndex, TreeIndex
 from .utils_heapfile import MetaHeapFile, TSHeapFile
 import pickle
 import shutil
-
-# this dictionary will help you in writing a generic select operation
-OPMAP = {
-    '<': 0,
-    '>': 1,
-    '==': 2,
-    '!=': 3,
-    '<=': 4,
-    '>=': 5
-}
-
-# DNY: Potentially useful for different types of indices
-INDEXES = {
-    1: None,#Binary Tree type here,
-    2: None#bitmask type here
-}
-
-FILES_DIR = 'files'
-MAX_CARD = 8
-
-# if changed, need to modify in heap.py as well
-TYPES = {
-    'float': 'd',
-    'bool': '?',
-    'int': 'i'
-}
-# if changed, need to modify in heap.py as well
-TYPE_DEFAULT = {
-    'float': 0.0,
-    'bool': False,
-    'int': 0
-}
+from tsdb.tsdb_constants import *
 
 def dict_eq(dict1, dict2):
     "helper function to test equality of dictionaries of dictionaries"
@@ -77,15 +40,6 @@ class PersistentDB():
         pk_field : dict
             new metadata dictionary to be inserted
         """
-        # TODO DNY: set up bitmask indexes
-
-        # COULD DO DNY: create function that eliminates deleted values in the heaps
-        # COULD DO DNY: support non-string primary keys
-        # COULD DO: add in a field_to_index method to the MetaHeap class,
-        # eliminating the need to use the .index() function in the database
-
-        # DNY: ensure file hierarchy is set up
-        # all files to be found in './files/db_name/' directory
         if not testing and db_name == 'testing':
             raise ValueError("database name 'testing' reserved for database testing")
 
@@ -132,7 +86,6 @@ class PersistentDB():
 
         self.pks = PKIndex(self.dbname)
 
-        # DNY: to store fields that will have associated indexes
         self.indexFields = [field for field, value in self.schema.items()
                                   if value['index'] is not None]
         self.indexes = {}
@@ -193,7 +146,6 @@ class PersistentDB():
 
         ts_offset = self.tsheap.encode_and_write_ts(ts) # write ts to tsheap file
 
-        # DNY: write default meta values to disk
         meta = list(self.metaheap.fieldsDefaultValues)
         meta[self.metaheap.fields.index('ts_offset')] = ts_offset
         meta[self.metaheap.fields.index('ts_offset_set')] = True
@@ -214,10 +166,6 @@ class PersistentDB():
         """
         self._check_pk(pk)
         old_meta_dict = self._get_meta_dict(pk,deleting=True)
-
-        # write tombstone marker to the metaheap [[[
-        # COULD DO DNY: add list of timeseries to be deleted, for later maintenance
-        # currently, left as a ts_offset and deleted=True within the metaheap file
         delete_meta = list(self.metaheap.fieldsDefaultValues)
         delete_meta[self.metaheap.fields.index('ts_offset')] = old_meta_dict['ts_offset']
         delete_meta[self.metaheap.fields.index('ts_offset_set')] = True
@@ -275,10 +223,6 @@ class PersistentDB():
         new_meta : dict
             new metadata dictionary to be inserted
         """
-        # COULD DO DNY: support changing primary keys
-        # COULD DO DNY: support deleting metadata columns once inserted, rather
-        # than only being able to update them
-
         pk_offset = self.pks[pk]
         meta = self.metaheap.read_and_return_meta(pk_offset)
         old_meta_dict = self._get_meta_dict(pk)
@@ -292,10 +236,6 @@ class PersistentDB():
                 typestr = self.schema[field]['type']
 
                 if type(TYPE_DEFAULT[typestr]) != type(new_meta[field]):
-                    # DNY: If this error is called too often, check to make sure
-                    # that values are not floats/ numpy floats or other similar
-                    # types like that.
-                    # import pdb; pdb.set_trace()
                     raise TypeError("Entries of '{}' must be of type '{}'. You submitted type {}.".format(field, str(type(TYPE_DEFAULT[typestr])),type(new_meta[field])))
                 meta[n] = new_meta[field]
                 if self.schema[field]['type'] != "bool":
@@ -405,8 +345,6 @@ class PersistentDB():
                 else:
                     return ([],[])
             elif field in self.schema:
-                # Range Query
-                #DNY: TODO change BitmapIndex to contain 'get'
                 if isinstance(criteria,dict):
                     op,val = list(criteria.items())[0]
                     matches = self.indexes[field].get(val,OPMAP[op])

@@ -13,8 +13,7 @@ import pickle
 import os
 import bintrees
 import numpy as np
-
-REFRESH_RATE = 50 # rate at which write_ahead log is flushed to disk
+from tsdb.tsdb_constants import *
 
 class SimpleIndex():
     """Very simple index that implements a default dict
@@ -22,8 +21,7 @@ class SimpleIndex():
     def __init__(self, fieldName='default', database_name='default'):
         self.database_name = database_name
         self.name = fieldName
-        self.filename = 'files'+'/'+database_name+'/'+fieldName+'.idx'
-        # DNY: temporary, in memory solution to be removed
+        self.filename = FILES_DIR+'/'+database_name+'/'+fieldName+'.idx'
         self.dict = defaultdict(set)
 
         # load from file if the file exists
@@ -50,9 +48,8 @@ class PKIndex():
     Essentially a (pk: offset) dictionary with writelog and disk storage.
     """
     def __init__(self, database_name='default'):
-        # TODO DNY: write separate class for write ahead log?
-        self.filename = 'files/'+database_name+'/'+'pks.p'
-        self.writelog = 'files/'+database_name+'/'+'writelog.idx'
+        self.filename = FILES_DIR + '/'+database_name+'/'+'pks.p'
+        self.writelog = FILES_DIR + '/'+database_name+'/'+'writelog.idx'
 
         # if file never created before, create it
         if not os.path.exists(self.filename):
@@ -68,7 +65,7 @@ class PKIndex():
 
         self.pk_count = len(self.dict.keys())
 
-        self.fd.seek(0,2)#DNY: seek the end of the file
+        self.fd.seek(0,2)
         self.writeptr = self.fd.tell()
 
     def load_and_clear_log(self, loaded=False, close=False):
@@ -366,7 +363,6 @@ class BitmapIndex():
 
     def getEqual(self, fieldValue):
         # Returns the list of primary keys that match this fieldValue
-
         # Find the index of this fieldValue in the list of valid values
         fieldValue_index = self.values.index(fieldValue)
 
