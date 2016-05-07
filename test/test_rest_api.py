@@ -8,10 +8,6 @@ import requests
 import json
 from scipy.stats import norm
 
-NUMVPS = 5
-
-
-
 # m is the mean, s is the standard deviation, and j is the jitter
 # the meta just fills in values for order and blarg from the schema
 def tsmaker(m, s, j):
@@ -140,12 +136,15 @@ class RestApiTest(unittest.TestCase):
         # this is an augmented select
         vpdist = {}
         print(type(query.to_json()))
-        payload = {'proc':'corr', 'target':'d', 'arg':query.to_json()}
+        payload = {"proc":"corr", "target":"d", "arg":query.to_json()}
+        print(str(payload))
+        print(json.dumps(payload))
         # for v in vpkeys:
         #     payload['where'] = {'pk': v}
-        #     r = requests.get(self.web_url+'/augmented_select', params={'query':json.dumps(payload)})
+        #     # r = requests.get(self.web_url+'/augmented_select', params={'query':json.dumps(payload)})
+        #     r = requests.get(self.web_url+'/augmented_select?query='+str(payload))
         #     results = json.loads(r.content.decode('utf-8'))
-        #     print(results)
+        #     print(r.url)
         #     vpdist[v] = results[v]['d']
         #
         # closest_vpk = min(vpkeys,key=lambda v:vpdist[v])
