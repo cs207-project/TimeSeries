@@ -167,41 +167,63 @@ class Handler(object):
                 return web.Response(body=json.dumps(result).encode('utf-8'))
 
     async def tsdb_augmented_select(self, request):
-        if 'query' not in request.GET:
-            view = AUGMENTED_SELECT_VIEW
-            return web.Response(body=view.encode('utf-8'))
-        else: # if there is query parameter in URL
-            try:
-                query = json.loads(request.GET['query'])
-                proc = query['proc']
-                target = query['target']
+        try:
+            if 'query' not in request.GET:
+                raise ValueError("'query' must be sent with a augmented select",request.GET)
 
-                if 'md' in query:
-                    metadata_dict = query['md']
-                else:
-                    metadata_dict = {}
-                if 'additional' in query:
-                    additional = query['additional']
-                else:
-                    additional = None
-                if 'arg' in query:
-                    arg = query['arg']
-                else:
-                    arg = None
+            json_query = json.loads(request.GET['query'])
+            target = json_query['target']
+            proc = json_query['proc']
 
-                status, result = await self.client.augmented_select(proc, target, arg, metadata_dict, additional)
-                # return web.Response(body=json.dumps(payload).encode('utf-8'))
+            metadata_dict = json_query['where'] if 'where' in json_query else {}
+            additional = json_query['additional'] if 'additional' in json_query else None
+            arg = json_query['arg'] if 'arg' in json_query else None
 
-                if status != TSDBStatus.OK:
-                    result = "Augmented Selection failed"
+            status,payload = await self.client.augmented_select(proc,target,arg
+                                                                ,metadata_dict
+                                                                ,additional)
+        except Exception as error:
+            payload = {"msg": "Could not parse request. Please see documentation."}
+            payload["type"] = str(type(error))
+            payload["args"] = str(error.args)
 
-            except Exception as error:
-                result = {"msg": "Cannot parse the Request"}
-                result["type"] = str(type(error))
-                result["args"] = str(error.args)
-
-            finally:
-                return web.Response(body=json.dumps(result).encode('utf-8'))
+        finally:
+            return web.Response(body=json.dumps(payload).encode('utf-8'))
+        # if 'query' not in request.GET:
+        #     view = AUGMENTED_SELECT_VIEW
+        #     return web.Response(body=view.encode('utf-8'))
+        # else: # if there is query parameter in URL
+        #     try:
+        #         query = json.loads(request.GET['query'])
+        #         proc = query['proc']
+        #         target = query['target']
+        #
+        #         if 'md' in query:
+        #             metadata_dict = query['md']
+        #         else:
+        #             metadata_dict = {}
+        #         if 'additional' in query:
+        #             additional = query['additional']
+        #         else:
+        #             additional = None
+        #         if 'arg' in query:
+        #             arg = query['arg']
+        #         else:
+        #             arg = None
+        #
+        #         status, result = await self.client.augmented_select(proc, target, arg, metadata_dict, additional)
+        #         # return web.Response(body=json.dumps(payload).encode('utf-8'))
+        #
+        #         if status != TSDBStatus.OK:
+        #             result = "Augmented Selection failed"
+        #
+        #     except Exception as error:
+        #         result = {"msg": "Cannot parse the Request"}
+        #         result["type"] = str(type(error))
+        #         result["args"] = str(error.args)
+        #
+        #     finally:
+        #         return web.Response(body=json.dumps(result).encode('utf-8'))
 
     async def tsdb_find_similar(self,request):
         try:

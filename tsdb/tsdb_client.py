@@ -83,7 +83,29 @@ class TSDBClient(object):
         return status, payload
 
     async def augmented_select(self, proc, target, arg=None, metadata_dict={}, additional=None):
+        """
 
+        Parameters
+        ----------
+        proc : enum
+            which of the modules in procs,
+            or name of module in procs with coroutine main.
+            (Options: 'corr', 'junk', 'stats')
+        target : array of fieldnames
+            will be mapped to the array of results from the coroutine.
+            If the target is None rather than a list of fields, we'll assume no upserting
+        arg : additional argument
+            (ex : Timeseries object)
+        metadata_dict : dict
+                        store info for TimeSeries other than TimeSeries object itself
+                        (ex. vantage point is metadata_dict['ts-14']['vp']
+        additional : dict
+                    (Options: {"sort_by":"-order"})
+
+        Returns
+        -------
+
+        """
         ts_augmented_select = TSDBOp_AugmentedSelect(proc, target, arg, metadata_dict, additional)
         status, payload = await self._send(ts_augmented_select.to_json())
         return status, payload
