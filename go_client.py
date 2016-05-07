@@ -129,4 +129,4 @@ async def client_op():
 if __name__=='__main__':
     loop = asyncio.get_event_loop()
     coro = asyncio.ensure_future(client_op())
-    loop.run_until_complete(coro)#DNY: blocking call until coro completes
+    loop.run_until_complete(coro)
