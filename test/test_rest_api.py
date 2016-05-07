@@ -100,10 +100,17 @@ class RestApiTest(unittest.TestCase):
             data = upsert_meta_to_json(k, metadict[k])
             requests.post(self.web_url+'/add_metadata', data)
 
-        print('---------DEFAULT------------')
+        # ===============================
+        # In go_clinet.py
+        # SELECT test cases
+        # ===============================
         # client.select()
-        response = requests.get(self.web_url+'/select', None)
-        print(response)
+        # test = {'query':{}} <- this one works
+        params = '{"additional":{"sort_by":"-order"}}'
+        print(params)
+        r = requests.get(self.web_url+'/select?query='+params)
+        print(r.url)
+        print(r.content)
         # #we first create a query time series.
         # _, query = tsmaker(0.5, 0.2, 0.1)
         #
