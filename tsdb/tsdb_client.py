@@ -104,7 +104,7 @@ class TSDBClient(object):
 
         Returns
         -------
-
+        tsdb status & payload
         """
         ts_augmented_select = TSDBOp_AugmentedSelect(proc, target, arg, metadata_dict, additional)
         status, payload = await self._send(ts_augmented_select.to_json())
