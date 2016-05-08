@@ -3,26 +3,11 @@
 
 import os
 import timeseries
-from .utils_indices import PKIndex, TreeIndex
+from .utils_indices import PKIndex, TreeIndex, BitmapIndex
 from .utils_heapfile import MetaHeapFile, TSHeapFile
 import pickle
 import shutil
 from tsdb.tsdb_constants import *
-
-def dict_eq(dict1, dict2):
-    "helper function to test equality of dictionaries of dictionaries"
-    if not sorted(list(dict1.keys()))==sorted(list(dict2.keys())):
-        return False
-    eq = True
-    for key in dict1.keys():
-        if isinstance(dict1[key], dict) and isinstance(dict2[key], dict):
-            eq = (eq and dict_eq(dict1[key],dict2[key]))
-        else:
-            eq = (eq and (dict1[key]==dict2[key]))
-        if not eq:
-            break
-    return eq
-
 
 class PersistentDB():
     """
@@ -50,25 +35,25 @@ class PersistentDB():
         if not os.path.exists(self.data_dir):
             os.makedirs(self.data_dir)
 
-        # load db_metadata if it exists, or write it if new
+        # Load persistentdb and validate input
         if os.path.exists(self.data_dir+"/db_metadata.met"):
             with open(self.data_dir+"/db_metadata.met", 'rb', buffering=0) as fd:
                 self.tsLength, self.pkfield, self.schema = pickle.load(fd)
+                # Validate Schema
                 if schema is not None:
-                    try:
-                        assert(dict_eq(schema, self.schema))
-                    except:
-                        # import pdb; pdb.set_trace()
-                        raise ValueError("schema does not match stored schema. pass in schema=None")
-                try:
-                    assert(self.pkfield == pk_field)
-                except:
-                    raise ValueError("PK field does not match stored pk. PK field should be '{}'".format(self.pkfield))
-                try:
-                    assert(self.tsLength == ts_length)
-                except:
-                    raise ValueError("ts_length field does not match stored value. ts_length field should be '{}'".format(self.tsLength))
-                # print("old db values loaded, assertions passed")
+                    dict_is_eq =  set(schema.keys())==set(self.schema.keys())
+                    for key in schema.keys():
+                        dict_is_eq = (schema[key]==self.schema[key])
+                        if not dict_is_eq:
+                            break
+                    if not dict_is_eq:
+                        raise ValueError("Input schema contradicts persistent schema.")
+                # Validate pk_field
+                if not self.pkfield == pk_field:
+                    raise ValueError("PK field contradicts persistent pk:'{}'".format(self.pkfield))
+                # Validate ts_length
+                if not self.tsLength == ts_length:
+                    raise ValueError("ts_length field contradicts persistent ts_length '{}'".format(self.tsLength))
         else:
             self.tsLength = ts_length
             self.pkfield = pk_field
@@ -83,7 +68,6 @@ class PersistentDB():
         # open heap files
         self.metaheap = MetaHeapFile(FILES_DIR+"/"+self.dbname+"/"+'metaheap', schema)
         self.tsheap = TSHeapFile(FILES_DIR+"/"+self.dbname+"/"+'tsheap', self.tsLength)
-
         self.pks = PKIndex(self.dbname)
 
         self.indexFields = [field for field, value in self.schema.items()
@@ -91,7 +75,7 @@ class PersistentDB():
         self.indexes = {}
         for field in self.indexFields:
             if (self.schema[field]['index']==2) and (len(self.schema[field]['values']) <= MAX_CARD):
-                # TODO self.indexes[field] = BitMaskIndex()
+                # self.indexes[field] = BitmapIndex(field, self.dbname)
                 self.indexes[field] = TreeIndex(field, self.dbname)
             else:
                 self.indexes[field] = TreeIndex(field, self.dbname)
@@ -108,7 +92,6 @@ class PersistentDB():
 
     def delete_database(self):
         "Remove the database and all associated files"
-        #ASK: added close to fix files being open issue
         self.close()
         shutil.rmtree(self.data_dir)
 
@@ -121,7 +104,8 @@ class PersistentDB():
     def _check_pk(self,pk):
         "helper function to check that 'pk' is a string"
         try:
-            assert isinstance(pk,str), "Invalid PK"
+            # assert isinstance(pk,str), "Invalid PK"
+            assert isinstance(pk,str)
         except:
             raise ValueError('pk must be a string object')
 
