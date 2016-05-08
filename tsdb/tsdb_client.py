@@ -104,7 +104,7 @@ class TSDBClient(object):
 
         Returns
         -------
-
+        tsdb status & payload
         """
         ts_augmented_select = TSDBOp_AugmentedSelect(proc, target, arg, metadata_dict, additional)
         status, payload = await self._send(ts_augmented_select.to_json())
@@ -162,7 +162,7 @@ class TSDBClient(object):
         -------
         tsdb status and payload
         '''
-        reader, writer = await asyncio.open_connection('127.0.0.1', self.port, loop=loop)
+        reader, writer = await asyncio.open_connection('localhost', self.port, loop=loop)
         writer.write(serialize(msg))
         await writer.drain()
         # Wait for response

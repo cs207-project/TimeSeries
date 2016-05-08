@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+import asynctest
 import timeseries as ts
 import subprocess
 import time
@@ -46,7 +46,7 @@ def make_remove_trigger(proc, onwhat):
 
 
 
-class RestApiTest(unittest.TestCase):
+class Test_Web_Application(unittest.TestCase):
     def setUp(self):
         '''Method or coroutine called to prepare the test fixture.'''
         self.server_log_file = open('.test_rest_api_server_log', 'w')
