@@ -142,21 +142,18 @@ class Test_Web_Application(unittest.TestCase):
             results = json.loads(r.content.decode('utf-8'))
             vpdist[v] = results[v]['d']
 
-        #
-        # closest_vpk = min(vpkeys,key=lambda v:vpdist[v])
-        #
-        # # Step 2: find all time series within 2*d(query, nearest_vp_to_query)
-        # #this is an augmented select to the same proc in correlation
-        # payload = {'proc':'corr','target':'d','arg':query.to_json()}
-        # payload['where'] = {'d_'+closest_vpk: {'<=': 2*vpdist[closest_vpk]}}
-        # r = requests.get(self.server_url+'/augselect',params={'query':json.dumps(payload)})
-        # results = json.loads(r.content.decode('utf-8'))
-        #
-        # #2b: find the smallest distance amongst this ( or k smallest)
-        # #you can do this in local code
-        # nearestwanted = min(results.keys(),key=lambda p: results[p]['d'])
-        #
-        # self.assertEqual(nearestwanted,'ts-35')
+        closest_vpk = min(vpkeys,key=lambda v:vpdist[v])
+
+        # Step 2: find all time series within 2*d(query, nearest_vp_to_query)
+        #this is an augmented select to the same proc in correlation
+        payload = {'proc':'corr','target':'d','arg':query.to_json()}
+        payload['where'] = {'d_vp-'+str(vpkeys.index(closest_vpk)): {'<=': 2*vpdist[closest_vpk]}}
+        r = requests.get(self.web_url+'/augmented_select',params={'query':json.dumps(payload)})
+        results = json.loads(r.content.decode('utf-8'))
+
+        #2b: find the smallest distance amongst this ( or k smallest)
+        #you can do this in local code
+        nearestwanted = min(results.keys(),key=lambda p: results[p]['d'])
 
 if __name__ == '__main__':
     unittest.main()
