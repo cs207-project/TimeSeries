@@ -16,7 +16,7 @@ schema = {
   'd-vp2': {'type': 'float',  'index': 1},
   'd-vp3': {'type': 'float',  'index': 1},
   'd-vp4': {'type': 'float',  'index': 1},
-  'd-vp5': {'type': 'float',  'index': 1}
+  'd-vp5': {'type': 'float',  'index': 1},
 }
 
 def main():

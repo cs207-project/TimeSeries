@@ -39,21 +39,8 @@ class PersistentDB():
         if os.path.exists(self.data_dir+"/db_metadata.met"):
             with open(self.data_dir+"/db_metadata.met", 'rb', buffering=0) as fd:
                 self.tsLength, self.pkfield, self.schema = pickle.load(fd)
-                # Validate Schema
-                if schema is not None:
-                    dict_is_eq =  set(schema.keys())==set(self.schema.keys())
-                    for key in schema.keys():
-                        dict_is_eq = (schema[key]==self.schema[key])
-                        if not dict_is_eq:
-                            break
-                    if not dict_is_eq:
-                        raise ValueError("Input schema contradicts persistent schema.")
-                # Validate pk_field
-                if not self.pkfield == pk_field:
-                    raise ValueError("PK field contradicts persistent pk:'{}'".format(self.pkfield))
-                # Validate ts_length
-                if not self.tsLength == ts_length:
-                    raise ValueError("ts_length field contradicts persistent ts_length '{}'".format(self.tsLength))
+                self._assert_valid_db(schema, pk_field, ts_length)
+
         else:
             self.tsLength = ts_length
             self.pkfield = pk_field
@@ -79,6 +66,22 @@ class PersistentDB():
                 self.indexes[field] = TreeIndex(field, self.dbname)
             else:
                 self.indexes[field] = TreeIndex(field, self.dbname)
+
+    def _assert_valid_db(self, schema, pk_field, ts_length):
+        if schema is not None:
+            dict_is_eq =  set(schema.keys())==set(self.schema.keys())
+            for key in schema.keys():
+                dict_is_eq = (schema[key]==self.schema[key])
+                if not dict_is_eq:
+                    break
+            if not dict_is_eq:
+                raise ValueError("Input schema contradicts persistent schema.")
+        # Validate pk_field
+        if not self.pkfield == pk_field:
+            raise ValueError("PK field contradicts persistent pk:'{}'".format(self.pkfield))
+        # Validate ts_length
+        if not self.tsLength == ts_length:
+            raise ValueError("ts_length field contradicts persistent ts_length '{}'".format(self.tsLength))
 
     def __len__(self):
         "Dunder function to return length of timeseries db"
@@ -342,7 +345,7 @@ class PersistentDB():
                     else:
                         matches = []
                         for pk in self.pks:
-                            test_meta = self._get_meta_dict[p]
+                            test_meta = self._get_meta_dict[pk]
                             if field in test_meta.keys() and test_meta[field] == criteria:
                                 matches.append(pk)
                     pks_out = pks_out & set(matches)
