@@ -138,15 +138,7 @@ class Test_Web_Application(unittest.TestCase):
         payload = {"proc":"corr", "target":"d", "arg":query.to_json()}
         for v in vpkeys:
             payload['where'] = {'pk': v}
-            print(json.dumps(payload))
-            print(payload)
-            print(type(payload))
-            # print(str(payload))
-            # print(str(payload).replace("'", '"'))
             r = requests.get(self.web_url+'/augmented_select', {'query':json.dumps(payload)})
-            # r = requests.post(self.web_url+'/augmented_select', json.dumps(payload))
-            print(r.url)
-            print("content", r.content)
             results = json.loads(r.content.decode('utf-8'))
             vpdist[v] = results[v]['d']
 
