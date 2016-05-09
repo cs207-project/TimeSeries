@@ -153,6 +153,7 @@ class Test_Web_Application(unittest.TestCase):
 
         #2b: find the smallest distance amongst this ( or k smallest)
         #you can do this in local code
+        print(results)
         nearestwanted = min(results.keys(),key=lambda p: results[p]['d'])
 
 if __name__ == '__main__':
