@@ -119,7 +119,7 @@ class Handler(object):
     -------
     tsdb_root
     tsdb_select
-    tsdb_augment_select
+    tsdb_augmented_select
     tsdb_insert_ts
     """
     def __init__(self):
