@@ -363,6 +363,7 @@ class BitmapIndex():
 
     def getEqual(self, fieldValue):
         # Returns the list of primary keys that match this fieldValue
+
         # Find the index of this fieldValue in the list of valid values
         fieldValue_index = self.values.index(fieldValue)
 
