@@ -18,7 +18,7 @@ def tsmaker(m, s, j):
 class Test_Persistentdb(asynctest.TestCase):
 
     async def setUp(self):
-        self.server_log_file = open('.test_tsdb_client_log','w')
+        self.server_log_file = open('.test_persistentdb_client_log','w')
         self.server_proc = subprocess.Popen(['python', 'go_persistent_server.py']
             ,stdout=self.server_log_file,stderr=subprocess.STDOUT)
 
