@@ -3,6 +3,7 @@ from operator import and_
 from functools import reduce
 import operator
 import numbers
+from .tsdb_error import TSDBStatus
 
 # this dictionary will help you in writing a generic select operation
 OPMAP = {
@@ -84,6 +85,25 @@ class DictDB:
         self.rows[pk]['ts'] = ts
         self.update_indices(pk)
 
+    def delete_ts(self, pk):
+        """
+        given a pk, delete corresponding TimeSeries from the DB.
+
+        Parameters
+        ----------
+        pk : int
+            primary_key, a unique identifier for the TimeSeries
+        """
+
+        # first, check if the pk exist in DB
+        if pk not in self.rows:
+            raise ValueError(TSDBStatus.INVALID_KEY, 'Tried to delete {}, but that primary key does not exist'.format(pk))
+
+        # save the row for pk temporarily to remove meta data too
+        tmp_row = self.rows[pk]
+        # delete pk from rows dictionary
+        del self.rows[pk]
+        self.remove_from_indices(pk,tmp_row)
 
     def upsert_meta(self, pk, meta):
         """
@@ -139,37 +159,6 @@ class DictDB:
             if self.schema[field]['index'] is not None:
                 idx = self.indexes[field]
                 idx[v].add(pk)
-
-    def _rows_to_return(self, pks, fields_to_ret):
-        pks_ret = []
-        fields_ret = []
-        if fields_to_ret is None:
-            print ('S> D> NO FIELDS')
-            pks_ret, fields_ret = list(pks), [{}]*len(pks)
-        elif fields_to_ret == []:
-            print ('S> D> ALL FIELDS')
-            # Need to loop through pks first
-            for pk in pks:
-                if pk in self.rows.keys():
-                    pks_ret.append(pk)
-                    fields_dict = self.rows[pk]
-                    field_dict_ret = {}
-                    for f_pk in fields_dict.keys():
-                        if f_pk != 'ts':
-                            field_dict_ret[f_pk] = fields_dict[f_pk]
-                    fields_ret.append(field_dict_ret)
-        elif isinstance(fields_to_ret,list):
-            print ('S> D> FIELDS {}'.format(fields_to_ret))
-            for pk in pks:
-                if pk in self.rows.keys():
-                    pks_ret.append(pk)
-                    fields_dict = self.rows[pk]
-                    field_dict_ret = {}
-                    for f_pk in fields_dict.keys():
-                        if f_pk in fields_to_ret:
-                            field_dict_ret[f_pk] = fields_dict[f_pk]
-                    fields_ret.append(field_dict_ret)
-        return pks_ret, fields_ret
 
     def select(self, meta, fields_to_ret = None, additional = None):
         """
@@ -246,3 +235,44 @@ class DictDB:
             return self._rows_to_return(set(pks_list), fields_to_ret)
 
 
+    # ======================
+    # Helper Functions
+    # ======================
+    def _rows_to_return(self, pks, fields_to_ret):
+        pks_ret = []
+        fields_ret = []
+        if fields_to_ret is None:
+            print ('S> D> NO FIELDS')
+            pks_ret, fields_ret = list(pks), [{}]*len(pks)
+        elif fields_to_ret == []:
+            print ('S> D> ALL FIELDS')
+            # Need to loop through pks first
+            for pk in pks:
+                if pk in self.rows.keys():
+                    pks_ret.append(pk)
+                    fields_dict = self.rows[pk]
+                    field_dict_ret = {}
+                    for f_pk in fields_dict.keys():
+                        if f_pk != 'ts':
+                            field_dict_ret[f_pk] = fields_dict[f_pk]
+                    fields_ret.append(field_dict_ret)
+        elif isinstance(fields_to_ret,list):
+            print ('S> D> FIELDS {}'.format(fields_to_ret))
+            for pk in pks:
+                if pk in self.rows.keys():
+                    pks_ret.append(pk)
+                    fields_dict = self.rows[pk]
+                    field_dict_ret = {}
+                    for f_pk in fields_dict.keys():
+                        if f_pk in fields_to_ret:
+                            field_dict_ret[f_pk] = fields_dict[f_pk]
+                    fields_ret.append(field_dict_ret)
+        return pks_ret, fields_ret
+
+    def remove_from_indices(self, pk, row):
+        "Remove pk from indices after deletion"
+        for field in row:
+            v = row[field]
+            if self.schema[field]['index'] is not None:
+                idx = self.indexes[field]# idx is a defaultdict(set)
+                idx[v].remove(pk)#DNY: 'v' must be hashable

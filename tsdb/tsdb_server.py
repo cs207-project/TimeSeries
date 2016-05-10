@@ -29,6 +29,19 @@ class TSDBProtocol(asyncio.Protocol):
         self._run_trigger('insert_ts', [op['pk']])
         return TSDBOp_Return(TSDBStatus.OK, op['op'])
 
+    def _delete_ts(self, op):
+        """
+        Delete a TimeSeries at the database (server-side)
+
+        Parameters
+        ----------
+        op : TSDBOp_DeleteTS object
+            contains primary key for TimeSeries to delete
+        """
+        self.server.db.delete_ts(op['pk'])
+        self._run_trigger('delete_ts', [op['pk']])
+        return TSDBOp_Return(TSDBStatus.OK, op['op'])
+
     def _upsert_meta(self, op):
         self.server.db.upsert_meta(op['pk'], op['md'])
         self._run_trigger('upsert_meta', [op['pk']])
@@ -111,6 +124,8 @@ class TSDBProtocol(asyncio.Protocol):
             if status is TSDBStatus.OK:
                 if isinstance(op, TSDBOp_InsertTS):
                     response = self._insert_ts(op)
+                elif isinstance(op, TSDBOp_DeleteTS):
+                    response = self._delete_ts(op)
                 elif isinstance(op, TSDBOp_UpsertMeta):
                     response = self._upsert_meta(op)
                 elif isinstance(op, TSDBOp_Select):

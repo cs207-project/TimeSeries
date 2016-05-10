@@ -54,6 +54,14 @@ class TSDBOp_InsertTS(TSDBOp):
     def from_json(cls, json_dict):
         return cls(json_dict['pk'], TimeSeries(*(json_dict['ts'])))
 
+class TSDBOp_DeleteTS(TSDBOp):
+    def __init__(self, pk):
+        super().__init__('delete_ts')
+        self['pk'] = pk
+
+    @classmethod
+    def from_json(cls, json_dict):
+        return cls(json_dict['pk'])
 
 class TSDBOp_Return(TSDBOp):
 

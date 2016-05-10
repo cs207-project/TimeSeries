@@ -30,13 +30,6 @@ def select_to_str(md=None, fields=None, additional=None):
     return_str+='}'
     return return_str
 
-def upsert_meta_to_json(primary_key, metadata_dict):
-    return json.dumps({'primary_key':primary_key, 'metadata_dict': metadata_dict})
-
-def add_trigger_to_json(proc, onwhat, target, arg):
-    if hasattr(arg, 'to_json'):
-        arg = arg.to_json()
-    return json.dumps({'proc':proc, 'onwhat':onwhat, 'target':target, 'arg':arg})
 
 def make_remove_trigger(proc, onwhat):
     return json.dumps({'proc':proc,'onwhat':onwhat})
@@ -140,7 +133,7 @@ class Test_Web_Application(unittest.TestCase):
         r = requests.get(self.web_url+'/select?query='+params)
         self.assertEqual(r.status_code, 200)
 
-    def test_main(self):
+    def test_augmented_select(self):
         #we first create a query time series.
         _, query = tsmaker(0.5, 0.2, 0.1)
 
@@ -154,20 +147,9 @@ class Test_Web_Application(unittest.TestCase):
             results = json.loads(r.content.decode('utf-8'))
             vpdist[v] = results[v]['d']
 
-        closest_vpk = min(vpkeys,key=lambda v:vpdist[v])
+        lowest_dist_vp = min(vpkeys, key=lambda v:vpdist[v])
+        print(lowest_dist_vp)
 
-        # Step 2: find all time series within 2*d(query, nearest_vp_to_query)
-        #this is an augmented select to the same proc in correlation
-        payload = {'proc':'corr','target':'d','arg':query.to_json()}
-        payload['where'] = {'d_vp-'+str(vpkeys.index(closest_vpk)): {'<=': 2*vpdist[closest_vpk]}}
-        r = requests.get(self.web_url+'/augmented_select',params={'query':json.dumps(payload)})
-        print(r.content, r.status_code)
-        results = json.loads(r.content.decode('utf-8'))
-
-        #2b: find the smallest distance amongst this ( or k smallest)
-        #you can do this in local code
-        print(results)
-        nearestwanted = min(results.keys(),key=lambda p: results[p]['d'])
 
 if __name__ == '__main__':
     unittest.main()
