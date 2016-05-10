@@ -38,7 +38,21 @@ class TSDBClient(object):
         """
 
         ts_insert = TSDBOp_InsertTS(primary_key, ts)
-        status, payload =  await self._send(ts_insert.to_json())
+        status, payload = await self._send(ts_insert.to_json())
+        return status, payload
+
+    async def delete_ts(self, primary_key):
+        """
+        Delete a timeseries from the database by sending a request to the server.
+
+        Parameters
+        ----------
+        primary_key: int
+            a unique identifier for the timeseries
+        """
+
+        ts_delete = TSDBOp_DeleteTS(primary_key)
+        status, payload = await self._send(ts_delete.to_json())
         return status, payload
 
     async def upsert_meta(self, primary_key, metadata_dict):
@@ -79,7 +93,7 @@ class TSDBClient(object):
 
         """
         ts_select = TSDBOp_Select(metadata_dict, fields, additional)
-        status, payload =  await self._send(ts_select.to_json())
+        status, payload = await self._send(ts_select.to_json())
         return status, payload
 
     async def augmented_select(self, proc, target, arg=None, metadata_dict={}, additional=None):
@@ -162,7 +176,7 @@ class TSDBClient(object):
         -------
         tsdb status and payload
         '''
-        reader, writer = await asyncio.open_connection('127.0.0.1', self.port, loop=loop)
+        reader, writer = await asyncio.open_connection('localhost', self.port, loop=loop)
         writer.write(serialize(msg))
         await writer.drain()
         # Wait for response

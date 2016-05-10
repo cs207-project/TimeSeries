@@ -54,6 +54,14 @@ class TSDBOp_InsertTS(TSDBOp):
     def from_json(cls, json_dict):
         return cls(json_dict['pk'], TimeSeries(*(json_dict['ts'])))
 
+class TSDBOp_DeleteTS(TSDBOp):
+    def __init__(self, pk):
+        super().__init__('delete_ts')
+        self['pk'] = pk
+
+    @classmethod
+    def from_json(cls, json_dict):
+        return cls(json_dict['pk'])
 
 class TSDBOp_Return(TSDBOp):
 
@@ -151,6 +159,7 @@ class TSDBOp_RemoveTrigger(TSDBOp):
 typemap = {
   'insert_ts': TSDBOp_InsertTS,
   'upsert_meta': TSDBOp_UpsertMeta,
+  'delete_ts': TSDBOp_DeleteTS,
   'select': TSDBOp_Select,
   'augmented_select': TSDBOp_AugmentedSelect,
   'add_trigger': TSDBOp_AddTrigger,

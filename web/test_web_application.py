@@ -30,21 +30,14 @@ def select_to_str(md=None, fields=None, additional=None):
     return_str+='}'
     return return_str
 
-def insert_ts_to_json(primary_key, ts):
-    return json.dumps({'primary_key':primary_key, 'ts':ts.to_json()})
-
-def upsert_meta_to_json(primary_key, metadata_dict):
-    return json.dumps({'primary_key':primary_key, 'metadata_dict': metadata_dict})
-
-def add_trigger_to_json(proc, onwhat, target, arg):
-    if hasattr(arg, 'to_json'):
-        arg = arg.to_json()
-    return json.dumps({'proc':proc, 'onwhat':onwhat, 'target':target, 'arg':arg})
 
 def make_remove_trigger(proc, onwhat):
     return json.dumps({'proc':proc,'onwhat':onwhat})
 
-
+def make_add_trigger(proc, onwhat, target, arg):
+    if hasattr(arg,'to_json'):
+        arg = arg.to_json()
+    return json.dumps({'proc':proc,'onwhat':onwhat,'target':target,'arg':arg})
 
 class Test_Web_Application(unittest.TestCase):
     def setUp(self):
@@ -98,23 +91,35 @@ class Test_Web_Application(unittest.TestCase):
         vpkeys = ["ts-{}".format(i) for i in np.random.choice(range(50), size=5, replace=False)]
         for i in range(5):
             # add 5 triggers to upsert distances to these vantage points
-            data = add_trigger_to_json('corr', 'insert_ts', ["d_vp-{}".format(i)], tsdict[vpkeys[i]])
+            # data = json.dumps({'proc':'corr', 'onwhat':'insert_ts', 'target':["d_vp-{}".format(i)], 'arg':tsdict[vpkeys[i]].to_json()})
+            data = make_add_trigger('corr', 'insert_ts', ["d_vp-{}".format(i)], tsdict[vpkeys[i]])
             r = requests.post(self.web_url+'/add_trigger', data)
             self.assertEqual(r.status_code, 200)
             # change the metadata for the vantage points to have meta['vp']=True
             metadict[vpkeys[i]]['vp'] = True
 
-    def test_insert_ts(self):
+    def test_insert_ts_and_upsert_meta(self):
         # Having set up the triggers, now insert the time series, and upsert the metadata
+        # ==========================================
+        # When it's first time to insert these keys in TSDB_server,
+        # insert_ts will work and return TSDBStatus.OK
+        # ==========================================
         for k in tsdict:
-            data = insert_ts_to_json(k, tsdict[k])
-            # TODO: 404 page not found status. Should check later on..
+            data = json.dumps({'primary_key':k, 'ts':tsdict[k].to_json()})
             r = requests.post(self.web_url+'/insert_ts', data)
-            data = upsert_meta_to_json(k, metadict[k])
+            self.assertEqual(r.status_code, 200)
+
+            # upsert meta
+            data = json.dumps({'primary_key':k, 'metadata_dict': metadict[k]})
             r = requests.post(self.web_url+'/add_metadata', data)
             self.assertEqual(r.status_code, 200)
 
-    def test_main(self):
+        # ==========================================
+        # However if it's not first time to insert these keys,
+        # insert_ts will return TSDBStatus.INVALID_KEY
+        # ==========================================
+
+    def test_select(self):
         # ===============================
         # In go_client.py
         # SELECT test cases
@@ -132,6 +137,7 @@ class Test_Web_Application(unittest.TestCase):
         r = requests.get(self.web_url+'/select?query='+params)
         self.assertEqual(r.status_code, 200)
 
+    def test_augmented_select_and_delete_ts(self):
         #we first create a query time series.
         _, query = tsmaker(0.5, 0.2, 0.1)
 
@@ -142,22 +148,24 @@ class Test_Web_Application(unittest.TestCase):
         for v in vpkeys:
             payload['where'] = {'pk': v}
             r = requests.get(self.web_url+'/augmented_select', {'query':json.dumps(payload)})
+            print("aug_select r content", r.content)
             results = json.loads(r.content.decode('utf-8'))
             vpdist[v] = results[v]['d']
 
-        closest_vpk = min(vpkeys,key=lambda v:vpdist[v])
+        lowest_dist_vp = min(vpkeys, key=lambda v:vpdist[v])
+        print(lowest_dist_vp)
 
-        # Step 2: find all time series within 2*d(query, nearest_vp_to_query)
-        #this is an augmented select to the same proc in correlation
-        payload = {'proc':'corr','target':'d','arg':query.to_json()}
-        payload['where'] = {'d_vp-'+str(vpkeys.index(closest_vpk)): {'<=': 2*vpdist[closest_vpk]}}
-        r = requests.get(self.web_url+'/augmented_select',params={'query':json.dumps(payload)})
-        results = json.loads(r.content.decode('utf-8'))
+        # just try to delete 'ts-99' for test
+        # don't check like this. Just compare the dictDB case.
+        r = requests.post(self.web_url+'/delete_ts', json.dumps({'primary_key':'ts-99'}))
+        print("status", r.status_code)
+        print("content", r.content)
+        self.assertEqual(r.status_code, 200)
 
-        #2b: find the smallest distance amongst this ( or k smallest)
-        #you can do this in local code
-        print(results)
-        nearestwanted = min(results.keys(),key=lambda p: results[p]['d'])
+    def test_delete_ts(self):
+        pass
+
+
 
 if __name__ == '__main__':
     unittest.main()
