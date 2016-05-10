@@ -3,6 +3,15 @@ import numpy as np
 import timeseries as ts
 from scipy.stats import norm
 import pyfftw
+import sys
+#sys.path.append("/Users/yuhantang/CS207/TimeSeries/procs")
+from .interface import *
+
+def createfromlist(l):
+    d = new_darray(len(l))
+    for i in range(0,len(l)):
+        darray_set(d,i,l[i])
+    return d
 
 def tsmaker(m, s, j):
     meta={}
@@ -18,20 +27,48 @@ def random_ts(a):
     return ts.TimeSeries(t, v)
 
 def stand(x, m, s):
-    #print(type(x),type(m),type(s))
-    #print(type((x-m)/s),'hey go fuck yourself')
+
     return (x-m)/s
 
 def ccor(ts1, ts2):
     "given two standardized time series, compute their cross-correlation using FFT"
-    #your code here
-    #print(type(ts1))
-    #print(type(ts1.values()))
+
+    next_2 = int(2**np.ceil(np.log(len(ts1.values()))))
     ts_1 = pyfftw.empty_aligned(len(ts1), dtype='complex128', n=16)
     ts_1[:] = ts1
-    f1 = nfft.fft(ts1.values())
-    f2 = nfft.fft(ts2.values())
-    #print(f1)
+    f1 = ts1.values()
+    f2 = ts2.values()
+    f3,f4 = [],[]
+    f5 = [0]*len(ts1.values())
+    f6 = [0]*len(ts2.values())
+
+    f7,f8 = [None]*(len(f5)*2),[None]*(len(f6)*2)
+
+    f7[::2] = f1
+    f7[1::2] = f5
+    f8[::2] = f2
+    f8[1::2] = f6
+
+    for i in range(len(f7)+1,next_2*2):
+        f7.append(np.double(0))
+
+    for i in range(len(f8)+1,next_2*2):
+        f8.append(np.double(0))
+    f7.insert(0,0)
+    f8.insert(0,0)
+    f7 = createfromlist(np.double(f7))
+    f8 = createfromlist(np.double(f8))
+    
+    four1(f7,next_2,1)
+    four1(f8,next_2,1)
+    for i in range(len(ts2.values())*2+1):
+        f3.append(darray_get(f7,i))
+    for j in range(len(ts1.values())*2+1):
+        f4.append(darray_get(f8,j))
+    f1 = np.asarray(f3[1::2]) + 1j * np.asarray(f3[2::2])
+    f2 = np.asarray(f4[1::2]) + 1j * np.asarray(f4[2::2])
+    f1 = f1[:len(ts1)+1]
+    f2 = f2[:len(ts2)+1]
     ccor_value = nfft.ifft(f1 * np.conj(f2)).real
     return 1/len(ts1) * ccor_value
 

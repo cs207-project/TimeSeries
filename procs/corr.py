@@ -2,6 +2,7 @@ import timeseries as ts
 import numpy as np
 
 from ._corr import stand, kernel_corr
+from .interface import *
 
 import asyncio
 
