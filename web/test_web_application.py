@@ -30,9 +30,6 @@ def select_to_str(md=None, fields=None, additional=None):
     return_str+='}'
     return return_str
 
-def insert_ts_to_json(primary_key, ts):
-    return json.dumps({'primary_key':primary_key, 'ts':ts.to_json()})
-
 def upsert_meta_to_json(primary_key, metadata_dict):
     return json.dumps({'primary_key':primary_key, 'metadata_dict': metadata_dict})
 
@@ -104,17 +101,28 @@ class Test_Web_Application(unittest.TestCase):
             # change the metadata for the vantage points to have meta['vp']=True
             metadict[vpkeys[i]]['vp'] = True
 
-    def test_insert_ts(self):
+    def test_insert_ts_and_upsert_meta(self):
         # Having set up the triggers, now insert the time series, and upsert the metadata
+        # ==========================================
+        # When it's first time to insert these keys in TSDB_server,
+        # insert_ts will work and return TSDBStatus.OK
+        # ==========================================
         for k in tsdict:
-            data = insert_ts_to_json(k, tsdict[k])
-            # TODO: 404 page not found status. Should check later on..
+            data = json.dumps({'primary_key':k, 'ts':tsdict[k].to_json()})
             r = requests.post(self.web_url+'/insert_ts', data)
-            data = upsert_meta_to_json(k, metadict[k])
+            self.assertEqual(r.status_code, 200)
+
+            # upsert meta
+            data = json.dumps({'primary_key':k, 'metadata_dict': metadict[k]})
             r = requests.post(self.web_url+'/add_metadata', data)
             self.assertEqual(r.status_code, 200)
 
-    def test_main(self):
+        # ==========================================
+        # However if it's not first time to insert these keys,
+        # insert_ts will return TSDBStatus.INVALID_KEY
+        # ==========================================
+
+    def test_select(self):
         # ===============================
         # In go_client.py
         # SELECT test cases
@@ -132,6 +140,7 @@ class Test_Web_Application(unittest.TestCase):
         r = requests.get(self.web_url+'/select?query='+params)
         self.assertEqual(r.status_code, 200)
 
+    def test_main(self):
         #we first create a query time series.
         _, query = tsmaker(0.5, 0.2, 0.1)
 
@@ -152,6 +161,7 @@ class Test_Web_Application(unittest.TestCase):
         payload = {'proc':'corr','target':'d','arg':query.to_json()}
         payload['where'] = {'d_vp-'+str(vpkeys.index(closest_vpk)): {'<=': 2*vpdist[closest_vpk]}}
         r = requests.get(self.web_url+'/augmented_select',params={'query':json.dumps(payload)})
+        print(r.content, r.status_code)
         results = json.loads(r.content.decode('utf-8'))
 
         #2b: find the smallest distance amongst this ( or k smallest)

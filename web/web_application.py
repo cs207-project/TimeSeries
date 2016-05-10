@@ -94,7 +94,7 @@ class WebApplication(object):
         self.app.router.add_route('GET', '/tsdb/select', self.handler.tsdb_select)
         self.app.router.add_route('GET', '/tsdb/augmented_select', self.handler.tsdb_augmented_select)
         self.app.router.add_route('GET', '/tsdb/find_similar', self.handler.tsdb_find_similar)
-        self.app.router.add_route('POST', '/tsdb/insert_ts', self.handler.tsdb_add_ts)
+        self.app.router.add_route('POST', '/tsdb/insert_ts', self.handler.tsdb_insert_ts)
         self.app.router.add_route('POST', '/tsdb/delete_ts', self.handler.tsdb_delete_ts)
         self.app.router.add_route('POST', '/tsdb/add_trigger', self.handler.tsdb_add_trigger)
         self.app.router.add_route('POST', '/tsdb/remove_trigger', self.handler.tsdb_remove_trigger)
@@ -178,17 +178,14 @@ class Handler(object):
 
                 if 'where' in query:
                     metadata_dict = query['where']
-                    print("meta", metadata_dict)
                 else:
                     metadata_dict = {}
                 if 'additional' in query:
                     additional = query['additional']
-                    print("addi", additional)
                 else:
                     additional = None
                 if 'arg' in query: # arg should be put as TimeSeries object form. Last time we only put json form of it and that aroused errors.
                     arg = ts.TimeSeries(*query['arg'])
-                    print("arg", arg)
                 else:
                     arg = None
                 status, result = await self.client.augmented_select(proc, target, arg, metadata_dict, additional)
@@ -226,7 +223,7 @@ class Handler(object):
         finally:
             return web.Response(body=json.dumps(result).encode('utf-8'))
 
-    async def tsdb_add_ts(self,request):
+    async def tsdb_insert_ts(self,request):
         try:
             request_dict = await request.json()
             print(request_dict)
@@ -236,6 +233,8 @@ class Handler(object):
 
             if status ==TSDBStatus.OK:
                 result = "Successfully inserted timeseries {}".format(pk)
+            elif status == TSDBStatus.INVALID_KEY:
+                result = "Primiary key {} DUPLICATED.".format(pk)
             else:
                 result = "DB Insertion failed with pk {},ts {} , please check again. ".format(pk, *request_dict['ts'])
 
