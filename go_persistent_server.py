@@ -28,7 +28,7 @@ def main():
     else:
         _createdDirs = False
     db = PersistentDB(schema, pk_field='pk', db_name=db_name, ts_length=TS_LENGTH, testing=True)
-    server = TSDBServer(db)
+    server = TSDBServer(db, port = 9998)
     server.run()
     db.delete_database()
 
