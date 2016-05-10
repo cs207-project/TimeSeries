@@ -119,7 +119,7 @@ class Handler(object):
     -------
     tsdb_root
     tsdb_select
-    tsdb_augment_select
+    tsdb_augmented_select
     tsdb_insert_ts
     """
     def __init__(self):
@@ -167,39 +167,14 @@ class Handler(object):
                 return web.Response(body=json.dumps(result).encode('utf-8'))
 
     async def tsdb_augmented_select(self, request):
-        # print("i got aug select")
-        # print(request)
-        # try:
-        #
-        #     json_query = await request.json()
-        #     print("got here", type(json_query), json_query)
-        #     target = json_query['target']
-        #     proc = json_query['proc']
-        #
-        #     metadata_dict = json_query['where'] if 'where' in json_query else {}
-        #     additional = json_query['additional'] if 'additional' in json_query else None
-        #     arg = json_query['arg'] if 'arg' in json_query else None
-        #
-        #     status,payload = await self.client.augmented_select(proc,target,arg
-        #                                                         ,metadata_dict
-        #                                                         ,additional)
-        # except Exception as error:
-        #     payload = {"msg": "Could not parse request. Please see documentation."}
-        #     payload["type"] = str(type(error))
-        #     payload["args"] = str(error.args)
-        #
-        # finally:
-        #     return web.Response(body=json.dumps(payload).encode('utf-8'))
         if 'query' not in request.GET:
             view = AUGMENTED_SELECT_VIEW
             return web.Response(body=view.encode('utf-8'))
         else: # if there is query parameter in URL
             try:
                 query = json.loads(request.GET['query'])
-                print("got here", type(query), query)
                 proc = query['proc']
                 target = query['target']
-                print(proc, target)
 
                 if 'where' in query:
                     metadata_dict = query['where']
@@ -211,13 +186,12 @@ class Handler(object):
                     print("addi", additional)
                 else:
                     additional = None
-                if 'arg' in query:
+                if 'arg' in query: # arg should be put as TimeSeries object form. Last time we only put json form of it and that aroused errors.
                     arg = ts.TimeSeries(*query['arg'])
                     print("arg", arg)
                 else:
                     arg = None
                 status, result = await self.client.augmented_select(proc, target, arg, metadata_dict, additional)
-                # return web.Response(body=json.dumps(payload).encode('utf-8'))
 
                 if status != TSDBStatus.OK:
                     result = "Augmented Selection failed"

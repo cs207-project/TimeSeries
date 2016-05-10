@@ -66,17 +66,14 @@ class Test_Web_Application(unittest.TestCase):
         self.web_proc.terminate()
         self.web_log_file.close()
 
-    def test_main(self):
-        # add a trigger. notice the argument. It does not do anything here but
-        # could be used to save a shlep of data from client to server.
-        data = add_trigger_to_json('junk', 'insert_ts', None, 'db:one:ts')
+    def test_add_trigger(self):
+        data = json.dumps({'proc':'junk', 'onwhat':'insert_ts', 'target':None, 'arg':'db:one:ts'})
         response = requests.post(self.web_url+'/add_trigger', data)
         self.assertEqual(response.status_code, 200)
 
-        data = add_trigger_to_json('stats', 'insert_ts', ['mean', 'std'], None)
+        data = json.dumps({'proc':'stats', 'onwhat':'insert_ts', 'target':['mean', 'std'], 'arg':None})
         r = requests.post(self.web_url+'/add_trigger', data)
         self.assertEqual(r.status_code, 200)
-
 
         #Set up 50 time series
         mus = np.random.uniform(low=0.0, high=1.0, size=50)
@@ -84,6 +81,8 @@ class Test_Web_Application(unittest.TestCase):
         jits = np.random.uniform(low=0.05, high=0.2, size=50)
 
         # dictionaries for time series and their metadata
+        global tsdict
+        global metadict
         tsdict={}
         metadict={}
         for i, m, s, j in zip(range(50), mus, sigs, jits):
@@ -95,6 +94,7 @@ class Test_Web_Application(unittest.TestCase):
             metadict[pk] = meta
 
         # choose 5 distinct vantage point time series
+        global vpkeys
         vpkeys = ["ts-{}".format(i) for i in np.random.choice(range(50), size=5, replace=False)]
         for i in range(5):
             # add 5 triggers to upsert distances to these vantage points
@@ -103,6 +103,8 @@ class Test_Web_Application(unittest.TestCase):
             self.assertEqual(r.status_code, 200)
             # change the metadata for the vantage points to have meta['vp']=True
             metadict[vpkeys[i]]['vp'] = True
+
+    def test_insert_ts(self):
         # Having set up the triggers, now insert the time series, and upsert the metadata
         for k in tsdict:
             data = insert_ts_to_json(k, tsdict[k])
@@ -112,6 +114,7 @@ class Test_Web_Application(unittest.TestCase):
             r = requests.post(self.web_url+'/add_metadata', data)
             self.assertEqual(r.status_code, 200)
 
+    def test_main(self):
         # ===============================
         # In go_client.py
         # SELECT test cases
@@ -138,33 +141,23 @@ class Test_Web_Application(unittest.TestCase):
         payload = {"proc":"corr", "target":"d", "arg":query.to_json()}
         for v in vpkeys:
             payload['where'] = {'pk': v}
-            print(json.dumps(payload))
-            print(payload)
-            print(type(payload))
-            # print(str(payload))
-            # print(str(payload).replace("'", '"'))
             r = requests.get(self.web_url+'/augmented_select', {'query':json.dumps(payload)})
-            # r = requests.post(self.web_url+'/augmented_select', json.dumps(payload))
-            print(r.url)
-            print("content", r.content)
             results = json.loads(r.content.decode('utf-8'))
             vpdist[v] = results[v]['d']
 
-        #
-        # closest_vpk = min(vpkeys,key=lambda v:vpdist[v])
-        #
-        # # Step 2: find all time series within 2*d(query, nearest_vp_to_query)
-        # #this is an augmented select to the same proc in correlation
-        # payload = {'proc':'corr','target':'d','arg':query.to_json()}
-        # payload['where'] = {'d_'+closest_vpk: {'<=': 2*vpdist[closest_vpk]}}
-        # r = requests.get(self.server_url+'/augselect',params={'query':json.dumps(payload)})
-        # results = json.loads(r.content.decode('utf-8'))
-        #
-        # #2b: find the smallest distance amongst this ( or k smallest)
-        # #you can do this in local code
-        # nearestwanted = min(results.keys(),key=lambda p: results[p]['d'])
-        #
-        # self.assertEqual(nearestwanted,'ts-35')
+        closest_vpk = min(vpkeys,key=lambda v:vpdist[v])
+
+        # Step 2: find all time series within 2*d(query, nearest_vp_to_query)
+        #this is an augmented select to the same proc in correlation
+        payload = {'proc':'corr','target':'d','arg':query.to_json()}
+        payload['where'] = {'d_vp-'+str(vpkeys.index(closest_vpk)): {'<=': 2*vpdist[closest_vpk]}}
+        r = requests.get(self.web_url+'/augmented_select',params={'query':json.dumps(payload)})
+        results = json.loads(r.content.decode('utf-8'))
+
+        #2b: find the smallest distance amongst this ( or k smallest)
+        #you can do this in local code
+        print(results)
+        nearestwanted = min(results.keys(),key=lambda p: results[p]['d'])
 
 if __name__ == '__main__':
     unittest.main()
