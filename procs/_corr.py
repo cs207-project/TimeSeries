@@ -2,7 +2,7 @@ import numpy.fft as nfft
 import numpy as np
 import timeseries as ts
 from scipy.stats import norm
-import pyfftw
+# import pyfftw
 
 def tsmaker(m, s, j):
     meta={}
@@ -27,8 +27,8 @@ def ccor(ts1, ts2):
     #your code here
     #print(type(ts1))
     #print(type(ts1.values()))
-    ts_1 = pyfftw.empty_aligned(len(ts1), dtype='complex128', n=16)
-    ts_1[:] = ts1
+    # ts_1 = pyfftw.empty_aligned(len(ts1), dtype='complex128', n=16)
+    # ts_1[:] = ts1
     f1 = nfft.fft(ts1.values())
     f2 = nfft.fft(ts2.values())
     #print(f1)
