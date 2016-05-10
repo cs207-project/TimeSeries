@@ -20,7 +20,6 @@ NUMVPS = 5
 
 
 def main():
-    print("go server come")
     # we augment the schema by adding columns for 5 vantage points
     for i in range(NUMVPS):
         schema["d_vp-{}".format(i)] = {'convert': float, 'index': 1}

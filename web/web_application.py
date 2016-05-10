@@ -21,9 +21,9 @@ localhost:8080/tsdb/augmented_select    augmented select
 localhost:8080/tsdb/find_similar        timeSeries similarity search
 localhost:8080/tsdb/insert_ts           insert
 localhost:8080/tsdb/add_trigger         add trigger
-/tsdb/remove/trigger --> remove trigger
-/tsdb/add/metadata --> insert metadata
-            """
+localhost:8080/tsdb/remove_trigger      remove trigger
+localhost:8080/tsdb/add_metadata        upsert metadata
+"""
 
 SELECT_VIEW = """\
 # =================================
@@ -226,7 +226,6 @@ class Handler(object):
     async def tsdb_insert_ts(self,request):
         try:
             request_dict = await request.json()
-            print(request_dict)
             pk = request_dict['primary_key']
             t = ts.TimeSeries(*request_dict['ts'])
             status, result = await self.client.insert_ts(pk,t)
@@ -248,10 +247,14 @@ class Handler(object):
 
     async def tsdb_delete_ts(self,request):
         try:
+            print('i got here!')
             request_dict = await request.json()
+            print(request_dict)
 
             pk = request_dict['primary_key']
+            print('pk', pk)
             status, result = await self.client.delete_ts(pk)
+            print("delete_ts status, result", status, result)
 
             if status ==TSDBStatus.OK:
                 result = "Successfully deleted timeseries {}".format(pk)

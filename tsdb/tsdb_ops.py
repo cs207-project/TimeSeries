@@ -159,6 +159,7 @@ class TSDBOp_RemoveTrigger(TSDBOp):
 typemap = {
   'insert_ts': TSDBOp_InsertTS,
   'upsert_meta': TSDBOp_UpsertMeta,
+  'delete_ts': TSDBOp_DeleteTS,
   'select': TSDBOp_Select,
   'augmented_select': TSDBOp_AugmentedSelect,
   'add_trigger': TSDBOp_AddTrigger,

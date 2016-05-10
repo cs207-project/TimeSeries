@@ -100,10 +100,11 @@ class DictDB:
             raise ValueError(TSDBStatus.INVALID_KEY, 'Tried to delete {}, but that primary key does not exist'.format(pk))
 
         # save the row for pk temporarily to remove meta data too
-        tmp_row = self.rows[pk]
+        row = self.rows[pk]
+        self._delete_at_indices(pk, row)
         # delete pk from rows dictionary
         del self.rows[pk]
-        self.remove_from_indices(pk,tmp_row)
+
 
     def upsert_meta(self, pk, meta):
         """
@@ -160,7 +161,7 @@ class DictDB:
                 idx = self.indexes[field]
                 idx[v].add(pk)
 
-    def select(self, meta, fields_to_ret = None, additional = None):
+    def select(self, meta, fields_to_ret=None, additional=None):
         """
         Selecting timeseries elements in the database that match the criteria
         set in metadata_dict and return corresponding fields with additional
@@ -269,10 +270,17 @@ class DictDB:
                     fields_ret.append(field_dict_ret)
         return pks_ret, fields_ret
 
-    def remove_from_indices(self, pk, row):
-        "Remove pk from indices after deletion"
+    def _delete_at_indices(self, pk, row):
+        """
+        Delete pk in self.indices too"
+
+        Parameters
+        ----------
+        pk : primary key
+        row : a row for corresponding pk, a dict having fields in schema as columns
+        """
         for field in row:
-            v = row[field]
+            v = row[field] # ex) 1 or 2 for 'blarg'
             if self.schema[field]['index'] is not None:
-                idx = self.indexes[field]# idx is a defaultdict(set)
-                idx[v].remove(pk)#DNY: 'v' must be hashable
+                dict_set_from_index = self.indexes[field] # this is defaultdict(set)
+                dict_set_from_index[v].remove(pk) # set.remove(element)

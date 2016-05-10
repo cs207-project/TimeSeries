@@ -117,6 +117,7 @@ class TSDBProtocol(asyncio.Protocol):
             msg = self.deserializer.deserialize()
             status = TSDBStatus.OK  # until proven otherwise.
             response = TSDBOp_Return(status, None)  # until proven otherwise.
+            print("tsdb_server, msg:",msg)
             try:
                 op = TSDBOp.from_json(msg)
             except TypeError as e:

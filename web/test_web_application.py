@@ -34,7 +34,10 @@ def select_to_str(md=None, fields=None, additional=None):
 def make_remove_trigger(proc, onwhat):
     return json.dumps({'proc':proc,'onwhat':onwhat})
 
-
+def make_add_trigger(proc, onwhat, target, arg):
+    if hasattr(arg,'to_json'):
+        arg = arg.to_json()
+    return json.dumps({'proc':proc,'onwhat':onwhat,'target':target,'arg':arg})
 
 class Test_Web_Application(unittest.TestCase):
     def setUp(self):
@@ -88,7 +91,8 @@ class Test_Web_Application(unittest.TestCase):
         vpkeys = ["ts-{}".format(i) for i in np.random.choice(range(50), size=5, replace=False)]
         for i in range(5):
             # add 5 triggers to upsert distances to these vantage points
-            data = add_trigger_to_json('corr', 'insert_ts', ["d_vp-{}".format(i)], tsdict[vpkeys[i]])
+            # data = json.dumps({'proc':'corr', 'onwhat':'insert_ts', 'target':["d_vp-{}".format(i)], 'arg':tsdict[vpkeys[i]].to_json()})
+            data = make_add_trigger('corr', 'insert_ts', ["d_vp-{}".format(i)], tsdict[vpkeys[i]])
             r = requests.post(self.web_url+'/add_trigger', data)
             self.assertEqual(r.status_code, 200)
             # change the metadata for the vantage points to have meta['vp']=True
@@ -133,7 +137,7 @@ class Test_Web_Application(unittest.TestCase):
         r = requests.get(self.web_url+'/select?query='+params)
         self.assertEqual(r.status_code, 200)
 
-    def test_augmented_select(self):
+    def test_augmented_select_and_delete_ts(self):
         #we first create a query time series.
         _, query = tsmaker(0.5, 0.2, 0.1)
 
@@ -144,11 +148,23 @@ class Test_Web_Application(unittest.TestCase):
         for v in vpkeys:
             payload['where'] = {'pk': v}
             r = requests.get(self.web_url+'/augmented_select', {'query':json.dumps(payload)})
+            print("aug_select r content", r.content)
             results = json.loads(r.content.decode('utf-8'))
             vpdist[v] = results[v]['d']
 
         lowest_dist_vp = min(vpkeys, key=lambda v:vpdist[v])
         print(lowest_dist_vp)
+
+        # just try to delete 'ts-99' for test
+        # don't check like this. Just compare the dictDB case.
+        r = requests.post(self.web_url+'/delete_ts', json.dumps({'primary_key':'ts-99'}))
+        print("status", r.status_code)
+        print("content", r.content)
+        self.assertEqual(r.status_code, 200)
+
+    def test_delete_ts(self):
+        pass
+
 
 
 if __name__ == '__main__':
