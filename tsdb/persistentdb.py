@@ -222,8 +222,8 @@ class PersistentDB():
             # (field != self.pkfield) and (field != 'ts'):
                 typestr = self.schema[field]['type']
 
-                if type(TYPE_DEFAULT[typestr]) != type(new_meta[field]):
-                    raise TypeError("Entries of '{}' must be of type '{}'. You submitted type {}.".format(field, str(type(TYPE_DEFAULT[typestr])),type(new_meta[field])))
+                # if type(TYPE_DEFAULT[typestr]) != type(new_meta[field]):
+                #     raise TypeError("Entries of '{}' must be of type '{}'. You submitted type {}.".format(field, str(type(TYPE_DEFAULT[typestr])),type(new_meta[field])))
                 meta[n] = new_meta[field]
                 if self.schema[field]['type'] != "bool":
                     meta[n+1] = True
