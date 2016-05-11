@@ -27,7 +27,7 @@ MAX_CARD = 8
 TYPES = {
     'float': 'd',
     'bool': '?',
-    'int': 'i'
+    'int': 'i',
 }
 TYPE_DEFAULT = {
     'float': 0.0,

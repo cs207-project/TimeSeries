@@ -18,7 +18,7 @@ def tsmaker(m, s, j):
 
 async def client_op():
     print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
-    client = TSDBClient()
+    client = TSDBClient(port=9998)
 
     # add a trigger. notice the argument. It does not do anything here but
     # could be used to save a shlep of data from client to server.
