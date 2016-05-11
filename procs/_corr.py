@@ -2,7 +2,7 @@ import numpy.fft as nfft
 import numpy as np
 import timeseries as ts
 from scipy.stats import norm
-import pyfftw
+# import pyfftw
 import sys
 #sys.path.append("/Users/yuhantang/CS207/TimeSeries/procs")
 from .interface import *
@@ -34,8 +34,8 @@ def ccor(ts1, ts2):
     "given two standardized time series, compute their cross-correlation using FFT"
 
     next_2 = int(2**np.ceil(np.log(len(ts1.values()))))
-    ts_1 = pyfftw.empty_aligned(len(ts1), dtype='complex128', n=16)
-    ts_1[:] = ts1
+    # ts_1 = pyfftw.empty_aligned(len(ts1), dtype='complex128', n=16)
+    # ts_1[:] = ts1
     f1 = ts1.values()
     f2 = ts2.values()
     f3,f4 = [],[]

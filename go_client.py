@@ -48,7 +48,7 @@ async def client_op():
         await client.add_trigger('corr', 'insert_ts', ["d_vp-{}".format(i)], tsdict[vpkeys[i]])
         # change the metadata for the vantage points to have meta['vp']=True
         metadict[vpkeys[i]]['vp']=True
-    # Having set up the triggers, now inser the time series, and upsert the metadata
+    # Having set up the triggers, now insert the time series, and upsert the metadata
     for k in tsdict:
         await client.insert_ts(k, tsdict[k])
         await client.upsert_meta(k, metadict[k])
@@ -92,27 +92,27 @@ async def client_op():
     _, results = await client.select({'blarg': {'>=': 1}, 'order': 1}, fields=['blarg', 'std'])
     for k in results:
         print(k, results[k])
-
+    #
     print('------now computing vantage point stuff---------------------')
     print("VPS", vpkeys)
-
-    #we first create a query time series.
+    #
+    # #we first create a query time series.
     _, query = tsmaker(0.5, 0.2, 0.1)
-
+    #
     # your code here begins
-
-    # Step 1: in the vpdist key, get  distances from query to vantage points
+    #
+    # Step 1: in the vpdist key, get distances from query to vantage points
     # this is an augmented select
     vpdists = {}
     for v in vpkeys:
         _, results = await client.augmented_select('corr', 'd', query, {'pk': v})
         vpdists[v] = results[v]['d']
-
-    #1b: choose the lowest distance vantage point
+    #
+    # 1b: choose the lowest distance vantage point
     # you can do this in local code
     lowest_dist_vp = min(vpkeys, key=lambda v:vpdists[v])
-
-
+    #
+    #
     # Step 2: find all time series within 2*d(query, nearest_vp_to_query)
     # this is an augmented select to the same proc in correlation
     _, results = await client.augmented_select('corr', 'd', query, {'d_vp-'+str(vpkeys.index(lowest_dist_vp)):{'<=':2*vpdists[lowest_dist_vp]}})

@@ -1,7 +1,7 @@
-from simple_vp import *
+from .simple_vp import *
 import time
 import pylab as plt
-from simple_vp import VpNode, VpSearch
+from .simple_vp import VpNode, VpSearch
 import sys
 
 def levenshtein(a,b):
@@ -35,22 +35,22 @@ def main(file_name):
     distance = levenshtein
 
     s = time.time()
-    print "\ninput set %s points" % len(aset)
-    print "creating tree..."
+    print("\ninput set %s points" % len(aset))
+    print("creating tree...")
     root = VpNode(aset, distance=distance)
-    print "created: %s nodes" % VpNode.ids
-    print "done in s: %s" % (time.time() - s)
-    print "searching..."
+    print("created: %s nodes" % VpNode.ids)
+    print("done in s: %s" % (time.time() - s))
+    print("searching...")
     while True:
-        q = raw_input(">>")
+        q = input(">>")
 
         s = time.time()
         se = VpSearch(root, q, rad, 10)
         out = se.knn()
-        print se.stat
-        print "founded %s results" % len(out)
-        print "done in s: %s" % (time.time() - s)
-        print "\n".join(out)
+        print(se.stat)
+        print("founded %s results" % len(out))
+        print("done in s: %s" % (time.time() - s))
+        print("\n".join(out))
         print
 
 
@@ -59,5 +59,5 @@ if __name__ == '__main__':
         file_name = sys.argv[1]
         main(file_name)
     except:
-        print "usage:\nvp_searchtxt.py <filename>"
-        print "file name must be a column of words"
+        print("usage:\nvp_searchtxt.py <filename>")
+        print("file name must be a column of words")

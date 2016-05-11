@@ -1,4 +1,4 @@
-from simple_vp import *
+from .simple_vp import *
 import time
 
 
@@ -11,21 +11,21 @@ def main():
     distance = lambda a, b: math.sqrt(sum([((x-y)**2) for x, y in zip(a, b)]))
 
     s = time.time()
-    print "creating..."
+    print("creating...")
     root = VpNode(aset, distance=distance)
-    print "done", time.time() - s
+    print("done", time.time() - s)
     s = time.time()
-    print "searching..."
+    print("searching...")
 
     #print root.dump()
     se = VpSearch(root, q, rad, 30)
     #out = se.search()
     out = se.knn()
     for k, v in sorted(se.stat.items()):
-        print k, v
+        print(k, v)
 
-    print "out: %s" % len(out)
-    print "done", time.time() - s
+    print("out: %s" % len(out))
+    print("done", time.time() - s)
 
     try:
         import pylab as plt
