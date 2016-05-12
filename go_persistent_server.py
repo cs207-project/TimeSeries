@@ -27,14 +27,10 @@ def main():
         _createdDirs = True
     else:
         _createdDirs = False
-<<<<<<< HEAD
+
 
     db = PersistentDB(schema, pk_field='pk', db_name=db_name, ts_length=TS_LENGTH)
     server = TSDBServer(db, port = 9999)
-=======
-    db = PersistentDB(schema, pk_field='pk', db_name=db_name, ts_length=TS_LENGTH, testing=True)
-    server = TSDBServer(db, port = 9998)
->>>>>>> parent of 21eb776... working on README
     server.run()
     db.delete_database()
 
