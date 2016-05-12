@@ -46,7 +46,8 @@ install:
   - python setup.py install
   - pip install pyfftw
   - pip install bintrees
-  - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib pylab
+  - pip install pylab
+  - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib
 
 before_script:
   - git config --global user.email "you@example.com"
