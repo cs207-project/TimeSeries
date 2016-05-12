@@ -51,6 +51,13 @@ class Test_TSDB_Client(asynctest.TestCase):
             # change the metadata for the vantage points to have meta['vp']=True
             self.metadict[self.vpkeys[i]]['vp']=True
 
+        print('Test upsert')
+
+        # Having set up the triggers, now inser the time series, and upsert the metadata
+        for k in self.tsdict:
+            await self.client.insert_ts(k, self.tsdict[k])
+            await self.client.upsert_meta(k, self.metadict[k])
+
         time.sleep(1)
 
     def tearDown(self):
@@ -58,14 +65,6 @@ class Test_TSDB_Client(asynctest.TestCase):
         self.server_proc.terminate()
         self.server_log_file.close()
         time.sleep(1)
-
-    async def test_upsert(self):
-        print('Test upsert')
-
-        # Having set up the triggers, now inser the time series, and upsert the metadata
-        for k in self.tsdict:
-            await self.client.insert_ts(k, self.tsdict[k])
-            await self.client.upsert_meta(k, self.metadict[k])
 
     async def test_select1(self):
         print("Test select")

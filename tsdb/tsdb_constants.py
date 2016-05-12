@@ -44,3 +44,16 @@ REFRESH_RATE = 50
 TS_LENGTH = 100
 
 NUMVPS = 5
+
+
+schema = {
+  'pk':    {'type': 'string', 'index': None},
+  'ts':    {'type': None,     'index': None},
+  'order': {'type': 'int',    'index': 2,    'values': [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]},
+  'blarg': {'type': 'int',    'index': 2,    'values': [1, 2]},
+  'mean':  {'type': 'float',  'index': 1},
+  'std':   {'type': 'float',  'index': 1},
+  'vp':    {'type': 'bool',   'index': 2,    'values': [0,1]},
+  'd-vp1': {'type': 'float',  'index': 1}
+}
+

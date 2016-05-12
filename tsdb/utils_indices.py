@@ -107,25 +107,6 @@ class PKIndex(Index):
         with open(self.filename, 'rb', buffering=0) as fd:
             return pickle.load(fd)
 
-    def __getitem__(self, key):
-        return self.dict[key]
-
-    def __setitem__(self, key, value):
-        if key not in self.dict.keys():
-            self.pk_count += 1
-            self.dict[key] = value
-            self.fd.write(key+':'+str(value)+'\n')
-            if self.pk_count % REFRESH_RATE == 0:
-                self.fd = self.load_and_clear_log(loaded=True)
-        else:
-            self.dict[key] = value
-
-    def __iter__(self):
-        return iter(self.dict.keys())
-
-    def __contains__(self, key):
-        return key in self.dict.keys()
-
     def keys(self):
         return self.dict.keys()
 
@@ -148,6 +129,25 @@ class PKIndex(Index):
 
     def close(self):
         self.load_and_clear_log(loaded=True, close=True)
+
+    def __getitem__(self, key):
+        return self.dict[key]
+
+    def __setitem__(self, key, value):
+        if key not in self.dict.keys():
+            self.pk_count += 1
+            self.dict[key] = value
+            self.fd.write(key+':'+str(value)+'\n')
+            if self.pk_count % REFRESH_RATE == 0:
+                self.fd = self.load_and_clear_log(loaded=True)
+        else:
+            self.dict[key] = value
+
+    def __iter__(self):
+        return iter(self.dict.keys())
+
+    def __contains__(self, key):
+        return key in self.dict.keys()
 
 class TreeIndex(Index):
 
@@ -280,7 +280,7 @@ class BitmapIndex(Index):
         self.values = values
         self.values_len = len(values)
         # File containing the bitmap indices for this field
-        self.filename = 'files/'+db_name+'/'+fieldName+'_index.txt'
+        self.filename = 'persistent_files/'+db_name+'/'+fieldName+'_index.txt'
 
         # Empty list to store the the lists of booleans for each field value.
         #CJ: I am storing the indices as a list of list of boolean because it
