@@ -73,6 +73,7 @@ The functions can be accessed through web by following rule ::
 	localhost:8080/tsdb/add_trigger         add trigger
 	localhost:8080/tsdb/remove_trigger      remove trigger
 	localhost:8080/tsdb/add_metadata        upsert metadata
+	localhost:8080/tsdb/delete_ts		delete
 
 
 When we access to a certain function, for instance, we access to `select` function by passing arguments through URL, ::
