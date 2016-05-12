@@ -1,4 +1,3 @@
-==========
 timeseries
 ==========
 
@@ -10,40 +9,31 @@ timeseries
 
 This package delivers Persistent TimeSeries Database for CS207 final project.
 
-
-1. Persistent DB what you did (a para on the architecture of the persistence, your additional part, and REST api)
-=================================================================================================================
-______
-
-2. Additional Part : FFT implementation
-=======================================
+Project Description
+====================
 
 
-**1) Environment Setting**
+====================
+1.1 Persistent DB 
+====================
 
-To make it runnable, some packages have to be installed beforehand. If you are using ``brew``, ::
-	
-	brew install swig
-	
 
-Then, under the ``/proc`` folder, there is ``setup.py``. Go to this folder and run the following ::
-	
-	python setup.py build_ext --inplace
-	
-Then the environment is set.
-
-(For more information for environment setting, refer at https://docs.python.org/2/distutils/configfile.html)
+====================
+1.2 Index
+====================
 
 
 
-______
+====================
+1.3 Vantage Point
+====================
 
 
-
-3. REST api
-===========
-
-**1) structure**
+====================
+1.4 Rest API 
+====================
+structure
+---------------
 
 We adopted ``aiohttp`` when implementing REST api to support asynchronous client.
 ``/web/web_appication.py`` is the code according to ``aiohttp`` implementation.
@@ -83,9 +73,8 @@ and call corresponding function in ``tsdb_client``. Then the rest of work will b
 For ``GET Request`` cases (such as `select`), after the client got response from server, it will print out the result on web
 by ``web.Response(body=text)``. For the example we saw above with ``select``, the web browser will show up lists of TimeSeries instances in ordered way in json format.
 
-______
-
-**2) For testing**
+For testing
+---------------
 
 To test the web_application, it has to be run with tsdb_server, so we adopted ``Python Subprocess``.
 Then it turned out that the coverage cannot count in function calls in subprocess,
@@ -94,19 +83,56 @@ Basically what each functions do is the same with ``web_application.py``,
 but in this case, we directly call handler file and pass the result got from server to Python Requests.
 Then ``test_web_for_coverage.py`` will take the Requests and check if it returned TSDBStatus.OK or ``<Response 200>``.
 
-______
+====================
+1.5 Extra Credit
+====================
+
+====================
+1.6 To do
+====================
 
 
-4. How to install our project
-=============================
+User Guide
+====================
+========================================
+2.1 Setting up environment
+========================================
 
 
-______
 
-5. Where to find the docs (for the rest api, running the server, populating the database) The stuff in https://iacs-cs207.github.io/cs207/ProjectExpectations.html
-==================================================================================================================================================================
+To make it runnable, some packages have to be installed beforehand. If you are using ``brew``, ::
+	
+	brew install swig
+	
 
-**1) REST api**
+Then, under the ``/proc`` folder, there is ``setup.py``. Go to this folder and run the following ::
+	
+	python setup.py build_ext --inplace
+	
+Then the environment is set.
+
+(For more information for environment setting, refer to https://docs.python.org/2/distutils/configfile.html)
+
+
+========================================
+2.2 Installation
+========================================
+
+========================================
+2.3 Populating Database
+========================================
+
+========================================
+2.4 Try It Out!
+========================================
+
+
+========================================
+2.5 Support Documentation
+========================================
+
+REST api
+---------------
 
 * ``/web/web_application.py`` has main REST api implementation and docs as well.
 * ``/web/web_for_coverage.py`` is basically similar interface with ``web_application.py`` but directly send request so that it can be tested and covered by coverage.
