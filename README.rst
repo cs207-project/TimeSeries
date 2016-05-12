@@ -11,25 +11,27 @@ timeseries
 This package delivers Persistent TimeSeries Database for CS207 final project.
 
 
-Description
-===========
 
-1. Persistent DB
-what you did (a para on the architecture of the persistence, your additional part, and REST api)
+
+
+1. Persistent DB what you did (a para on the architecture of the persistence, your additional part, and REST api)
+=================================================================================================================
 
 2. Additional Part : FFT implementation
+=======================================
 
 3. REST api
+===========
+structure
+---------
+We adopted ``aiohttp`` when implementing REST api to support asynchronous client.
+``/web/web_appication.py`` is the code according to ``aiohttp`` implementation.
+``WebApplication`` object contains ``aiohttp web.Application()`` instance as its property ``self.app``,
+so it is runnable by calling ``WebApplication.run()`` as it calls ``aiohttp web.run_app(app)``.
+Another file ``/go_web.py`` helps us to run this ``WebApplication``. Note that it requires TSDB_server to be run beforehand.
+This can be achieved by running ``go_server.py`` and then ``go_web.py``.
 
-** structure **
-We adopted `aiohttp` when implementing REST api to support asynchronous client.
-`/web/web_appication.py` is the code according to `aiohttp` implementation.
-`WebApplication` object contains `aiohttp web.Application()` instance as its property `self.app`,
- so it is runnable by calling `WebApplication.run()` as it calls `aiohttp web.run_app(app)`.
- Another file `/go_web.py` helps us to run this `WebApplication`. Note that it requires TSDB_server to be run beforehand.
- This can be achieved by running `go_server.py` and then `go_web.py`.
-
- We defined each client functionality in `WebApplication` by assigning one function to one router.
+ We defined each client functionality in ``WebApplication`` by assigning one function to one router.
   The functions can be accessed through web by following rule :
 
 ```python
