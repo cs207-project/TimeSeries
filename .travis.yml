@@ -20,13 +20,7 @@ addons:
       - swig
       - scipy
 before_install:
-    - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
-    - chmod +x miniconda.sh
-    - ./miniconda.sh -b
-    - export PATH=/home/travis/miniconda2/bin:$PATH
 
-    # Update conda itself
-    - conda update --yes conda
     # The next couple lines fix a crash with multiprocessing on Travis and are not specific to using Miniconda
     #- sudo rm -rf /dev/shm
     #- sudo ln -s /run/shm /dev/shm
@@ -35,6 +29,8 @@ before_install:
     -  pip install pytest pytest-cov
     -  pip install coveralls
     -  pip install sphinx
+    - pip install pylab
+
 
 install:
   - source test/travis_install.sh
@@ -46,7 +42,13 @@ install:
   - python setup.py install
   - pip install pyfftw
   - pip install bintrees
-  - pip install pylab
+  - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+  - chmod +x miniconda.sh
+  - ./miniconda.sh -b
+ - export PATH=/home/travis/miniconda2/bin:$PATH
+
+    # Update conda itself
+  - conda update --yes conda
   - conda install --yes python=$TRAVIS_PYTHON_VERSION atlas numpy scipy matplotlib
 
 before_script:
