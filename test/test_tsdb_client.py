@@ -51,7 +51,7 @@ class Test_TSDB_Client(asynctest.TestCase):
             # change the metadata for the vantage points to have meta['vp']=True
             self.metadict[self.vpkeys[i]]['vp']=True
 
-        time.sleep(5)
+        time.sleep(10)
         print('Test upsert')
 
         # Having set up the triggers, now inser the time series, and upsert the metadata
