@@ -17,19 +17,20 @@ addons:
       - python-pip
       - libfftw3-3
       - libfftw3-dev
+      - swig
 before_install:
-    - pip install pytest pytest-cov
-    - pip install coveralls
-    - pip install sphinx
+    - travis_wait pip install pytest pytest-cov
+    - travis_wait pip install coveralls
+    - travis_wait pip install sphinx
 install:
   - source test/travis_install.sh
   - pip install -r requirements.txt
   - conda install --yes numpy ply
-  - pip install asynctest
-  - pip install asyncio
-  - pip install aiohttp
-  - pip install scipy
-  - python setup.py install
+  - travis_wait pip install asynctest
+  - travis_wait pip install asyncio
+  - travis_wait pip install aiohttp
+  - travis_wait pip install scipy
+  - travis_wait python setup.py install
   - pip install pyfftw
 
 before_script:
