@@ -100,11 +100,20 @@ ______
 
 
 4. How to install our project
+=============================
 
-5. Where to find the docs (for the rest api, running the server, populating the database)
-The stuff in https://iacs-cs207.github.io/cs207/ProjectExpectations.html
-1) REST api
-/web/web_application.py
+
+______
+
+5. Where to find the docs (for the rest api, running the server, populating the database) The stuff in https://iacs-cs207.github.io/cs207/ProjectExpectations.html
+==================================================================================================================================================================
+
+**1) REST api**
+
+* ``/web/web_application.py`` has main REST api implementation and docs as well.
+* ``/web/web_for_coverage.py`` is basically similar interface with ``web_application.py`` but directly send request so that it can be tested and covered by coverage.
+* ``/test/test_web_application.py`` is not counted in coverage, but it shows how each functions can be accessed through web URL and triggering corresponding handlers.
+* ``/test/test_web_for_coverage.py`` has test cases and documents demonstrating how each functions can be called and used through sending back requests.
 
 
 Timeseries package includes two modules: 'timeseries' and 'pype'.
