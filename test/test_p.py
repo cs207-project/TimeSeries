@@ -7,7 +7,7 @@ from tsdb.tsdb_constants import schema
 
 class PersistentDBTests(unittest.TestCase):
     def setUp(self):
-        self.dirPath = "files/testing"
+        self.dirPath = "persistent_files/testing"
         if not os.path.isdir(self.dirPath):
             os.makedirs(self.dirPath)
             self._createdDirs = True
