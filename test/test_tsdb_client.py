@@ -22,7 +22,7 @@ class Test_TSDB_Client(asynctest.TestCase):
         self.server_proc = subprocess.Popen(['python', 'go_server.py']
             ,stdout=self.server_log_file,stderr=subprocess.STDOUT)
 
-        time.sleep(1)
+        time.sleep(5)
 
         self.client = TSDBClient()
         await self.client.add_trigger('junk', 'insert_ts', None, 'db:one:ts')
@@ -51,6 +51,7 @@ class Test_TSDB_Client(asynctest.TestCase):
             # change the metadata for the vantage points to have meta['vp']=True
             self.metadict[self.vpkeys[i]]['vp']=True
 
+        time.sleep(5)
         print('Test upsert')
 
         # Having set up the triggers, now inser the time series, and upsert the metadata
@@ -58,7 +59,6 @@ class Test_TSDB_Client(asynctest.TestCase):
             await self.client.insert_ts(k, self.tsdict[k])
             await self.client.upsert_meta(k, self.metadict[k])
 
-        time.sleep(1)
 
     def tearDown(self):
         # Shuts down the server
