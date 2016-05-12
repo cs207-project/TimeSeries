@@ -11,9 +11,6 @@ timeseries
 This package delivers Persistent TimeSeries Database for CS207 final project.
 
 
-
-
-
 1. Persistent DB what you did (a para on the architecture of the persistence, your additional part, and REST api)
 =================================================================================================================
 ______
