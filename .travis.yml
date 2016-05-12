@@ -29,7 +29,7 @@ before_install:
     -  pip install pytest pytest-cov
     -  pip install coveralls
     -  pip install sphinx
-    - pip install pylab
+    -  pip install pylab
 
 
 install:
@@ -45,7 +45,7 @@ install:
   - wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
   - chmod +x miniconda.sh
   - ./miniconda.sh -b
- - export PATH=/home/travis/miniconda2/bin:$PATH
+  - export PATH=/home/travis/miniconda2/bin:$PATH
 
     # Update conda itself
   - conda update --yes conda
