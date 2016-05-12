@@ -18,20 +18,20 @@ addons:
       - libfftw3-3
       - libfftw3-dev
 before_install:
-    - pip install pytest pytest-cov
-    - pip install coveralls
-    - pip install sphinx
+    - travis_wait pip install pytest pytest-cov
+    - travis_wait pip install coveralls
+    - travis_wait pip install sphinx
 install:
   - source test/travis_install.sh
   - pip install -r requirements.txt
   - conda install --yes numpy ply
-  - pip install asynctest
-  - pip install asyncio
-  - pip install aiohttp
-  - pip install scipy
-  - python setup.py install
+  - travis_wait pip install asynctest
+  - travis_wait pip install asyncio
+  - travis_wait pip install aiohttp
+  - travis_wait pip install scipy
+  - travis_wait python setup.py install
   - pip install pyfftw
-
+  - python /procs/setup.py build_ext --inplace
 before_script:
   - git config --global user.email "you@example.com"
   - git config --global user.name "Your Name"
