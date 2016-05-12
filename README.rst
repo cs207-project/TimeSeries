@@ -22,8 +22,9 @@ This package delivers Persistent TimeSeries Database for CS207 final project.
 
 3. REST api
 ===========
-structure
----------
+
+**structure**
+
 We adopted ``aiohttp`` when implementing REST api to support asynchronous client.
 ``/web/web_appication.py`` is the code according to ``aiohttp`` implementation.
 ``WebApplication`` object contains ``aiohttp web.Application()`` instance as its property ``self.app``,
@@ -31,31 +32,30 @@ so it is runnable by calling ``WebApplication.run()`` as it calls ``aiohttp web.
 Another file ``/go_web.py`` helps us to run this ``WebApplication``. Note that it requires TSDB_server to be run beforehand.
 This can be achieved by running ``go_server.py`` and then ``go_web.py``.
 
- We defined each client functionality in ``WebApplication`` by assigning one function to one router.
-  The functions can be accessed through web by following rule :
+We defined each client functionality in ``WebApplication`` by assigning one function to one router.
+The functions can be accessed through web by following rule ::
 
-```python
-# =================================
-# CS 207 Final Project
-# TSDB RESTful API Implementation
-# =================================
+	# =================================
+	# CS 207 Final Project
+	# TSDB RESTful API Implementation
+	# =================================
+	
+	# Followings are the rule for router
+	
+	localhost:8080/tsdb                     root page
+	localhost:8080/tsdb/select              select
+	localhost:8080/tsdb/augmented_select    augmented select
+	localhost:8080/tsdb/find_similar        timeSeries similarity search
+	localhost:8080/tsdb/insert_ts           insert
+	localhost:8080/tsdb/add_trigger         add trigger
+	localhost:8080/tsdb/remove_trigger      remove trigger
+	localhost:8080/tsdb/add_metadata        upsert metadata
 
-# Followings are the rule for router
 
-localhost:8080/tsdb                     root page
-localhost:8080/tsdb/select              select
-localhost:8080/tsdb/augmented_select    augmented select
-localhost:8080/tsdb/find_similar        timeSeries similarity search
-localhost:8080/tsdb/insert_ts           insert
-localhost:8080/tsdb/add_trigger         add trigger
-localhost:8080/tsdb/remove_trigger      remove trigger
-localhost:8080/tsdb/add_metadata        upsert metadata
-```
+When we access to a certain function, for instance, we access to `select` function by passing arguments through URL, ::
 
-When we access to a certain function, for instance, we access to `select` function by passing arguments through URL,
-```python
-localhost:8080/tsdb/select?query={"additional":{"sort_by":"-order"}}
-```
+	localhost:8080/tsdb/select?query={"additional":{"sort_by":"-order"}}
+
 Then corresponding handler will be called, parse the arguments
 and call corresponding function in `tsdb_client`. Then the rest of work will be done as client part in previous Milestones.
 
