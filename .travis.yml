@@ -1,15 +1,6 @@
-# Travis configuration file using the build matrix feature
-# Read more under http://docs.travis-ci.com/user/build-configuration/
-# THIS SCRIPT IS SUPPOSED TO BE AN EXAMPLE. MODIFY IT ACCORDING TO YOUR NEEDS!
-
-sudo: false
 language: python
-virtualenv:
-  system_site_packages: true
-env:
-  matrix:
-    - DISTRIB="conda" PYTHON_VERSION="3.5" COVERAGE="true"
-
+python:
+  - "3.5"
 addons:
   apt:
     packages:
@@ -18,29 +9,37 @@ addons:
       - libfftw3-3
       - libfftw3-dev
       - swig
-before_install:
-    - travis_wait pip install pytest pytest-cov
-    - travis_wait pip install coveralls
-    - travis_wait pip install sphinx
 install:
-  - source test/travis_install.sh
-  - pip install -r requirements.txt
-  - conda install --yes numpy ply
-  - travis_wait pip install asynctest
-  - travis_wait pip install asyncio
-  - travis_wait pip install aiohttp
-  - travis_wait pip install scipy
-  - travis_wait python setup.py install
-  - pip install pyfftw
+  - sudo apt-get update
+
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib
+  - source activate test-environment
+  - sudo apt-get install -qq -y swig python-dev
+  - pip install pytest pytest-cov
+  - pip install coveralls
+  - pip install ply
+  - pip install sphinx
   - pip install bintrees
+  - pip install asynctest
+  - pip install asyncio
+  - pip install aiohttp
+  - pip install graphviz
+  - python setup.py install
+  - export PYTHONPATH=$PYTHONPATH:/Users/yuhantang/CS207/test2/TimeSeries/procs
+before_script:
   - cd procs
   - python setup.py build_ext --inplace
-before_script:
+  - cd ..
   - git config --global user.email "you@example.com"
   - git config --global user.name "Your Name"
 script:
-  - python setup.py test
+    - python setup.py test
+
 after_success:
   - if [[ "$COVERAGE" == "true" ]]; then coveralls || echo "failed"; fi
-cache:
-  - apt

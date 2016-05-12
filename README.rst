@@ -11,74 +11,110 @@ timeseries
 This package delivers Persistent TimeSeries Database for CS207 final project.
 
 
-Description
-===========
 
-1. Persistent DB
-what you did (a para on the architecture of the persistence, your additional part, and REST api)
+
+
+1. Persistent DB what you did (a para on the architecture of the persistence, your additional part, and REST api)
+=================================================================================================================
+______
 
 2. Additional Part : FFT implementation
+=======================================
+
+
+**1) Environment Setting**
+
+To make it runnable, some packages have to be installed beforehand. If you are using ``brew``, ::
+	
+	brew install swig
+	
+
+Then, under the ``/proc`` folder, there is ``setup.py``. Go to this folder and run the following ::
+	
+	python setup.py build_ext --inplace
+	
+Then the environment is set.
+
+(For more information for environment setting, refer at https://docs.python.org/2/distutils/configfile.html)
+
+
+
+______
+
+
 
 3. REST api
+===========
 
-** structure **
-We adopted `aiohttp` when implementing REST api to support asynchronous client.
-`/web/web_appication.py` is the code according to `aiohttp` implementation.
-`WebApplication` object contains `aiohttp web.Application()` instance as its property `self.app`,
- so it is runnable by calling `WebApplication.run()` as it calls `aiohttp web.run_app(app)`.
- Another file `/go_web.py` helps us to run this `WebApplication`. Note that it requires TSDB_server to be run beforehand.
- This can be achieved by running `go_server.py` and then `go_web.py`.
+**1) structure**
 
- We defined each client functionality in `WebApplication` by assigning one function to one router.
-  The functions can be accessed through web by following rule :
+We adopted ``aiohttp`` when implementing REST api to support asynchronous client.
+``/web/web_appication.py`` is the code according to ``aiohttp`` implementation.
+``WebApplication`` object contains ``aiohttp web.Application()`` instance as its property ``self.app``,
+so it is runnable by calling ``WebApplication.run()`` as it calls ``aiohttp web.run_app(app)``.
+Another file ``/go_web.py`` helps us to run this ``WebApplication``. Note that it requires TSDB_server to be run beforehand.
+This can be achieved by running ``go_server.py`` and then ``go_web.py``.
 
-```python
-# =================================
-# CS 207 Final Project
-# TSDB RESTful API Implementation
-# =================================
+We defined each client functionality in ``WebApplication`` by assigning one function to one router.
+The functions can be accessed through web by following rule ::
 
-# Followings are the rule for router
+	# =================================
+	# CS 207 Final Project
+	# TSDB RESTful API Implementation
+	# =================================
+	
+	# Followings are the rule for router
+	
+	localhost:8080/tsdb                     root page
+	localhost:8080/tsdb/select              select
+	localhost:8080/tsdb/augmented_select    augmented select
+	localhost:8080/tsdb/find_similar        timeSeries similarity search
+	localhost:8080/tsdb/insert_ts           insert
+	localhost:8080/tsdb/add_trigger         add trigger
+	localhost:8080/tsdb/remove_trigger      remove trigger
+	localhost:8080/tsdb/add_metadata        upsert metadata
+	localhost:8080/tsdb/delete_ts		delete
 
-localhost:8080/tsdb                     root page
-localhost:8080/tsdb/select              select
-localhost:8080/tsdb/augmented_select    augmented select
-localhost:8080/tsdb/find_similar        timeSeries similarity search
-localhost:8080/tsdb/insert_ts           insert
-localhost:8080/tsdb/add_trigger         add trigger
-localhost:8080/tsdb/remove_trigger      remove trigger
-localhost:8080/tsdb/add_metadata        upsert metadata
-```
 
-When we access to a certain function, for instance, we access to `select` function by passing arguments through URL,
-```python
-localhost:8080/tsdb/select?query={"additional":{"sort_by":"-order"}}
-```
+When we access to a certain function, for instance, we access to `select` function by passing arguments through URL, ::
+
+	localhost:8080/tsdb/select?query={"additional":{"sort_by":"-order"}}
+
 Then corresponding handler will be called, parse the arguments
-and call corresponding function in `tsdb_client`. Then the rest of work will be done as client part in previous Milestones.
+and call corresponding function in ``tsdb_client``. Then the rest of work will be done as client part in previous Milestones.
 
+For ``GET Request`` cases (such as `select`), after the client got response from server, it will print out the result on web
+by ``web.Response(body=text)``. For the example we saw above with ``select``, the web browser will show up lists of TimeSeries instances in ordered way in json format.
 
-For GET Request cases (such as `select`), after the client got response from server, it will print out the result on web
-by `web.Response(body=text)`. For the example we saw above with `select`, the web browser will show up lists of TimeSeries instances in ordered way in json format.
+______
 
+**2) For testing**
 
-** For testing **
-To test the web_application, it has to be run with tsdb_server, so we adopted Python Subprocess.
+To test the web_application, it has to be run with tsdb_server, so we adopted ``Python Subprocess``.
 Then it turned out that the coverage cannot count in function calls in subprocess,
-therefore, we implemented additional version of web_application, which is `web_for_coverage.py`.
-Basically what each functions do is the same with `web_application.py`,
+therefore, we implemented additional version of web_application, which is ``web_for_coverage.py``.
+Basically what each functions do is the same with ``web_application.py``,
 but in this case, we directly call handler file and pass the result got from server to Python Requests.
-Then `test_web_for_coverage.py` will take the Requests and check if it returned TSDBStatus.OK or \<Response 200\>.
+Then ``test_web_for_coverage.py`` will take the Requests and check if it returned TSDBStatus.OK or ``<Response 200>``.
 
-
+______
 
 
 4. How to install our project
+=============================
 
-5. Where to find the docs (for the rest api, running the server, populating the database)
-The stuff in https://iacs-cs207.github.io/cs207/ProjectExpectations.html
-1) REST api
-/web/web_application.py
+
+______
+
+5. Where to find the docs (for the rest api, running the server, populating the database) The stuff in https://iacs-cs207.github.io/cs207/ProjectExpectations.html
+==================================================================================================================================================================
+
+**1) REST api**
+
+* ``/web/web_application.py`` has main REST api implementation and docs as well.
+* ``/web/web_for_coverage.py`` is basically similar interface with ``web_application.py`` but directly send request so that it can be tested and covered by coverage.
+* ``/test/test_web_application.py`` is not counted in coverage, but it shows how each functions can be accessed through web URL and triggering corresponding handlers.
+* ``/test/test_web_for_coverage.py`` has test cases and documents demonstrating how each functions can be called and used through sending back requests.
 
 
 Timeseries package includes two modules: 'timeseries' and 'pype'.
