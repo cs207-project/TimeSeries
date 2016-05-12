@@ -1,5 +1,6 @@
 from vp_tree.simple_vp import *
 import time
+import matplotlib.pyplot as plt
 
 
 def test_vp_search():
@@ -27,7 +28,6 @@ def test_vp_search():
     print("done", time.time() - s)
 
     try:
-        import pylab as plt
         projx = lambda x: map(lambda y: y[0], x)
         projy = lambda x: map(lambda y: y[1], x)
         fig, ax = plt.subplots()
