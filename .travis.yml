@@ -21,7 +21,7 @@ before_install:
     - travis_wait pip install pytest pytest-cov
     - travis_wait pip install coveralls
     - travis_wait pip install sphinx
-    - travis_wait pip install swig
+    - travis_wait brew install swig
 install:
   - source test/travis_install.sh
   - pip install -r requirements.txt
