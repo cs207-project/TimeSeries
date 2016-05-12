@@ -121,13 +121,14 @@ class TSDBOp_FindSimilar(TSDBOp):
     """Find the timeseries in the DB closest to this one based on the predefined
     distance metric
     """
-    def __init__(self, arg):
+    def __init__(self, arg, vpkeys):
         super().__init__('find_similar')
         self['arg'] = arg
+        self['vpkeys'] = vpkeys
 
     @classmethod
     def from_json(cls, json_dict):
-        return cls(json_dict['arg'])
+        return cls(json_dict['arg'], json_dict['vpkeys'])
 
 class TSDBOp_AddTrigger(TSDBOp):
 

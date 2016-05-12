@@ -1,123 +1,191 @@
-# from tsdb import TSDBClient
-# from timeseries.TimeSeries import TimeSeries
-# import numpy as np
-# import subprocess
-# import asynctest
-# from scipy.stats import norm
-# import time
-#
-# def tsmaker(m, s, j):
-#     "returns metadata and a time series in the shape of a jittered normal"
-#     meta={}
-#     meta['order'] = int(np.random.choice([-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]))
-#     meta['blarg'] = int(np.random.choice([1, 2]))
-#     t = np.arange(0.0, 1.0, 0.1)
-#     v = norm.pdf(t, m, s) + j*np.random.randn(10)
-#     return meta, TimeSeries(t, v)
-#
-# class Test_Persistentdb(asynctest.TestCase):
-#
-#     async def setUp(self):
-#         self.server_log_file = open('.test_persistentdb_client_log','w')
-#         self.server_proc = subprocess.Popen(['python', 'go_persistent_server.py']
-#             ,stdout=self.server_log_file,stderr=subprocess.STDOUT)
-#
-#         time.sleep(2)
-#
-#         self.client = TSDBClient(port = 9998)
-#         await self.client.add_trigger('junk', 'insert_ts', None, 'db:one:ts')
-#         await self.client.add_trigger('stats', 'insert_ts', ['mean', 'std'], None)
-#
-#         mus = np.random.uniform(low=0.0, high=1.0, size=10)
-#         sigs = np.random.uniform(low=0.05, high=0.4, size=10)
-#         jits = np.random.uniform(low=0.05, high=0.2, size=10)
-#
-#         # dictionaries for time series and their metadata
-#         self.tsdict={}
-#         self.metadict={}
-#         for i, m, s, j in zip(range(10), mus, sigs, jits):
-#             meta, tsrs = tsmaker(m, s, j)
-#             # the primary key format is ts-1, ts-2, etc
-#             pk = "ts-{}".format(i)
-#             self.tsdict[pk] = tsrs
-#             meta['vp'] = False # augment metadata with a boolean asking if this is a  VP.
-#             self.metadict[pk] = meta
-#
-#         # choose 5 distinct vantage point time series
-#         self.vpkeys = ["ts-{}".format(i) for i in np.random.choice(range(10), size=5, replace=False)]
-#         for i in range(5):
-#             # add 5 triggers to upsert distances to these vantage points
-#             await self.client.add_trigger('corr', 'insert_ts', ["d_vp-{}".format(i)], self.tsdict[self.vpkeys[i]])
-#             # change the metadata for the vantage points to have meta['vp']=True
-#             self.metadict[self.vpkeys[i]]['vp']=True
-#
-#         time.sleep(2)
-#
-#     def tearDown(self):
-#         # Shuts down the server
-#         self.server_proc.terminate()
-#         self.server_log_file.close()
-#         time.sleep(3)
-#
-#     async def test_upsert(self):
-#         print('Test upsert')
-#
-#         # Having set up the triggers, now inser the time series, and upsert the metadata
-#         for k in self.tsdict:
-#             await self.client.insert_ts(k, self.tsdict[k])
-#             await self.client.upsert_meta(k, self.metadict[k])
-#
-#     async def test_select1(self):
-#         print("Test select")
-#         print('---------DEFAULT------------')
-#         await self.client.select()
-#
-#     async def test_select2(self):
-#         print("Test select")
-#         print('---------ADDITIONAL------------')
-#         await self.client.select(additional={'sort_by': '-order'})
-#
-#     async def test_select3(self):
-#         print("Test select")
-#         print('----------ORDER FIELD-----------')
-#         _, results = await self.client.select(fields=['order'])
-#         for k in results:
-#             print(k, results[k])
-#
-#     async def test_select4(self):
-#         print("Test select")
-#         print('---------ALL FILEDS------------')
-#         await self.client.select(fields=[])
-#
-#     async def test_select5(self):
-#         print("Test select")
-#         print('------------TS with order 1---------')
-#         await self.client.select({'order': 1}, fields=['ts'])
-#
-#     async def test_select6(self):
-#         print("Test select")
-#         print('------------All fields, blarg 1 ---------')
-#         await self.client.select({'blarg': 1}, fields=[])
-#
-#     async def test_select7(self):
-#         print("Test select")
-#         print('------------order 1 blarg 2 no fields---------')
-#         _, bla = await self.client.select({'order': 1, 'blarg': 2})
-#         print(bla)
-#
-#     async def test_select8(self):
-#         print("Test select")
-#         print('------------order >= 4  order, blarg and mean sent back, also sorted---------')
-#         _, results = await self.client.select({'order': {'>=': 4}}, fields=['order', 'blarg', 'mean'], additional={'sort_by': '-order'})
-#         for k in results:
-#             print(k, results[k])
-#
-#     async def test_select9(self):
-#         print("Test select")
-#         print('------------order 1 blarg >= 1 fields blarg and std---------')
-#         _, results = await self.client.select({'blarg': {'>=': 1}, 'order': 1}, fields=['blarg', 'std'])
-#         for k in results:
-#             print(k, results[k])
-#
-# if __name__ == '__main__':
-#     asynctest.main()
+import unittest
+from tsdb.persistentdb import PersistentDB
+import os
+import timeseries as ts
+import numpy as np
+from tsdb.tsdb_constants import schema_type
+
+class PersistentDBTests(unittest.TestCase):
+    def setUp(self):
+        self.dirPath = "persistent_files/testing"
+        if not os.path.isdir(self.dirPath):
+            os.makedirs(self.dirPath)
+            self._createdDirs = True
+        else:
+            self._createdDirs = False
+
+        self.schema = schema_type
+        self.ts_length = 100
+
+        self.db = PersistentDB(schema_type, pk_field='pk', db_name='testing', ts_length=self.ts_length)
+
+        for i in range(100):
+            pk = 'ts-'+str(i)
+            values = np.array(range(self.ts_length)) + i
+            series = ts.TimeSeries(values, values)
+            meta = {}
+            n_order = len(schema_type['order']['values'])# 11
+            meta['order'] = schema_type['order']['values'][i % n_order]
+            n_blarg = 2
+            meta['blarg'] = schema_type['blarg']['values'][i % n_blarg]
+            meta['mean'] = float(series.mean())# make sure they are python floats, not numpy floats
+            meta['std'] = float(series.std())
+            meta['vp'] = False
+            self.db.insert_ts(pk, series)
+            self.db.upsert_meta(pk, meta)
+
+    def tearDown(self):
+        self.db.delete_database()
+
+
+    def test_select1(self):
+        self.db.select({'pk':'ts-0'})
+
+    def test_select2(self):
+        self.db.select({'pk':'ts-35'})
+
+    def test_select3(self):
+        self.db.select({'order':2})
+
+    def test_select4(self):
+        self.db.select({'order':{'>=':1}},['blarg'],{'sort_by':'-order'})
+
+    def test_select5(self):
+        self.db.select({'order':{'<=':2}},['blarg'],{'sort_by':'+blarg'})
+
+    def test_select6(self):
+        val = self.db.select({'order':{'>=':2}},['pk','blarg'],{'sort_by':'-order', 'limit':10})
+        self.assertTrue(len(val[0]) <= 10)
+
+    def test_select7(self):
+        with self.assertRaises(ValueError):
+            self.db.select({'order':{'>=':2}},['blarg'],{'sort_by':'=blarg'})
+
+    def test_select8(self):
+        with self.assertRaises(ValueError):
+            self.db.select({'order':{'>=':2}},['blarg'],{'sort_by':'-none'})
+
+    def test_select9(self):
+        self.db.select({'order':{'>=':2}},None,{'sort_by':'-blarg'})
+
+    def test_select10(self):
+        with self.assertRaises(TypeError):
+            self.db.select({'order':{'>=':2}},('pk','blarg'),{'sort_by':'-order', 'limit':10})
+
+    def test_meta_save_ts(self):
+        self.db.close()
+        self.db = PersistentDB(pk_field='pk', db_name='testing', ts_length=self.ts_length)
+        self.assertEqual(len(self.db),100)
+
+    def test_schema_change_good(self):
+        self.db.close()
+        self.db = PersistentDB(self.schema, pk_field='pk', db_name='testing', ts_length=self.ts_length)
+
+    def test_schema_change_bad(self):
+        badschema = dict(self.schema)
+        badschema['blarg'] = {'type': 'int', 'index': 2, 'values': [1, 2, 3]}
+        self.db.close()
+        with self.assertRaises(ValueError):
+            self.db = PersistentDB(badschema, pk_field='pk', db_name='testing', ts_length=self.ts_length)
+
+    def test_insert_exception(self):
+        pk = 'bad'
+        existing = 'ts-0'
+        with self.assertRaises(ValueError):
+            bad_series = np.array(range(self.ts_length+3))
+            self.db.insert_ts(pk, bad_series)
+        with self.assertRaises(ValueError):
+            values = np.array(range(self.ts_length+5))
+            bad_series = ts.TimeSeries(values, values)
+            self.db.insert_ts(pk, bad_series)
+        with self.assertRaises(ValueError):
+            values = np.array(range(self.ts_length))
+            series = ts.TimeSeries(values,values)
+            self.db.insert_ts('ts-0', series)
+
+    def test_get_meta(self):
+        for i in range(100):
+            pk = 'ts-'+str(i)
+            values = np.array(range(self.ts_length)) + i
+            series = ts.TimeSeries(values, values)
+            r_meta = self.db._get_meta_list(pk)
+            n_order = len(self.schema['order']['values'])
+            self.assertEqual(r_meta[self.db.metaheap.fields.index('order')], self.schema['order']['values'][i % n_order])
+            n_blarg = 2
+            self.assertEqual(r_meta[self.db.metaheap.fields.index('blarg')],self.schema['blarg']['values'][i % n_blarg])
+            self.assertEqual(r_meta[self.db.metaheap.fields.index('mean')],series.mean())
+            self.assertEqual(r_meta[self.db.metaheap.fields.index('std')],series.std())
+
+    def test_read_ts(self):
+        for i in range(100):
+            pk = 'ts-'+str(i)
+            values = np.array(range(self.ts_length)) + i
+            series = ts.TimeSeries(values, values)
+            r_ts = self.db._return_ts(pk)
+            self.assertEqual(series,r_ts)
+
+    def test_indices(self):
+        n_test = 10
+        for i in range(n_test):
+            pk = 'ts-'+str(i)
+            tsmeta = self.db._get_meta_dict(pk)
+            tsinstance = tsmeta['ts']
+            # assert values are in indices
+            for field, value in tsmeta.items():
+                if field in self.schema.keys() and self.schema[field]['index'] is not None:
+                    self.assertTrue(pk in self.db.select({field:value})[0])
+
+    def test_index_bulk(self):
+        self.db.index_bulk()
+
+    def test_delete_ts(self):
+        n_delete = 10
+        # delete and check to make sure they're gone
+        for i in range(n_delete):
+            pk = 'ts-'+str(i)
+            tsmeta = self.db._get_meta_dict(pk)
+
+            self.db.delete_ts(pk) # delete the timeseries
+
+            #Check 1: __get__() get by pk fail
+            with self.assertRaises(KeyError):
+                self.db[pk] # check to make sure it's gone
+
+            #Check 2: db_select return empty sets
+            self.assertEqual(self.db.select({'pk':pk}), ([],[]))
+
+            #Check 3: does not exist in index
+            for field, value in tsmeta.items(): # make sure it's gone from indexes
+                if field in self.schema.keys() and self.schema[field]['index'] is not None:
+                    self.assertTrue(pk not in self.db.select({field:value})[0])
+
+        #Check 4: check the db after deletion is clean and can hold the same pk and timeseries again
+        # insert the deleted ts and check to make sure everything is working as before
+        for i in range(n_delete):
+            pk = 'ts-'+str(i)
+            values = np.array(range(self.ts_length)) + i
+            series = ts.TimeSeries(values, values)
+            meta = {}
+            meta['mean'] = float(series.mean())
+            meta['std'] = float(series.std())
+            meta['vp'] = False
+            meta['blarg'] = self.schema['blarg']['values'][i % 2] #blarg only has two value
+            n_order = len(self.schema['order']['values'])# 11
+            meta['order'] = self.schema['order']['values'][i % n_order]
+            self.db.insert_ts(pk, series)
+            self.db.upsert_meta(pk, meta)
+
+        for i in range(n_delete):
+            pk = 'ts-'+str(i)
+            values = np.array(range(self.ts_length)) + i
+            series = ts.TimeSeries(values, values)
+            r_meta = self.db._get_meta_list(pk)
+            n_order = len(self.schema['order']['values'])# 11
+            self.assertTrue(r_meta[self.db.metaheap.fields.index('order')] == self.schema['order']['values'][i % n_order])
+            n_blarg = 2
+            self.assertTrue(r_meta[self.db.metaheap.fields.index('blarg')] == self.schema['blarg']['values'][i % n_blarg])
+            self.assertTrue(r_meta[self.db.metaheap.fields.index('mean')] == series.mean())
+            self.assertTrue(r_meta[self.db.metaheap.fields.index('std')] == series.std())
+
+if __name__ == '__main__':
+    unittest.main()

@@ -7,13 +7,13 @@ class TSDBStatus(enum.IntEnum):
     INVALID_OPERATION = 2
     INVALID_KEY = 3
 
-    @staticmethod
-    def encoded_length():
-        return 3
+    # @staticmethod
+    # def encoded_length():
+    #     return 3
 
-    def encode(self):
-        return str.encode('{:3d}'.format(self.value))
+    # def encode(self):
+    #     return str.encode('{:3d}'.format(self.value))
 
-    @classmethod
-    def from_bytes(cls, data):
-        return cls(int(data.decode()))
+    # @classmethod
+    # def from_bytes(cls, data):
+    #     return cls(int(data.decode()))
