@@ -22,7 +22,7 @@ ______
 =======================================
 
 
-**1) structure**
+**1) Environment Setting**
 
 To make it runnable, some packages have to be installed beforehand. If you are using ``brew``, ::
 	
@@ -34,6 +34,8 @@ Then, under the ``/proc`` folder, there is ``setup.py``. Go to this folder and r
 	python setup.py build_ext --inplace
 	
 Then the environment is set.
+
+(For more information for environment setting, refer at https://docs.python.org/2/distutils/configfile.html)
 
 
 
