@@ -14,7 +14,7 @@ class PersistentDB():
     Database implementation to allow for persistent storage. It's implemented
     using Binary Trees and BitMasks.
     """
-    def __init__(self, schema=None, pk_field='pk', db_name='default', ts_length=1024, testing=False):
+    def __init__(self, schema=None, pk_field='pk', db_name='default', ts_length=1024):
         """
         Initializes database with index and schema.
 
@@ -25,8 +25,6 @@ class PersistentDB():
         pk_field : dict
             new metadata dictionary to be inserted
         """
-        if not testing and db_name == 'testing':
-            raise ValueError("database name 'testing' reserved for database testing")
 
         self.dbname = db_name
         self.data_dir = FILES_DIR+"/"+self.dbname
@@ -160,8 +158,6 @@ class PersistentDB():
         pk_offset = self.pks[pk]
         # write deleted values to metaheap
         self.metaheap.encode_and_write_meta(delete_meta, pk_offset)
-        # ]]]
-
         # remove from auxilary indices
         self.remove_indices(pk, old_meta_dict)
 
@@ -364,7 +360,7 @@ class PersistentDB():
             elif sortdir == '-':
                 pks_out = sorted(pks_out,key=lambda p: self._get_meta_dict(p)[sortfield],reverse=True)
             else:
-                raise ValueError("Ill-defined sort order. Must be '+' or '-'")
+                raise ValueError("Sort order must be '+' or '-'")
         if additional and 'limit' in additional:
             amt = int(additional['limit'])
             if amt < len(pks_out):

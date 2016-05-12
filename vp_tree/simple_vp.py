@@ -18,9 +18,10 @@ class VpNode(object):
                  'pivot', 'dist_set', 'median', 'left', 'right',
                  'type')
 
-    def __init__(self, aset=[], distance=None, level=0,
+    def __init__(self, aset=list(), distance=None, level=0,
                  median=None):
-        self.ids.next()
+        next(self.ids)
+        aset = list(aset)
         self.is_leaf = True
         self.aset = aset
         self.level = level

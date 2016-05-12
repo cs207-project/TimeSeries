@@ -5,7 +5,10 @@
 # import asynctest
 # from scipy.stats import norm
 # import time
-#
+# from tsdb.tsdb_constants import NUMVPS
+# from tsdb.persistentdb import PersistentDB
+# import os
+# from tsdb.tsdb_constants import schema
 # def tsmaker(m, s, j):
 #     "returns metadata and a time series in the shape of a jittered normal"
 #     meta={}
@@ -15,27 +18,29 @@
 #     v = norm.pdf(t, m, s) + j*np.random.randn(10)
 #     return meta, TimeSeries(t, v)
 #
-# class Test_TSDB_Client(asynctest.TestCase):
+# class Test_Persistentdb(asynctest.TestCase):
 #
 #     async def setUp(self):
-#         self.server_log_file = open('.test_tsdb_client_log','w')
-#         self.server_proc = subprocess.Popen(['python', 'go_server.py']
+#         self.server_log_file = open('.test_persistentdb_client_log','w')
+#         self.server_proc = subprocess.Popen(['python', 'go_persistent_server.py']
 #             ,stdout=self.server_log_file,stderr=subprocess.STDOUT)
 #
-#         time.sleep(5)
+#         time.sleep(2)
 #
-#         self.client = TSDBClient()
+#         self.client = TSDBClient(port = 9999)
 #         await self.client.add_trigger('junk', 'insert_ts', None, 'db:one:ts')
 #         await self.client.add_trigger('stats', 'insert_ts', ['mean', 'std'], None)
 #
-#         mus = np.random.uniform(low=0.0, high=1.0, size=10)
-#         sigs = np.random.uniform(low=0.05, high=0.4, size=10)
-#         jits = np.random.uniform(low=0.05, high=0.2, size=10)
-#
+#         np.random.seed(1000)
+#         self.N_ts = 20
+#         self.N_vp = NUMVPS
+#         mus = np.random.uniform(low=0.0, high=1.0, size=self.N_ts)
+#         sigs = np.random.uniform(low=0.05, high=0.4, size=self.N_ts)
+#         jits = np.random.uniform(low=0.05, high=0.2, size=self.N_ts)
 #         # dictionaries for time series and their metadata
 #         self.tsdict={}
 #         self.metadict={}
-#         for i, m, s, j in zip(range(10), mus, sigs, jits):
+#         for i, m, s, j in zip(range(self.N_ts), mus, sigs, jits):
 #             meta, tsrs = tsmaker(m, s, j)
 #             # the primary key format is ts-1, ts-2, etc
 #             pk = "ts-{}".format(i)
@@ -44,14 +49,13 @@
 #             self.metadict[pk] = meta
 #
 #         # choose 5 distinct vantage point time series
-#         self.vpkeys = ["ts-{}".format(i) for i in np.random.choice(range(10), size=5, replace=False)]
+#         self.vpkeys = ["ts-{}".format(i) for i in np.random.choice(range(self.N_ts), size=self.N_vp, replace=False)]
 #         for i in range(5):
 #             # add 5 triggers to upsert distances to these vantage points
 #             await self.client.add_trigger('corr', 'insert_ts', ["d_vp-{}".format(i)], self.tsdict[self.vpkeys[i]])
 #             # change the metadata for the vantage points to have meta['vp']=True
 #             self.metadict[self.vpkeys[i]]['vp']=True
 #
-#         time.sleep(10)
 #         print('Test upsert')
 #
 #         # Having set up the triggers, now inser the time series, and upsert the metadata
@@ -59,12 +63,38 @@
 #             await self.client.insert_ts(k, self.tsdict[k])
 #             await self.client.upsert_meta(k, self.metadict[k])
 #
+#         time.sleep(2)
 #
 #     def tearDown(self):
 #         # Shuts down the server
 #         self.server_proc.terminate()
 #         self.server_log_file.close()
-#         time.sleep(1)
+#         time.sleep(3)
+#
+#     async def _findNearest(self, query):
+#             # Step 1: in the vpdist key, get  distances from query to vantage points
+#             # this is an augmented select
+#             vpdist = {}
+#             for v in self.vpkeys:
+#                 _, results = await self.client.augmented_select('corr','d',query, {'pk':v})
+#                 vpdist[v] = results[v]['d']
+#
+#             #1b: choose the lowest distance vantage point
+#             # you can do this in local code
+#             closest_vpk = min(self.vpkeys,key=lambda v:vpdist[v])
+#             closest_vpk_dist_col = 'd_vp-' + str(self.vpkeys.index(closest_vpk))
+#             print("CLOSEST VPK: vp-"+str(closest_vpk))
+#
+#             # Step 2: find all time series within 2*d(query, nearest_vp_to_query)
+#             #this is an augmented select to the same proc in correlation
+#             _, results = await self.client.augmented_select('corr','d',query,
+#                                             {closest_vpk_dist_col: {'<=': 2*vpdist[closest_vpk]}})
+#
+#             #2b: find the smallest distance amongst this ( or k smallest)
+#             #you can do this in local code
+#             nearestwanted = min(results.keys(),key=lambda p: results[p]['d'])
+#
+#             return nearestwanted
 #
 #     async def test_select1(self):
 #         print("Test select")
@@ -117,6 +147,7 @@
 #         _, results = await self.client.select({'blarg': {'>=': 1}, 'order': 1}, fields=['blarg', 'std'])
 #         for k in results:
 #             print(k, results[k])
+#
 #
 # if __name__ == '__main__':
 #     asynctest.main()

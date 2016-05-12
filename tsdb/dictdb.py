@@ -91,9 +91,10 @@ class DictDB:
 
         Parameters
         ----------
-        pk : str
+        pk : int
             primary_key, a unique identifier for the TimeSeries
         """
+
         # first, check if the pk exist in DB
         if pk not in self.rows:
             raise ValueError(TSDBStatus.INVALID_KEY, 'Tried to delete {}, but that primary key does not exist'.format(pk))
@@ -111,7 +112,7 @@ class DictDB:
 
         Parameters
         ----------
-        primary_key: str
+        primary_key: int
             a unique identifier for the timeseries
 
         metadata_dict: dict
@@ -147,7 +148,7 @@ class DictDB:
 
         Parameters
         ----------
-        primary_key: str
+        primary_key: int
             a unique identifier (primary key) for the row to be updated
         """
         if pk not in self.rows:
