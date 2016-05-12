@@ -24,9 +24,13 @@ install:
   - pip install aiohttp
   - pip install graphviz
   - python setup.py install
-
+  - export PYTHONPATH=$PYTHONPATH:/Users/yuhantang/CS207/test2/TimeSeries/procs
+before_script:
+  - cd procs
+  - python setup.py build_ext --inplace
+  - cd ..
 script:
-    - cd procs & python setup.py build_ext --inplace & cd .. & python setup.py test
+    - python setup.py test
 
 after_success:
     - coveralls
