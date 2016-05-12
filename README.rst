@@ -65,14 +65,15 @@ by ``web.Response(body=text)``. For the example we saw above with ``select``, th
 ______
 
 **2) For testing**
-To test the web_application, it has to be run with tsdb_server, so we adopted Python Subprocess.
+
+To test the web_application, it has to be run with tsdb_server, so we adopted ``Python Subprocess``.
 Then it turned out that the coverage cannot count in function calls in subprocess,
-therefore, we implemented additional version of web_application, which is `web_for_coverage.py`.
-Basically what each functions do is the same with `web_application.py`,
+therefore, we implemented additional version of web_application, which is ``web_for_coverage.py``.
+Basically what each functions do is the same with ``web_application.py``,
 but in this case, we directly call handler file and pass the result got from server to Python Requests.
-Then `test_web_for_coverage.py` will take the Requests and check if it returned TSDBStatus.OK or \<Response 200\>.
+Then ``test_web_for_coverage.py`` will take the Requests and check if it returned TSDBStatus.OK or ``<Response 200>``.
 
-
+______
 
 
 4. How to install our project
