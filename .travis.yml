@@ -1,29 +1,43 @@
+sudo: true
 language: python
-python:
-  - "3.5"
+virtualenv:
+  system_site_packages: true
+env:
+  matrix:
+    - DISTRIB="conda" PYTHON_VERSION="3.5" COVERAGE="true"
+
+addons:
+  apt:
+    packages:
+      - git
+      - python-pip
+      - libfftw3-3
+      - libfftw3-dev
+      - swig
+before_install:
+    - travis_wait pip install pytest pytest-cov
+    - travis_wait pip install coveralls
+    - travis_wait pip install sphinx
 install:
   - sudo apt-get update
 
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
   - bash miniconda.sh -b -p $HOME/miniconda
-  - export PATH="$HOME/miniconda/bin:$PATH"
-  - hash -r
-  - conda config --set always_yes yes --set changeps1 no
+  - export PATH="$HOME/miniconda2/bin:$PATH"
   - conda update -q conda
   - conda info -a
 
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib
   - source activate test-environment
   - sudo apt-get install -qq -y swig python-dev
+  - pip install asynctest
+  - pip install asyncio
+  - pip install aiohttp
   - pip install pytest pytest-cov
   - pip install coveralls
   - pip install ply
   - pip install sphinx
-  - pip install bintrees
-  - pip install asynctest
-  - pip install asyncio
-  - pip install aiohttp
-  - pip install graphviz
+
   - python setup.py install
   - export PYTHONPATH=$PYTHONPATH:/Users/yuhantang/CS207/test2/TimeSeries/procs
 before_script:
@@ -31,7 +45,8 @@ before_script:
   - python setup.py build_ext --inplace
   - cd ..
 script:
-    - python setup.py test
-
+  - python setup.py test
 after_success:
-    - coveralls
+  - if [[ "$COVERAGE" == "true" ]]; then coveralls || echo "failed"; fi
+cache:
+  - apt
