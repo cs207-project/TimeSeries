@@ -16,18 +16,29 @@ This package delivers Persistent TimeSeries Database for CS207 final project.
 
 1. Persistent DB what you did (a para on the architecture of the persistence, your additional part, and REST api)
 =================================================================================================================
+______
 
 2. Additional Part : FFT implementation
 =======================================
 
-**1) Setting Environment**
+
+**1) structure**
+
 To make it runnable, some packages have to be installed beforehand. If you are using ``brew``, ::
+	
 	brew install swig
 	
+
 Then, under the ``/proc`` folder, there is ``setup.py``. Go to this folder and run the following ::
+	
 	python setup.py build_ext --inplace
 	
 Then the environment is set.
+
+
+
+______
+
 
 
 3. REST api
