@@ -23,7 +23,7 @@ This package delivers Persistent TimeSeries Database for CS207 final project.
 3. REST api
 ===========
 
-**structure**
+**1) structure**
 
 We adopted ``aiohttp`` when implementing REST api to support asynchronous client.
 ``/web/web_appication.py`` is the code according to ``aiohttp`` implementation.
@@ -57,14 +57,14 @@ When we access to a certain function, for instance, we access to `select` functi
 	localhost:8080/tsdb/select?query={"additional":{"sort_by":"-order"}}
 
 Then corresponding handler will be called, parse the arguments
-and call corresponding function in `tsdb_client`. Then the rest of work will be done as client part in previous Milestones.
+and call corresponding function in ``tsdb_client``. Then the rest of work will be done as client part in previous Milestones.
 
+For ``GET Request`` cases (such as `select`), after the client got response from server, it will print out the result on web
+by ``web.Response(body=text)``. For the example we saw above with ``select``, the web browser will show up lists of TimeSeries instances in ordered way in json format.
 
-For GET Request cases (such as `select`), after the client got response from server, it will print out the result on web
-by `web.Response(body=text)`. For the example we saw above with `select`, the web browser will show up lists of TimeSeries instances in ordered way in json format.
+______
 
-
-** For testing **
+**2) For testing**
 To test the web_application, it has to be run with tsdb_server, so we adopted Python Subprocess.
 Then it turned out that the coverage cannot count in function calls in subprocess,
 therefore, we implemented additional version of web_application, which is `web_for_coverage.py`.
