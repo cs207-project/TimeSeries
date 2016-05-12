@@ -1,41 +1,20 @@
-# Travis configuration file using the build matrix feature
-# Read more under http://docs.travis-ci.com/user/build-configuration/
-# THIS SCRIPT IS SUPPOSED TO BE AN EXAMPLE. MODIFY IT ACCORDING TO YOUR NEEDS!
-
-sudo: false
 language: python
 python:
-  -"3.5"
-
-addons:
-  apt:
-    packages:
-      - git
-      - python-pip
-      - libfftw3-3
-      - libfftw3-dev
-      - swig
-      - scipy
-before_install:
-
-    # The next couple lines fix a crash with multiprocessing on Travis and are not specific to using Miniconda
-    #- sudo rm -rf /dev/shm
-    #- sudo ln -s /run/shm /dev/shm
-
-
-    -  pip install pytest pytest-cov
-    -  pip install coveralls
-    -  pip install sphinx
-
-
+  - "3.5"
 install:
+  - sudo apt-get update
+  # We do this conditionally because it saves us some downloading if the
+  # version is the same.
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
+  # Useful for debugging any issues with conda
   - conda info -a
+
+  # Replace dep1 dep2 ... with your dependencies
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib
   - source activate test-environment
   - pip install pytest pytest-cov
@@ -46,16 +25,11 @@ install:
   - pip install asynctest
   - pip install asyncio
   - pip install aiohttp
+  - pip install graphviz
   - python setup.py install
 
- 
-
-before_script:
-  - git config --global user.email "you@example.com"
-  - git config --global user.name "Your Name"
 script:
-  - cd procs & python setup.py build_ext --inplace & python setup.py test
+    - cd procs & python setup build_ext --inplace $ cd .. $ python setup.py test
+
 after_success:
-  - if [[ "$COVERAGE" == "true" ]]; then coveralls || echo "failed"; fi
-cache:
-  - apt
+    - coveralls
