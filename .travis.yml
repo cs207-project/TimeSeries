@@ -32,6 +32,7 @@ install:
   - travis_wait pip install scipy
   - travis_wait python setup.py install
   - pip install pyfftw
+  - pip install bintrees
   - cd procs & python setup.py build_ext --inplace
 before_script:
   - git config --global user.email "you@example.com"
