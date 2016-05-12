@@ -18,7 +18,7 @@ def tsmaker(m, s, j):
 
 async def client_op():
     print('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
-    client = TSDBClient(port=9998)
+    client = TSDBClient(port=9999)
 
     # add a trigger. notice the argument. It does not do anything here but
     # could be used to save a shlep of data from client to server.
@@ -115,7 +115,8 @@ async def client_op():
     #
     # Step 2: find all time series within 2*d(query, nearest_vp_to_query)
     # this is an augmented select to the same proc in correlation
-    _, results = await client.augmented_select('corr', 'd', query, {'d_vp-'+str(vpkeys.index(lowest_dist_vp)):{'<=':2*vpdists[lowest_dist_vp]}})
+    _, results = await client.augmented_select('corr', 'd', query, {'d_'+str(vpkeys.index(lowest_dist_vp)):{'<=':2*vpdists[lowest_dist_vp]}})
+    # _, results = await client.augmented_select('corr', 'd', query, {'d_vp-'+str(vpkeys.index(lowest_dist_vp)):{'<=':2*vpdists[lowest_dist_vp]}})
     #2b: find the smallest distance amongst this ( or k smallest)
     #you can do this in local code
     nearestwanted = min(results.keys(), key=lambda p: results[p]['d'])
@@ -124,7 +125,7 @@ async def client_op():
     import matplotlib.pyplot as plt
     plt.plot(query)
     plt.plot(tsdict[nearestwanted])
-    plt.show('Agg')
+    plt.show()
 
 if __name__=='__main__':
     loop = asyncio.get_event_loop()

@@ -34,7 +34,8 @@ SELECT_VIEW = """\
 # SELECT router rule example
 
 localhost:8080/tsdb/select?query={}
-localhost:8080/tsdb/select?query={"md":{"order": 1}, "fields":["ts"], "additional":{"sort_by":"-order"}}
+localhost:8080/tsdb/select?query={"additional":{"sort_by":"-order"}}
+localhost:8080/tsdb/select?query={"fields":["order"]}
 
 !!! NOTE !!!
 Every string should be wrapped with ", not '
@@ -49,7 +50,7 @@ AUGMENTED_SELECT_VIEW = """\
 # TSDB RESTful API Implementation
 # =================================
 
-# SELECT router rule example
+# AUGMENTED_SELECT router rule example
 
 localhost:8080/tsdb/augmented_select?query={"proc":"corr", "target":"d"}
 localhost:8080/tsdb/augmented_select?query={"proc":"corr", "target":"d", "md":{"order": 1}, "fields":["ts"]}
@@ -127,7 +128,8 @@ class Handler(object):
 
     async def tsdb_root(self, request):
         root_view = ROOT_VIEW
-        return web.Response(body=root_view.encode('utf-8'))
+        # return web.Response(body=root_view.encode('utf-8'))
+        return web.Response()
 
     async def tsdb_select(self, request):
         if 'query' not in request.GET:
