@@ -3,7 +3,7 @@ from tsdb.persistentdb import PersistentDB
 import os
 import timeseries as ts
 import numpy as np
-from tsdb.tsdb_constants import schema
+from tsdb.tsdb_constants import schema_type
 
 class PersistentDBTests(unittest.TestCase):
     def setUp(self):
@@ -14,20 +14,20 @@ class PersistentDBTests(unittest.TestCase):
         else:
             self._createdDirs = False
 
-        self.schema = schema
+        self.schema = schema_type
         self.ts_length = 100
 
-        self.db = PersistentDB(schema, pk_field='pk', db_name='testing', ts_length=self.ts_length)
+        self.db = PersistentDB(schema_type, pk_field='pk', db_name='testing', ts_length=self.ts_length)
 
         for i in range(100):
             pk = 'ts-'+str(i)
             values = np.array(range(self.ts_length)) + i
             series = ts.TimeSeries(values, values)
             meta = {}
-            n_order = len(schema['order']['values'])# 11
-            meta['order'] = schema['order']['values'][i % n_order]
+            n_order = len(schema_type['order']['values'])# 11
+            meta['order'] = schema_type['order']['values'][i % n_order]
             n_blarg = 2
-            meta['blarg'] = schema['blarg']['values'][i % n_blarg]
+            meta['blarg'] = schema_type['blarg']['values'][i % n_blarg]
             meta['mean'] = float(series.mean())# make sure they are python floats, not numpy floats
             meta['std'] = float(series.std())
             meta['vp'] = False
@@ -48,10 +48,10 @@ class PersistentDBTests(unittest.TestCase):
         self.db.select({'order':2})
 
     def test_select4(self):
-        self.db.select({'order':{'>=':2}},['blarg'],{'sort_by':'+blarg'})
+        self.db.select({'order':{'>=':1}},['blarg'],{'sort_by':'-order'})
 
     def test_select5(self):
-        self.db.select({'order':{'>=':2}},['blarg'],{'sort_by':'-order'})
+        self.db.select({'order':{'<=':2}},['blarg'],{'sort_by':'+blarg'})
 
     def test_select6(self):
         val = self.db.select({'order':{'>=':2}},['pk','blarg'],{'sort_by':'-order', 'limit':10})
@@ -63,7 +63,7 @@ class PersistentDBTests(unittest.TestCase):
 
     def test_select8(self):
         with self.assertRaises(ValueError):
-            self.db.select({'order':{'>=':2}},['blarg'],{'sort_by':'-blargh'})
+            self.db.select({'order':{'>=':2}},['blarg'],{'sort_by':'-none'})
 
     def test_select9(self):
         self.db.select({'order':{'>=':2}},None,{'sort_by':'-blarg'})

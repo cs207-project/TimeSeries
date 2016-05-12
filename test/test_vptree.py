@@ -1,9 +1,8 @@
-from .simple_vp import *
+from vp_tree.simple_vp import *
 import time
 
 
-def main():
-
+def test_vp_search():
     rn = lambda: random.randint(0, 10000)
     aset = [(rn(), rn()) for i in range(40000)]
     q = (rn(), rn())
@@ -41,5 +40,3 @@ def main():
     except:
         pass
 
-if __name__ == '__main__':
-    main()
