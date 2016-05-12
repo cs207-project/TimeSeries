@@ -39,4 +39,3 @@ def test_vp_search():
         plt.show()
     except:
         pass
-

@@ -38,7 +38,6 @@ class PersistentDB():
             with open(self.data_dir+"/db_metadata.met", 'rb', buffering=0) as fd:
                 self.tsLength, self.pkfield, self.schema = pickle.load(fd)
                 self._assert_valid_db(schema, pk_field, ts_length)
-
         else:
             self.tsLength = ts_length
             self.pkfield = pk_field
@@ -51,8 +50,8 @@ class PersistentDB():
             schema['ts_offset'] = {'type': 'int', 'index': None}
 
         # open heap files
-        self.metaheap = MetaHeapFile(FILES_DIR+"/"+self.dbname+"/"+'metaheap', schema)
-        self.tsheap = TSHeapFile(FILES_DIR+"/"+self.dbname+"/"+'tsheap', self.tsLength)
+        self.metaheap = MetaHeapFile(FILES_DIR+"/"+self.dbname+"/"+'metadata_heap', schema)
+        self.tsheap = TSHeapFile(FILES_DIR+"/"+self.dbname+"/"+'ts_heap', self.tsLength)
         self.pks = PKIndex(self.dbname)
 
         self.indexFields = [field for field, value in self.schema.items()

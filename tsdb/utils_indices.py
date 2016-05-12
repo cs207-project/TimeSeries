@@ -2,8 +2,9 @@
 
 Currentlly:
     PKIndex: Primary Key Index
-    TreeIndex: Tree based index done using a AVL tree
-    BitmapIndex: Bitmap index for low cardinality columns
+    TreeIndex: Tree based index using a AVL tree for high cardinality fields
+    BitmapIndex: Bitmap index for low cardinality fields
+    vptreeIndex: for similarity search
 """
 
 # from .persistentdb import FILES_DIR
@@ -28,7 +29,6 @@ class Index(metaclass = abc.ABCMeta):
         Initialization
         1. Initialize DB Parameters
         2. Create file system for persistence
-
         '''
         pass
 

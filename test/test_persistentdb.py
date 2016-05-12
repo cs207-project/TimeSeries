@@ -37,7 +37,6 @@ class PersistentDBTests(unittest.TestCase):
     def tearDown(self):
         self.db.delete_database()
 
-
     def test_select1(self):
         self.db.select({'pk':'ts-0'})
 
@@ -77,11 +76,11 @@ class PersistentDBTests(unittest.TestCase):
         self.db = PersistentDB(pk_field='pk', db_name='testing', ts_length=self.ts_length)
         self.assertEqual(len(self.db),100)
 
-    def test_schema_change_good(self):
+    def test_schema_change(self):
         self.db.close()
         self.db = PersistentDB(self.schema, pk_field='pk', db_name='testing', ts_length=self.ts_length)
 
-    def test_schema_change_bad(self):
+    def test_schema_change_exception(self):
         badschema = dict(self.schema)
         badschema['blarg'] = {'type': 'int', 'index': 2, 'values': [1, 2, 3]}
         self.db.close()
@@ -103,7 +102,7 @@ class PersistentDBTests(unittest.TestCase):
             series = ts.TimeSeries(values,values)
             self.db.insert_ts('ts-0', series)
 
-    def test_get_meta(self):
+    def test_metadata(self):
         for i in range(100):
             pk = 'ts-'+str(i)
             values = np.array(range(self.ts_length)) + i
