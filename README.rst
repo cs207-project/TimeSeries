@@ -6,6 +6,7 @@ timeseries
 .. image:: https://coveralls.io/repos/github/cs207-project/TimeSeries/badge.svg?branch=master 
 	:target: https://coveralls.io/github/cs207-project/TimeSeries?branch=master
 
+
 This package delivers Persistent TimeSeries Database for CS207 final project.
 
 Project Description
@@ -111,20 +112,20 @@ but in this case, we directly call handler file and pass the result got from ser
 Then ``test_web_for_coverage.py`` will take the Requests and check if it returned TSDBStatus.OK or ``<Response 200>``.
 
 ====================
-1.5 Extra Feature
+1.5 Extra Credit
 ====================
 Fast FFT Using Cython with fftw Integrated
 ---------------------------------------------
+For the first extra feature, we implemented "FFT Using Cython with fftw Integrated", so that now we are able to do our computation in corr.py by C and therefore achieve higher speed when executing related database operations.
+
+For more implementation details, please refer to our project folder ``/procs``.
 
 VPTREE (Text Corpus Similarity Search Supported)
 ------------------------------------------------------------
 
+In addition to simple vptree construction, we implemented an improved version using ``knn`` algorithm to speed up the vpnode search process. And except for time series data, we also used our implementation to test on natural language corpus. See the example attached below to learn how to use our tool!
 
-
-============================================================
-1.6 Other Design Decisions or Trade-offs We Have Made
-============================================================
-
+* [**VPTREE EXAMPLE**] (vp_tree/VPTREE_DEMO.ipynb)
 
 
 ====================
@@ -138,7 +139,6 @@ User Guide
 ========================================
 2.1 Setting up environment
 ========================================
-
 
 
 To make it runnable, some packages have to be installed beforehand. If you are using ``brew``, ::
@@ -179,7 +179,17 @@ and this will help you launch the persistent server. Then, to populate the datab
 ========================================
 2.4 Try It Out!
 ========================================
+For user, we provide two easy way to test out our database:
 
+- with the server on (see steps in ``2.3``), you can either go to root folder, and type::
+
+	python go_web.py
+
+and go to the web application interface as prompt to access db through http request;
+
+
+- Or you could refer to our demo to get more customised options for more db operations:
+[Database function demonstration] (docs/Web_service_demo.ipynb)
 
 ========================================
 2.5 Support Documentation
@@ -195,6 +205,15 @@ REST api
 
 Timeseries package includes two modules: 'timeseries' and 'pype'.
 
+Discussions
+========================
+
 ========================================
-What We Learned
+What difficulty have we encountered?
+========================================
+
+
+
+========================================
+What we learned?
 ========================================
