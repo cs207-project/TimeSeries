@@ -54,7 +54,7 @@ We designed four types of indices for different types of metadata and apply them
 ====================
 1.3 Vantage Point
 ====================
-In addition to the basic requirement of representing vantage points in this persistent database and do vantage point searches, we implemented vptree representation and used KNN for initialisation. Refer to "Extra Credit" section / sample codes / test cases for it's mechanism  and user instruction.
+In addition to the basic requirement of representing vantage points in this persistent database and do vantage point searches, we implemented vptree representation and used KNN for similarity searching in vptree. Refer to "Extra Credit" section / sample codes / test cases for it's mechanism  and user instruction.
 
 
 ====================
@@ -134,6 +134,14 @@ In addition to simple vptree construction, we implemented an improved version us
 
 - We tried transaction and rollback on fail by implementing file (partial) locks, however, due to time limitation, we wouldn't be able to present reliable interface and enough exception handling so we decide to move this part of of our final submission to ensure the rest part of projects functions well. We will explore more in the vacation for proof of concept.
 
+However, we did try something:
+
+- A lot of exception handlings (see ``test cases``)
+- "Safe" deletion (only update ``offset`` and ``deleted`` fields in schema)
+- Writing to log upon failure
+- Best Approach:
+    - Write-ahead logging + locking
+
 User Guide
 ====================
 ========================================
@@ -189,7 +197,7 @@ and go to the web application interface as prompt to access db through http requ
 
 
 - Or you could refer to our demo to get more customised options for more db operations:
-[Database function demonstration] (docs/Web_service_demo.ipynb)
+    - [Database function demonstration] (docs/Web_service_demo.ipynb)
 
 ========================================
 2.5 Support Documentation

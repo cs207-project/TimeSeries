@@ -1,6 +1,7 @@
 /************************************************
 * FFT code from the book Numerical Recipes in C *
-* Visit www.nr.com for the licence.             *
+* Yuhan Tang 
+* Havard University
 ************************************************/
 
 // The following line must be defined before including math.h to correctly define M_PI
