@@ -121,9 +121,8 @@ VPTREE (Text Corpus Similarity Search Supported)
 
 
 
-
 ============================================================
-1.6 Other Design Decision or Trade-offs We Have Made
+1.6 Other Design Decisions or Trade-offs We Have Made
 ============================================================
 
 
