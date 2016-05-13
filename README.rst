@@ -6,7 +6,6 @@ timeseries
 .. image:: https://coveralls.io/repos/github/cs207-project/TimeSeries/badge.svg?branch=master 
 	:target: https://coveralls.io/github/cs207-project/TimeSeries?branch=master
 
-
 This package delivers Persistent TimeSeries Database for CS207 final project.
 
 Project Description
@@ -112,7 +111,7 @@ but in this case, we directly call handler file and pass the result got from ser
 Then ``test_web_for_coverage.py`` will take the Requests and check if it returned TSDBStatus.OK or ``<Response 200>``.
 
 ====================
-1.5 Extra Credit
+1.5 Extra Feature
 ====================
 Fast FFT Using Cython with fftw Integrated
 ---------------------------------------------
