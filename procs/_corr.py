@@ -69,6 +69,7 @@ def ccor(ts1, ts2):
     for i in range(len(ts2.values())*2+1):
         ts1_container.append(darray_get(ts1_c_array,i))
     for j in range(len(ts1.values())*2+1):
+<<<<<<< HEAD
         ts2_container.append(darray_get(ts2_c_array,j))
 
 
@@ -101,6 +102,29 @@ def ccor(ts1, ts2):
 
     ccor_value = np.asarray(ts1_ts2_ifft_container_python[1::2])
 
+=======
+        f4.append(darray_get(f8,j))
+    f1 = np.asarray(f3[1::2]) + 1j * np.asarray(f3[2::2])
+    f2 = np.asarray(f4[1::2]) + 1j * np.asarray(f4[2::2])
+    f1 = f1[:len(ts1)+1]
+    f2 = f2[:len(ts2)+1]
+
+    f1_f2_conj = f1 * np.conj(f2)
+    f3 = [0]*len(f1_f2_conj)*2
+    f3[::2] = f1_f2_conj.real
+    f3[1::2] = f1_f2_conj.imag
+    for i in range(len(f1_f2_conj)+1, next_2 * 2):
+        f3.append(0)
+    f3.insert(0,0)
+    f4 = createfromlist(f3)
+    four1(f4, next_2, -1)
+    f10 = []
+    for i in range(len(f1_f2_conj)*2 + 1):
+        f10.append(darray_get(f4, i))
+    ccor_value = np.asarray(f10[1::2])
+
+
+>>>>>>> 6898a732e3cb6d648bf847d59c832217bb0e2b4a
     return 1/len(ts1) * ccor_value
 
 

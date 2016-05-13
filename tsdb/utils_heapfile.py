@@ -39,7 +39,6 @@ class MetaHeapFile(HeapFile):
         else:
             with open(heap_file_name+'_metadata.met','rb',buffering=0) as fd:
                 self.compression_string, self.fields, self.fieldsDefaultValues, self.byteArrayLength = pickle.load(fd)
-            # print("old metaheap meta values loaded from disk")
 
     def _create_compression_string(self, schema):
         fieldList = sorted(list(schema.keys()))
@@ -53,7 +52,6 @@ class MetaHeapFile(HeapFile):
             self.compression_string += TYPES[schema[field]['type']]
             self.fields.append(field)
             self.fieldsDefaultValues.append(TYPE_DEFAULT[schema[field]['type']])
-            # create field to check whether field is set, later
             if schema[field]['type'] != "bool":
                 self.compression_string += TYPES['bool']
                 self.fields.append(field+"_set")
@@ -80,9 +78,6 @@ class MetaHeapFile(HeapFile):
     def read_and_return_meta(self,pk_offset):
         self.fd.seek(pk_offset)
         buff = self.fd.read(self.byteArrayLength)
-        #check that reading and writing worked
-        # print(self.metaFields)
-        # print(struct.unpack(self.compression_string,buff))
         return list(struct.unpack(self.compression_string,buff))
 
 class TSHeapFile(HeapFile):
@@ -115,8 +110,6 @@ class TSHeapFile(HeapFile):
 
     def read_and_decode_ts(self, offset):
         self.fd.seek(offset)
-        # ts_length = int.from_bytes(self.fd.read(TS_FIELD_LENGTH), byteorder='little')
-        # self.fd.seek(offset + TS_FIELD_LENGTH)
         buff = self.fd.read(self.byteArrayLength)
         items = struct.unpack('%sd' % (2*self.ts_length),buff)
         return timeseries.TimeSeries(items[:self.ts_length], items[self.ts_length:])

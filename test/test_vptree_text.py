@@ -1,7 +1,7 @@
-from .simple_vp import *
+from vp_tree.simple_vp import *
 import time
 import pylab as plt
-from .simple_vp import VpNode, VpSearch
+from vp_tree.simple_vp import VpNode, VpSearch
 import sys
 
 def levenshtein(a,b):
@@ -54,10 +54,9 @@ def main(file_name):
         print
 
 
-if __name__ == '__main__':
+def test_search_text():
     try:
-        file_name = sys.argv[1]
-        main(file_name)
+        main('../vp_tree/README.md')
     except:
         print("usage:\nvp_searchtxt.py <filename>")
         print("file name must be a column of words")

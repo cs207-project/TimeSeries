@@ -2,8 +2,9 @@
 
 Currentlly:
     PKIndex: Primary Key Index
-    TreeIndex: Tree based index done using a AVL tree
-    BitmapIndex: Bitmap index for low cardinality columns
+    TreeIndex: Tree based index using a AVL tree for high cardinality fields
+    BitmapIndex: Bitmap index for low cardinality fields
+    vptreeIndex: for similarity search
 """
 
 # from .persistentdb import FILES_DIR
@@ -28,7 +29,6 @@ class Index(metaclass = abc.ABCMeta):
         Initialization
         1. Initialize DB Parameters
         2. Create file system for persistence
-
         '''
         pass
 
@@ -60,8 +60,8 @@ class PKIndex(Index):
 
     """
     def __init__(self, db_name='default'):
-        self.filename = FILES_DIR + '/'+db_name+'/'+'pks.p'
-        self.writelog = FILES_DIR + '/'+db_name+'/'+'writelog.idx'
+        self.filename = FILES_DIR + '/'+db_name+'/'+'pks.idx'
+        self.writelog = FILES_DIR + '/'+db_name+'/'+'idx.log'
 
         # if file never created before, create it
         if not os.path.exists(self.filename):
