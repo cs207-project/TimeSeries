@@ -196,6 +196,6 @@ REST api
 
 Timeseries package includes two modules: 'timeseries' and 'pype'.
 
-Thanks
-============
-Special thanks to Rahul for answering our questions and kindly offer necessary guidance in every single office hour. The project is definitely really hard for us from the very beginning, but at the same time we learned a lot!
+========================================
+What We Learned
+========================================
