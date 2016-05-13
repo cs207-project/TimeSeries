@@ -208,12 +208,3 @@ Timeseries package includes two modules: 'timeseries' and 'pype'.
 Discussions
 ========================
 
-========================================
-What difficulty have we encountered?
-========================================
-
-
-
-========================================
-What have we learned?
-========================================
