@@ -15,14 +15,14 @@ OPMAP = {
     '>=': 5
 }
 
-INDEXES = {
-    1: None, #Binary Tree
-    2: None #bitmask
-}
-
 FILES_DIR = 'persistent_files'
 
 MAX_CARD = 8
+
+INDEXES = {
+    1: None, #Binary Tree
+    2: None  #bitmask
+}
 
 TYPES = {
     'float': 'd',
@@ -55,12 +55,13 @@ schema_type = {
   'std':   {'type': 'float',  'index': 1},
   'vp':    {'type': 'bool',   'index': 2,    'values': [0,1]},
   'd-vp1': {'type': 'float',  'index': 1}
+
 }
 
 identity = lambda x: x
 
 schema_convert = {
-  'pk': {'convert': identity, 'index': None},  #will be indexed anyways
+  'pk': {'convert': identity, 'index': None},
   'ts': {'convert': identity, 'index': None},
   'order': {'convert': int, 'index': 1},
   'blarg': {'convert': int, 'index': 1},

@@ -39,7 +39,6 @@ class MetaHeapFile(HeapFile):
         else:
             with open(heap_file_name+'_metadata.met','rb',buffering=0) as fd:
                 self.compression_string, self.fields, self.fieldsDefaultValues, self.byteArrayLength = pickle.load(fd)
-            # print("old metaheap meta values loaded from disk")
 
     def _create_compression_string(self, schema):
         fieldList = sorted(list(schema.keys()))
@@ -53,7 +52,6 @@ class MetaHeapFile(HeapFile):
             self.compression_string += TYPES[schema[field]['type']]
             self.fields.append(field)
             self.fieldsDefaultValues.append(TYPE_DEFAULT[schema[field]['type']])
-            # create field to check whether field is set, later
             if schema[field]['type'] != "bool":
                 self.compression_string += TYPES['bool']
                 self.fields.append(field+"_set")

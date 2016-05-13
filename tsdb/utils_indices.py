@@ -60,8 +60,8 @@ class PKIndex(Index):
 
     """
     def __init__(self, db_name='default'):
-        self.filename = FILES_DIR + '/'+db_name+'/'+'pks.p'
-        self.writelog = FILES_DIR + '/'+db_name+'/'+'writelog.idx'
+        self.filename = FILES_DIR + '/'+db_name+'/'+'pks.idx'
+        self.writelog = FILES_DIR + '/'+db_name+'/'+'idx.log'
 
         # if file never created before, create it
         if not os.path.exists(self.filename):

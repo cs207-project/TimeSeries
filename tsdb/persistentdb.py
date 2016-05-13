@@ -213,17 +213,11 @@ class PersistentDB():
             # will skip all the *_set entries
             if (field in new_meta.keys()) and (field in self.schema.keys()) \
             and (field != self.pkfield) and (field != 'ts'):
-            # if (field in new_meta.keys()) and (field in self.schema.keys()) and \
-            # (field != self.pkfield) and (field != 'ts'):
                 typestr = self.schema[field]['type']
 
-                # if type(TYPE_DEFAULT[typestr]) != type(new_meta[field]):
-                #     raise TypeError("Entries of '{}' must be of type '{}'. You submitted type {}.".format(field, str(type(TYPE_DEFAULT[typestr])),type(new_meta[field])))
                 meta[n] = new_meta[field]
                 if self.schema[field]['type'] != "bool":
                     meta[n+1] = True
-            # do not raise an exception if a bad field was passed in, an
-            # intentional design choice
 
         self.metaheap.encode_and_write_meta(meta, pk_offset)
         self.update_indices(pk, old_meta_dict) # pass in old meta for deletion
