@@ -33,57 +33,73 @@ def stand(x, m, s):
 def ccor(ts1, ts2):
     "given two standardized time series, compute their cross-correlation using FFT"
 
+    # Get the next 2 th power 110 -> 128
     next_2 = int(2**np.ceil(np.log(len(ts1.values()))))
-    # ts_1 = pyfftw.empty_aligned(len(ts1), dtype='complex128', n=16)
-    # ts_1[:] = ts1
-    f1 = ts1.values()
-    f2 = ts2.values()
-    f3,f4 = [],[]
-    f5 = [0]*len(ts1.values())
-    f6 = [0]*len(ts2.values())
 
-    f7,f8 = [None]*(len(f5)*2),[None]*(len(f6)*2)
+    # 
+    ts1_value = ts1.values()
+    ts2_value = ts2.values()
+    ts1_container,ts2_container = [],[]
+    ts1_zero_container = [0]*len(ts1.values())
+    ts2_zero_container = [0]*len(ts2.values())
 
-    f7[::2] = f1
-    f7[1::2] = f5
-    f8[::2] = f2
-    f8[1::2] = f6
+    ts1_c_array,ts2_c_array = [None]*(len(ts1.values())*2),[None]*(len(ts2.values())*2)
 
-    for i in range(len(f7)+1,next_2*2):
-        f7.append(np.double(0))
+    ts1_c_array[::2] = ts1_value
+    ts1_c_array[1::2] = ts1_zero_container
+    ts2_c_array[::2] = ts2_value
+    ts2_c_array[1::2] = ts2_zero_container
 
-    for i in range(len(f8)+1,next_2*2):
-        f8.append(np.double(0))
-    f7.insert(0,0)
-    f8.insert(0,0)
-    f7 = createfromlist(np.double(f7))
-    f8 = createfromlist(np.double(f8))
+    for i in range(len(ts1_c_array)+1,next_2*2):
+        ts1_c_array.append(np.double(0))
+
+    for i in range(len(ts2_c_array)+1,next_2*2):
+        ts2_c_array.append(np.double(0))
+    ts1_c_array.insert(0,0)
+    ts2_c_array.insert(0,0)
+
+
+    ts1_c_array = createfromlist(np.double(ts1_c_array))
+    ts2_c_array = createfromlist(np.double(ts2_c_array))
     
-    four1(f7,next_2,1)
-    four1(f8,next_2,1)
+    four1(ts1_c_array,next_2,1)
+    four1(ts2_c_array,next_2,1)
+
+
     for i in range(len(ts2.values())*2+1):
-        f3.append(darray_get(f7,i))
+        ts1_container.append(darray_get(ts1_c_array,i))
     for j in range(len(ts1.values())*2+1):
-        f4.append(darray_get(f8,j))
-    f1 = np.asarray(f3[1::2]) + 1j * np.asarray(f3[2::2])
-    f2 = np.asarray(f4[1::2]) + 1j * np.asarray(f4[2::2])
-    f1 = f1[:len(ts1)+1]
-    f2 = f2[:len(ts2)+1]
+        ts2_container.append(darray_get(ts2_c_array,j))
 
-    f1_f2_conj = f1 * np.conj(f2)
-    f3 = [0]*len(f1_f2_conj)*2
-    f3[::2] = f1_f2_conj.real
-    f3[1::2] = f1_f2_conj.imag
-    for i in range(len(f1_f2_conj)+1, next_2 * 2):
-        f3.append(0)
-    f3.insert(0,0)
-    f4 = createfromlist(f3)
-    four1(f4, next_2, -1)
-    f10 = []
-    for i in range(len(f1_f2_conj)*2 + 1):
-        f10.append(darray_get(f4, i))
-    ccor_value = np.asarray(f10[1::2])
 
+    ts1_fft = np.asarray(ts1_container[1::2]) + 1j * np.asarray(ts1_container[2::2])
+    ts2_fft = np.asarray(ts2_container[1::2]) + 1j * np.asarray(ts2_container[2::2])
+    ts1_fft = ts1_fft[:len(ts1)+1]
+    ts2_fft = ts2_fft[:len(ts2)+1]
+
+
+    # ifft part
+
+    ts1_ts2_conj = ts1_fft * np.conj(ts2_fft)
+    ts1_ts2_ifft_container = [0]*len(ts1_ts2_conj)*2
+    ts1_ts2_ifft_container[::2] = ts1_ts2_conj.real
+    ts1_ts2_ifft_container[1::2] = ts1_ts2_conj.imag
+
+    for i in range(len(ts1_ts2_conj)+1, next_2 *2):
+        ts1_ts2_ifft_container.append(0)
+
+    ts1_ts2_ifft_container.insert(0,0)
+
+    ts1_ts2_ifft_container = createfromlist(ts1_ts2_ifft_container)
+
+    four1(ts1_ts2_ifft_container, next_2, -1)
+
+    ts1_ts2_ifft_container_python = []
+
+    for i in range(len(ts1_ts2_conj)*2+1):
+        ts1_ts2_ifft_container_python.append(darray_get(ts1_ts2_ifft_container,i))
+
+    ccor_value = np.asarray(ts1_ts2_ifft_container_python[1::2])
 
     return 1/len(ts1) * ccor_value
 
