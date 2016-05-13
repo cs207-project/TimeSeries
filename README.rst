@@ -49,7 +49,7 @@ We designed four types of indices for different types of metadata and apply them
 
 -  VPTree Index
     - Implemented using ``VPTree`` constructed using ``knn`` algorithm
-    - Specially revered for timeseries similarity search (see more in the "Extra Credit: VPTree" section)
+    - Specially reserved for timeseries similarity search (see more in the "Extra Credit: VPTree" section)
 
 ====================
 1.3 Vantage Point
@@ -112,7 +112,7 @@ but in this case, we directly call handler file and pass the result got from ser
 Then ``test_web_for_coverage.py`` will take the Requests and check if it returned TSDBStatus.OK or ``<Response 200>``.
 
 ====================
-1.5 Extra Credit
+1.5 Extra Features
 ====================
 Fast FFT Using Cython with fftw Integrated
 ---------------------------------------------
@@ -215,5 +215,5 @@ What difficulty have we encountered?
 
 
 ========================================
-What we learned?
+What have we learned?
 ========================================
