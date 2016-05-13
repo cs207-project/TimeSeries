@@ -10,18 +10,6 @@ addons:
       - libfftw3-dev
       - swig
 install:
-  - source test/travis_install.sh
-  - pip install -r requirements.txt
-  - conda install --yes numpy ply
-  - travis_wait pip install asynctest
-  - travis_wait pip install asyncio
-  - travis_wait pip install aiohttp
-  - travis_wait pip install scipy
-  - travis_wait python setup.py install
-  - pip install pyfftw
-  - cd procs
-  - python setup.py build_ext --inplace
-  - cd ..
   - sudo apt-get update
 
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
@@ -43,7 +31,7 @@ install:
   - pip install aiohttp
   - pip install graphviz
   - python setup.py install
-  - export PYTHONPATH=$PYTHONPATH:/Users/yuhantang/CS207/TimeSeries/procs
+  - export PYTHONPATH=$PYTHONPATH:/Users/yuhantang/CS207/test2/TimeSeries/procs
 before_script:
   - cd procs
   - python setup.py build_ext --inplace
